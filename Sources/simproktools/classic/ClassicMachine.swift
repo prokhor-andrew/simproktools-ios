@@ -5,7 +5,7 @@
 //  Created by Andrey Prokhorenko on 01.12.2021.
 //  Copyright (c) 2022 simprok. All rights reserved.
 
-import Foundation
+import simprokmachine
 
 
 /// A machine that receives input, reduces it into state and array of outputs that are emitted.

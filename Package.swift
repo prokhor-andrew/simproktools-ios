@@ -5,7 +5,6 @@ import PackageDescription
 
 let package = Package(
     name: "simproktools",
-    platforms: [ .iOS(.v11) ],
     products: [
         .library(
             name: "simproktools",
@@ -16,7 +15,7 @@ let package = Package(
         .package(
             name: "simprokmachine",
             url: "https://github.com/simprok-dev/simprokmachine-ios.git",
-            from: .init(1, 1, 1)
+            from: .init(1, 1, 2)
         ),
     ],
     targets: [
