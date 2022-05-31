@@ -155,7 +155,13 @@ A machine for dynamic creation and connection of other machines.
 
 ```Swift
 
-_ = 
+_ = ConnectableMachine<BasicConnection<Input, Output> /* or any class that conforms to Connection*/>(
+    BasicConnection([ /* machines for connection go here */ ])
+) { connection, input in 
+    // Return
+    // ConnectionType<BasicConnection<Input, Output>>.reduce(BasicConnection<Input, Output>([ /* machines for connection go here */ ])) // when we want to connect new array of machines
+    // ConnectionType<BasicConnection<Input, Output>>.inward // when we want to pass input to the connected machines
+}
 ```
 
 Creates a unique serial queue when connecting new machines dynamically. 
