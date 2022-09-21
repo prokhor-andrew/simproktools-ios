@@ -15,7 +15,7 @@ let package = Package(
         .package(
             name: "simprokmachine",
             url: "https://github.com/simprok-dev/simprokmachine-ios.git",
-            from: .init(1, 1, 2)
+            from: .init(1, 1, 8)
         ),
     ],
     targets: [

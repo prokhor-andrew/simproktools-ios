@@ -9,7 +9,7 @@ import simprokmachine
 
 
 /// A machine that when subscribed or receives input - ignores it, never emitting output.
-public final class NeverMachine<Input, Output>: ChildMachine {
+private final class NeverMachine<Input, Output>: ChildMachine {
     
     /// Initializes a machine
     public init() {
@@ -22,4 +22,16 @@ public final class NeverMachine<Input, Output>: ChildMachine {
     public func process(input: Input?, callback: @escaping Handler<Output>) {
         // do nothing, as we never should call the callback
     }
+}
+
+
+public extension MachineType {
+    
+    static func never() -> Machine<Input, Output> {
+        ~NeverMachine()
+    }
+}
+
+public func never<Input, Output>() -> Machine<Input, Output> {
+    Machine.never()
 }

@@ -8,8 +8,8 @@
 import Foundation
 
 
-internal enum EmitterOutput<Input, Output> {
-    case toConnected(Input)
-    case fromConnected(Output)
-}
-
+//internal enum EmitterOutput<Input, Output> {
+//    case toConnected(Input)
+//    case fromConnected(Output)
+//}
+//

@@ -9,7 +9,7 @@ import simprokmachine
 
 
 /// A machine that accepts a value as input and immediately emits it as output. When subscribed - emits `nil`.
-public final class ValueMachine<T>: ChildMachine {
+private final class ValueMachine<T>: ChildMachine {
     public typealias Input = T
     public typealias Output = T?
     
@@ -24,4 +24,16 @@ public final class ValueMachine<T>: ChildMachine {
     public func process(input: T?, callback: @escaping Handler<T?>) {
         callback(input)
     }
+}
+
+
+public extension MachineType where Output == Optional<Input> {
+    
+    static func value<T>() -> Machine<Input, Output> where T == Input {
+        ~ValueMachine()
+    }
+}
+
+public func value<T>() -> Machine<T, T?> {
+    .value()
 }

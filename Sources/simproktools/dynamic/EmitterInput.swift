@@ -8,11 +8,11 @@
 import Foundation
 
 
-internal struct EmitterInput<T> {
-    
-    internal let value: T
-    
-    internal init(_ value: T) {
-        self.value = value
-    }
-}
+//internal struct EmitterInput<T> {
+//    
+//    internal let value: T
+//    
+//    internal init(_ value: T) {
+//        self.value = value
+//    }
+//}

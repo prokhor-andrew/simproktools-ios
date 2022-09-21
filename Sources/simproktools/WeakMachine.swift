@@ -9,7 +9,7 @@ import simprokmachine
 
 
 /// A class that describes a machine with an injectable processinging behavior over the weakly referenced injected object.
-public final class WeakMachine<Input, Output>: ChildMachine {
+private final class WeakMachine<Input, Output>: ChildMachine {
     
     private let processor: BiHandler<Input?, Handler<Output>>
     
@@ -33,4 +33,22 @@ public final class WeakMachine<Input, Output>: ChildMachine {
     public func process(input: Input?, callback: @escaping Handler<Output>) {
         processor(input, callback)
     }
+}
+
+
+public extension MachineType {
+    
+    static func weak<O: AnyObject>(
+        _ object: O,
+        processor: @escaping TriHandler<O, Input?, Handler<Output>>
+    ) -> Machine<Input, Output> {
+        ~WeakMachine(object, processor: processor)
+    }
+}
+
+public func weak<O: AnyObject, Input, Output>(
+    _ object: O,
+    processor: @escaping TriHandler<O, Input?, Handler<Output>>
+) -> Machine<Input, Output> {
+    Machine.weak(object, processor: processor)
 }

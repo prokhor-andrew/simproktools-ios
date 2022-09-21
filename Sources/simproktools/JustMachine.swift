@@ -9,7 +9,7 @@ import simprokmachine
 
 
 /// A machine that emits the injected value when subscribed and every time input is received.
-public final class JustMachine<Input, Output>: ChildMachine {
+private final class JustMachine<Input, Output>: ChildMachine {
     
     private let value: Output
     
@@ -27,3 +27,15 @@ public final class JustMachine<Input, Output>: ChildMachine {
     }
 }
 
+
+
+public extension MachineType {
+    
+    static func just(_ value: Output) -> Machine<Input, Output> {
+        ~JustMachine(value)
+    }
+}
+
+public func just<Input, Output>(_ value: Output) -> Machine<Input, Output> {
+    Machine.just(value)
+}

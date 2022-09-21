@@ -9,7 +9,7 @@ import simprokmachine
 
 
 /// A machine that emits the injected value *when subscribed*.
-public final class SingleMachine<Input, Output>: ChildMachine {
+private final class SingleMachine<Input, Output>: ChildMachine {
     
     private let value: Output
     
@@ -27,4 +27,16 @@ public final class SingleMachine<Input, Output>: ChildMachine {
             callback(value)
         }
     }
+}
+
+
+public extension MachineType {
+    
+    static func single(_ value: Output) -> Machine<Input, Output> {
+        ~SingleMachine(value)
+    }
+}
+
+public func single<Input, Output>(_ value: Output) -> Machine<Input, Output> {
+    Machine.single(value)
 }

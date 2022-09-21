@@ -17,3 +17,12 @@ internal extension Dictionary {
     }
 }
 
+
+internal extension Array {
+    
+    func copy(add value: Element) -> Array<Element> {
+        var copied = self
+        copied.append(value)
+        return copied
+    }
+}

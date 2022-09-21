@@ -9,7 +9,7 @@ import simprokmachine
 
 
 /// A machine that receives input, reduces it into state and array of outputs that are emitted.
-public final class ClassicMachine<State, Input, Output>: ChildMachine {
+private final class ClassicMachine<State, Input, Output>: ChildMachine {
     
     private var state: ClassicResult<State, Output>
     private let reducer: BiMapper<State, Input, ClassicResult<State, Output>>
@@ -37,4 +37,25 @@ public final class ClassicMachine<State, Input, Output>: ChildMachine {
         }
         state.outputs.forEach { callback($0) }
     }
+}
+
+
+public extension MachineType {
+    
+    static func classic<State>(
+        _ initial: ClassicResult<State, Output>,
+        queue: MachineQueue = .new,
+        reducer: @escaping BiMapper<State, Input, ClassicResult<State, Output>>
+    ) -> Machine<Input, Output> {
+        ~ClassicMachine(initial, queue: queue, reducer: reducer)
+    }
+}
+
+
+public func classic<State, Input, Output>(
+    _ initial: ClassicResult<State, Output>,
+    queue: MachineQueue = .new,
+    reducer: @escaping BiMapper<State, Input, ClassicResult<State, Output>>
+) -> Machine<Input, Output> {
+    Machine.classic(initial, queue: queue, reducer: reducer)
 }

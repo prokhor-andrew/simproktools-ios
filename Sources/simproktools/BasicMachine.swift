@@ -9,7 +9,7 @@ import simprokmachine
 
 
 /// A class that describes a machine with an injectable processing behavior.
-public final class BasicMachine<Input, Output>: ChildMachine {
+private final class BasicMachine<Input, Output>: ChildMachine {
 
     private let processor: BiHandler<Input?, Handler<Output>>
     
@@ -27,4 +27,22 @@ public final class BasicMachine<Input, Output>: ChildMachine {
     public func process(input: Input?, callback: @escaping Handler<Output>) {
         processor(input, callback)
     }
+}
+
+
+public extension MachineType {
+    
+    static func basic(
+        queue: MachineQueue = .new,
+        processor: @escaping BiHandler<Input?, Handler<Output>>
+    ) -> Machine<Input, Output> {
+        ~BasicMachine(queue: queue, processor: processor)
+    }
+}
+
+public func basic<Input, Output>(
+    queue: MachineQueue = .new,
+    processor: @escaping BiHandler<Input?, Handler<Output>>
+) -> Machine<Input, Output> {
+    Machine.basic(queue: queue, processor: processor)
 }
