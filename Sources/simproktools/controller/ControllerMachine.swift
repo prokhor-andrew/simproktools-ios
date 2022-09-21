@@ -14,7 +14,23 @@ private enum ControllerEvent<Input, InternalOutput, ExternalOutput> {
 }
 
 
+public func controller<M: MachineType, Event, InternalOutput, ExternalOutput>(
+    _ machine: M,
+    state: State<Event>,
+    function: @escaping Mapper<Event, Ward<ControllerResult<InternalOutput, ExternalOutput>>>
+) -> Machine<Event, ExternalOutput> where M.Output == Event, M.Input == InternalOutput {
+    Machine.controller(machine, state: state, function: function)
+}
+
 public extension MachineType {
+    
+    static func controller<M: MachineType, Event, InternalOutput, ExternalOutput>(
+        _ machine: M,
+        state: State<Event>,
+        function: @escaping Mapper<Event, Ward<ControllerResult<InternalOutput, ExternalOutput>>>
+    ) -> Machine<Event, ExternalOutput> where M.Input == Input, M.Output == Output, Event == Output, InternalOutput == Input {
+        machine.controller(state, function: function)
+    }
     
     func controller<Event, InternalOutput, ExternalOutput>(
         _ state: State<Event>,
@@ -79,9 +95,4 @@ public extension MachineType {
         
         return out
     }
-}
-
-public enum ControllerResult<InternalOutput, ExternalOutput> {
-    case int(InternalOutput)
-    case ext(ExternalOutput)
 }
