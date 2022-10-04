@@ -14,11 +14,11 @@ private final class OutwardMachine<ParentOutput, ChildOutput, Input> : ChildMach
     internal var queue: MachineQueue { .new }
     
     private let machine: Machine<Input, ChildOutput>
-    private let mapper: Mapper<ChildOutput, Ward<ParentOutput>>
+    private let mapper: Mapper<ChildOutput, [ParentOutput]>
     
     private var subscription: Subscription<Input>?
     
-    internal init(_ machine: Machine<Input, ChildOutput>, function: @escaping Mapper<ChildOutput, Ward<ParentOutput>>) {
+    internal init(_ machine: Machine<Input, ChildOutput>, function: @escaping Mapper<ChildOutput, [ParentOutput]>) {
         self.machine = machine
         self.mapper = function
     }
@@ -28,7 +28,7 @@ private final class OutwardMachine<ParentOutput, ChildOutput, Input> : ChildMach
             subscription?.send(input: input)
         } else {
             subscription = ManualRoot(child: machine).start { [weak self] output in
-                self?.mapper(output).values.forEach(callback)
+                self?.mapper(output).forEach(callback)
             }
         }
     }
@@ -47,7 +47,7 @@ private final class OutwardMachine<ParentOutput, ChildOutput, Input> : ChildMach
 
 public extension MachineType {
     
-    func outward<ParentOutput>(function: @escaping Mapper<Output, Ward<ParentOutput>>) -> Machine<Input, ParentOutput> {
+    func outward<ParentOutput>(function: @escaping Mapper<Output, [ParentOutput]>) -> Machine<Input, ParentOutput> {
         ~OutwardMachine(~self, function: function)
     }
 }

@@ -14,18 +14,18 @@ private final class InwardMachine<ParentInput, ChildInput, Output> : ChildMachin
     internal var queue: MachineQueue { .new }
     
     private let machine: Machine<ChildInput, Output>
-    private let mapper: Mapper<ParentInput, Ward<ChildInput>>
+    private let mapper: Mapper<ParentInput, [ChildInput]>
     
     private var subscription: Subscription<ChildInput>?
     
-    internal init(_ machine: Machine<ChildInput, Output>, function: @escaping Mapper<ParentInput, Ward<ChildInput>>) {
+    internal init(_ machine: Machine<ChildInput, Output>, function: @escaping Mapper<ParentInput, [ChildInput]>) {
         self.machine = machine
         self.mapper = function
     }
     
     internal func process(input: ParentInput?, callback: @escaping Handler<Output>) {
         if let input = input {
-            mapper(input).values.forEach {
+            mapper(input).forEach {
                 subscription?.send(input: $0)
             }
         } else {
@@ -46,7 +46,7 @@ private final class InwardMachine<ParentInput, ChildInput, Output> : ChildMachin
 
 public extension MachineType {
     
-    func inward<ParentInput>(function: @escaping Mapper<ParentInput, Ward<Input>>) -> Machine<ParentInput, Output> {
+    func inward<ParentInput>(function: @escaping Mapper<ParentInput, [Input]>) -> Machine<ParentInput, Output> {
         ~InwardMachine(~self, function: function)
     }
 }
