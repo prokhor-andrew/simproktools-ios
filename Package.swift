@@ -23,7 +23,7 @@ let package = Package(
             dependencies: [
                 .product(
                     name: "simprokmachine",
-                    package: "simprokmachine"
+                    package: "simprokmachine-ios"
                 )
             ]
         )
