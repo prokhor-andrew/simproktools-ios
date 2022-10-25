@@ -5,8 +5,6 @@
 //  Created by Andrey Prokhorenko on 01.12.2021.
 //  Copyright (c) 2022 simprok. All rights reserved.
 
-import Foundation
-
 
 /// A type that represents a behavior of `ClassicMachine`.
 public struct ClassicResult<State, Output> {
