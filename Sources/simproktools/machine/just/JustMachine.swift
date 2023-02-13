@@ -7,8 +7,12 @@ import simprokmachine
 
 public extension Machine {
 
-    static func just(_ value: Output) -> Machine<Input, Output> {
-        Machine { _, callback in
+    static func just(_ value: Output, sendInitial: Bool = false) -> Machine<Input, Output> {
+        Machine { input, callback in
+            if input == nil && !sendInitial {
+                return
+            }
+
             callback(value)
         }
     }

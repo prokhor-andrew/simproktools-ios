@@ -10,7 +10,7 @@ public extension Feature {
 
     static func never() -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         Feature { _ in
-            nil
+            FeatureTransition(.never())
         }
     }
 }

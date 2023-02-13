@@ -28,7 +28,7 @@ public extension Machine {
 
 
     func and(_ machines: Set<Machine<Input, Output>>) -> Machine<Input, Output> {
-        Machine.merge(Set([self]).union(machines))
+        Machine.merge(machines.union([self]))
     }
 
     func and(_ machines: Machine<Input, Output>...) -> Machine<Input, Output> {
