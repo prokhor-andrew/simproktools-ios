@@ -25,4 +25,13 @@ public extension Machine {
     static func merge(_ machines: Machine<Input, Output>...) -> Machine<Input, Output> {
         merge(Set(machines))
     }
+
+
+    func and(_ machines: Set<Machine<Input, Output>>) -> Machine<Input, Output> {
+        Machine.merge(Set([self]).union(machines))
+    }
+
+    func and(_ machines: Machine<Input, Output>...) -> Machine<Input, Output> {
+        and(Set(machines))
+    }
 }
