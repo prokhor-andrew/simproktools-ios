@@ -11,11 +11,32 @@ public extension Feature {
             _ initial: State,
             function: @escaping BiMapper<State, FeatureEvent<IntTrigger, ExtTrigger>, ClassicResult<State, IntTrigger, IntEffect, ExtTrigger, ExtEffect>?>
     ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where State.Trigger == IntTrigger, State.Effect == IntEffect {
-        Feature(initial) { _, event in
-            if let result = function(initial, event) {
+        Feature(initial) { machines, event in
+            if let result = function(machines, event) {
                 return FeatureTransition(
                         classic(
                                 result.state,
+                                function: function
+                        ),
+                        effects: result.effects
+                )
+            } else {
+                return nil
+            }
+        }
+    }
+
+    static func classic<Payload, Machines: FeatureMachines>(
+            _ initial: Payload,
+            machines: Machines,
+            function: @escaping TriMapper<Payload, Machines, FeatureEvent<IntTrigger, ExtTrigger>, ClassicResultWithPayload<Payload, Machines, IntTrigger, IntEffect, ExtTrigger, ExtEffect>?>
+    ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where Machines.Trigger == IntTrigger, Machines.Effect == IntEffect {
+        Feature(machines) { machines, event in
+            if let result = function(initial, machines, event) {
+                return FeatureTransition(
+                        classic(
+                                result.payload,
+                                machines: result.machines,
                                 function: function
                         ),
                         effects: result.effects
