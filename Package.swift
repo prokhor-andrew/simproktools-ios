@@ -13,8 +13,8 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/simprok-dev/simprokmachine-ios.git",
-            exact: .init(1, 1, 8)
+            url: "https://github.com/simprok-dev/simprokstate-ios.git",
+            exact: .init(1, 2, 4)
         ),
     ],
     targets: [
@@ -22,8 +22,8 @@ let package = Package(
             name: "simproktools",
             dependencies: [
                 .product(
-                    name: "simprokmachine",
-                    package: "simprokmachine-ios"
+                    name: "simprokstate",
+                    package: "simprokstate-ios"
                 )
             ]
         )
