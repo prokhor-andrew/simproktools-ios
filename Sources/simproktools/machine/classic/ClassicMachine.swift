@@ -13,16 +13,20 @@ public extension Machine {
     ) -> Machine<Input, Output> {
         Machine<Input, Output>(
                 FeatureTransition(
-                        Feature<Void, Void, Input, Output>.classic(initial.state, machines: EmptyMachines()) { payload, machines, event in
+                        Feature<Void, Void, Input, Output>.classic(DataMachines(initial.state)) { machines, event in
                             switch event {
                             case .int:
-                                return ClassicResultWithPayload(payload, machines: machines)
+                                return ClassicFeatureResult(machines)
                             case .ext(let trigger):
-                                let result = function(payload, trigger)
-                                return ClassicResultWithPayload(result.state, machines: machines, effects: result.outputs.map { .ext($0) })
+                                let result = function(machines.data, trigger)
+                                return ClassicFeatureResult(DataMachines(result.state, machines: machines.machines), effects: result.outputs.map {
+                                    .ext($0)
+                                })
                             }
                         },
-                        effects: initial.outputs.map { .ext($0) }
+                        effects: initial.outputs.map {
+                            .ext($0)
+                        }
                 )
         )
     }

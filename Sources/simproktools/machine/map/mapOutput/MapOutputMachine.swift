@@ -13,9 +13,9 @@ public extension Machine {
                         Feature.classic(SetOfMachines(self)) { machines, trigger in
                             switch trigger {
                             case .ext(let input):
-                                return ClassicResult(machines, effects: .int(input))
+                                return ClassicFeatureResult(machines, effects: .int(input))
                             case .int(let output):
-                                return ClassicResult(machines, effects: function(output).map {
+                                return ClassicFeatureResult(machines, effects: function(output).map {
                                     .ext($0)
                                 })
                             }
@@ -30,19 +30,17 @@ public extension Machine {
     ) -> Machine<Input, ROutput> {
         Machine<Input, ROutput>(
                 FeatureTransition(
-                        Feature.classic(state, machines: SetOfMachines(self)) { state, machines, trigger in
+                        Feature.classic(DataMachines(state, machines: self)) { machines, trigger in
                             switch trigger {
                             case .ext(let input):
-                                return ClassicResultWithPayload(
-                                        state,
-                                        machines: machines,
+                                return ClassicFeatureResult(
+                                        machines,
                                         effects: .int(input)
                                 )
                             case .int(let output):
                                 let mapped = function(state, output)
-                                return ClassicResultWithPayload(
-                                        mapped.state,
-                                        machines: machines,
+                                return ClassicFeatureResult(
+                                        DataMachines(mapped.state, machines: machines.machines),
                                         effects: mapped.events.map {
                                             .ext($0)
                                         }

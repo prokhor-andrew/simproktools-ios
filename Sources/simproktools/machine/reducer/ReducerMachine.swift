@@ -14,15 +14,15 @@ public extension Machine {
     ) -> Machine<Input, Output> {
         Machine<Input, Output>(
                 FeatureTransition(
-                        Feature<Void, Void, Input, Output>.classic(initial, machines: EmptyMachines()) { payload, machines, event in
+                        Feature<Void, Void, Input, Output>.classic(DataMachines(initial)) { machines, event in
                             switch event {
                             case .int:
-                                return ClassicResultWithPayload(payload, machines: machines)
+                                return ClassicFeatureResult(machines)
                             case .ext(let trigger):
-                                if let result = function(payload, trigger) {
-                                    return ClassicResultWithPayload(result, machines: machines, effects: .ext(result))
+                                if let result = function(machines.data, trigger) {
+                                    return ClassicFeatureResult(DataMachines(result, machines: machines.machines), effects: .ext(result))
                                 } else {
-                                    return ClassicResultWithPayload(payload, machines: machines)
+                                    return ClassicFeatureResult(machines)
                                 }
                             }
                         },

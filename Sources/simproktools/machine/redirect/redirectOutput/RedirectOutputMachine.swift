@@ -16,13 +16,13 @@ public extension Machine {
                         Feature.classic(SetOfMachines(self)) { machines, trigger in
                             switch trigger {
                             case .ext(let input):
-                                return ClassicResult(machines, effects: .int(input))
+                                return ClassicFeatureResult(machines, effects: .int(input))
                             case .int(let output):
                                 switch function(output) {
                                 case .prop:
-                                    return ClassicResult(machines, effects: .ext(output))
+                                    return ClassicFeatureResult(machines, effects: .ext(output))
                                 case .back(let input):
-                                    return ClassicResult(machines, effects: .int(input))
+                                    return ClassicFeatureResult(machines, effects: .int(input))
                                 }
                             }
                         }
@@ -36,19 +36,19 @@ public extension Machine {
     ) -> Machine<Input, Output> {
         Machine(
                 FeatureTransition(
-                        Feature.classic(state, machines: SetOfMachines(self)) { payload, machines, trigger in
+                        Feature.classic(DataMachines(state, machines: self)) { machines, trigger in
                             switch trigger {
                             case .int(let output):
-                                let (newState, redirectResult) = function(payload, output)
+                                let (newState, redirectResult) = function(machines.data, output)
 
                                 switch redirectResult {
                                 case .prop:
-                                    return ClassicResultWithPayload(newState, machines: machines, effects: .ext(output))
+                                    return ClassicFeatureResult(DataMachines(newState, machines: machines.machines), effects: .ext(output))
                                 case .back(let input):
-                                    return ClassicResultWithPayload(newState, machines: machines, effects: .int(input))
+                                    return ClassicFeatureResult(DataMachines(newState, machines: machines.machines), effects: .int(input))
                                 }
                             case .ext(let input):
-                                return ClassicResultWithPayload(payload, machines: machines, effects: .int(input))
+                                return ClassicFeatureResult(machines, effects: .int(input))
                             }
                         }
                 )

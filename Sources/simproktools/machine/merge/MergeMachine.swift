@@ -13,9 +13,9 @@ public extension Machine {
                         Feature.classic(SetOfMachines(machines)) { machines, trigger in
                             switch trigger {
                             case .ext(let input):
-                                return ClassicResult(machines, effects: .int(input))
+                                return ClassicFeatureResult(machines, effects: .int(input))
                             case .int(let output):
-                                return ClassicResult(machines, effects: .ext(output))
+                                return ClassicFeatureResult(machines, effects: .ext(output))
                             }
                         }
                 )

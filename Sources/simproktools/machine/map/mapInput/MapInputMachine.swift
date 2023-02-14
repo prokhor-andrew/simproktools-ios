@@ -14,9 +14,9 @@ public extension Machine {
                         Feature.classic(SetOfMachines(self)) { machines, trigger in
                             switch trigger {
                             case .int(let output):
-                                return ClassicResult(machines, effects: .ext(output))
+                                return ClassicFeatureResult(machines, effects: .ext(output))
                             case .ext(let input):
-                                return ClassicResult(machines, effects: function(input).map {
+                                return ClassicFeatureResult(machines, effects: function(input).map {
                                     .int($0)
                                 })
                             }
@@ -31,20 +31,15 @@ public extension Machine {
     ) -> Machine<RInput, Output> {
         Machine<RInput, Output>(
                 FeatureTransition(
-                        Feature.classic(state, machines: SetOfMachines(self)) { state, machines, trigger in
+                        Feature.classic(DataMachines(state, machines: self)) { machines, trigger in
                             switch trigger {
                             case .int(let output):
-                                return ClassicResultWithPayload(
-                                        state,
-                                        machines: machines,
-                                        effects: .ext(output)
-                                )
+                                return ClassicFeatureResult(machines, effects: .ext(output))
                             case .ext(let input):
                                 let mapped = function(state, input)
 
-                                return ClassicResultWithPayload(
-                                        mapped.state,
-                                        machines: machines,
+                                return ClassicFeatureResult(
+                                        DataMachines(mapped.state, machines: machines.machines),
                                         effects: mapped.events.map {
                                             .int($0)
                                         }
