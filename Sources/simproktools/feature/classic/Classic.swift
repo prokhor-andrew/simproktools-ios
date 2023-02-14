@@ -28,8 +28,8 @@ public extension Feature {
             machines: Machines,
             function: @escaping TriMapper<Payload, Machines, FeatureEvent<IntTrigger, ExtTrigger>, ClassicResultWithPayload<Payload, Machines, IntTrigger, IntEffect, ExtTrigger, ExtEffect>>
     ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where Machines.Trigger == IntTrigger, Machines.Effect == IntEffect {
-        Feature(machines) { machines, event in
-            let result = function(initial, machines, event)
+        Feature(machines) {
+            let result = function(initial, $0, $1)
             return FeatureTransition(
                     classic(
                             result.payload,

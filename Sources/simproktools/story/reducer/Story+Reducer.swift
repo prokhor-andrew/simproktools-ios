@@ -11,8 +11,8 @@ public extension Story {
             _ initial: State,
             function: @escaping BiMapper<State, Event, State?>
     ) -> Story<Event> {
-        Story { event in
-            if let new = function(initial, event) {
+        Story {
+            if let new = function(initial, $0) {
                 return reducer(new, function: function)
             } else {
                 return nil

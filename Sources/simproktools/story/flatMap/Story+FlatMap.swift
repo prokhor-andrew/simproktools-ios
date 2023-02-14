@@ -11,9 +11,9 @@ public extension Story {
             _ initial: Story<Event>? = nil,
             function: @escaping BiMapper<Story<Event>?, Event, Story<Event>?>
     ) -> Story<Event> {
-        Story { event in
-            if let new = transit(event) {
-                if let sub = function(initial, event) {
+        Story {
+            if let new = transit($0) {
+                if let sub = function(initial, $0) {
                     return new.flatMap(sub, function: function)
                 } else {
                     return new.flatMap(initial, function: function)
