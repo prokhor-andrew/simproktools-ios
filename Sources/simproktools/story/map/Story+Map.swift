@@ -10,8 +10,8 @@ public extension Story {
     func map<REvent>(
             _ function: @escaping Mapper<REvent, Event?>
     ) -> Story<REvent> {
-        Story<REvent> {
-            if let mapped = function($0) {
+        Story<REvent> { event in
+            if let mapped = function(event) {
                 if let new = transit(mapped) {
                     return new.map(function)
                 } else {

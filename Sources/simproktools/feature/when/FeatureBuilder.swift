@@ -153,42 +153,44 @@ public struct FeatureBuilder<Machines: FeatureMachines, ExtTrigger, ExtEffect> {
 
 
     public func then(
-            _ function: @escaping BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, FeatureTransition<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>>
+            _ function: @escaping BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, FeatureTransition<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>?>
     ) -> Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> {
-        featureSupplier(function)
+        func feature() -> Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> {
+            featureSupplier { machines, event in
+                if let transition = function(machines, event) {
+                    return transition
+                } else {
+                    return FeatureTransition(feature())
+                }
+            }
+        }
+
+        return feature()
     }
 
     public func then(
             is trigger: FeatureEvent<Machines.Trigger, ExtTrigger>,
             execute transition: @autoclosure @escaping Supplier<FeatureTransition<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>>
     ) -> Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> where Machines.Trigger: Equatable, ExtTrigger: Equatable {
-        func feature() -> Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> {
-            featureSupplier { machines, event in
-                if event == trigger {
-                    return transition()
-                } else {
-                    return FeatureTransition(feature())
-                }
+        then { machines, event in
+            if event == trigger {
+                return transition()
+            } else {
+                return nil
             }
         }
-
-        return feature()
     }
 
     public func then(
             not trigger: FeatureEvent<Machines.Trigger, ExtTrigger>,
             execute transition: @autoclosure @escaping Supplier<FeatureTransition<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>>
     ) -> Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> where Machines.Trigger: Equatable, ExtTrigger: Equatable {
-        func feature() -> Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> {
-            featureSupplier { machines, event in
-                if event != trigger {
-                    return transition()
-                } else {
-                    return FeatureTransition(feature())
-                }
+        then { machines, event in
+            if event != trigger {
+                return transition()
+            } else {
+                return nil
             }
         }
-
-        return feature()
     }
 }

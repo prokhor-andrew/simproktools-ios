@@ -5,8 +5,6 @@
 import simprokstate
 
 public extension Story {
-
-
     static func merge(
             _ stories: [Story<Event>]
     ) -> Story<Event> {
