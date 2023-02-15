@@ -151,7 +151,6 @@ public struct FeatureBuilder<Machines: FeatureMachines, ExtTrigger, ExtEffect> {
         when(not: trigger, set: machines(), send: effects)
     }
 
-
     public func then(
             _ function: @escaping BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, FeatureTransition<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>?>
     ) -> Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> {
