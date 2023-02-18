@@ -20,7 +20,11 @@ public extension Scene {
 
                     if old != new {
                         var copy = dict
-                        copy[id] = new
+                        if new.isFinale {
+                            copy[id] = nil
+                        } else {
+                            copy[id] = new
+                        }
                         return (copy, effects: effects.map { IdEvent(id: id, event: $0) })
                     } else {
                         // no transition was executed

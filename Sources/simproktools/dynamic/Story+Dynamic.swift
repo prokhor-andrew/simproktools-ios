@@ -12,7 +12,11 @@ public extension Story {
                 if let transit = old.transit {
                     if let new = transit(data) {
                         var copy = dict
-                        copy[id] = new
+                        if new.isFinale {
+                            copy[id] = nil
+                        } else {
+                            copy[id] = new
+                        }
                         return .next(copy)
                     } else {
                         // no transition was executed
