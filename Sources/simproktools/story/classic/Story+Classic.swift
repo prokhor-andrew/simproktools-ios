@@ -7,13 +7,13 @@ import simprokstate
 
 public extension Story {
 
-    static func reducer<State>(
+    static func classic<State>(
             _ initial: State,
             function: @escaping BiMapper<State, Event, State?>
     ) -> Story<Event> {
-        Story {
+        Story.create {
             if let new = function(initial, $0) {
-                return reducer(new, function: function)
+                return classic(new, function: function)
             } else {
                 return nil
             }

@@ -159,7 +159,7 @@ _ = ConnectableMachine<BasicConnection<Input, Output> /* or any class that confo
     BasicConnection([ /* machine for connection go here */ ])
 ) { connection, input in 
     // Return
-    // ConnectionType<BasicConnection<Input, Output>>.reducer(BasicConnection<Input, Output>([ /* machine for connection go here */ ])) // when we want to connect new array of machine
+    // ConnectionType<BasicConnection<Input, Output>>.classic(BasicConnection<Input, Output>([ /* machine for connection go here */ ])) // when we want to connect new array of machine
     // ConnectionType<BasicConnection<Input, Output>>.inward // when we want to pass input to the connected machine
 }
 ```

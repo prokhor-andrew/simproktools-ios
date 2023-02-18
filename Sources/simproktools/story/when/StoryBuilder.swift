@@ -10,7 +10,7 @@ public struct StoryBuilder<Event> {
     private let storySupplier: Mapper<Mapper<Event, Story<Event>?>, Story<Event>>
 
     public init() {
-        storySupplier = Story.init
+        storySupplier = Story.create
     }
 
     private init(_ storySupplier: @escaping Mapper<Mapper<Event, Story<Event>?>, Story<Event>>) {
@@ -21,7 +21,7 @@ public struct StoryBuilder<Event> {
         StoryBuilder { mapper in
             storySupplier {
                 if function($0) {
-                    return Story(transit: mapper)
+                    return Story.create(transit: mapper)
                 } else {
                     return nil
                 }
@@ -49,7 +49,7 @@ public struct StoryBuilder<Event> {
                     if function($0) {
                         return story()
                     } else {
-                        return Story(transit: mapper)
+                        return Story.create(transit: mapper)
                     }
                 }
             }
@@ -71,7 +71,7 @@ public struct StoryBuilder<Event> {
             func story() -> Story<Event> {
                 storySupplier {
                     if function($0) {
-                        return Story(transit: mapper)
+                        return Story.create(transit: mapper)
                     } else {
                         return story()
                     }

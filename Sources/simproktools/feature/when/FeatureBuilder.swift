@@ -13,7 +13,7 @@ public struct FeatureBuilder<Machines: FeatureMachines, ExtTrigger, ExtEffect> {
             _ machines: @autoclosure @escaping Supplier<Machines>
     ) {
         featureSupplier = {
-            Feature(machines(), transit: $0)
+            Feature.create(machines(), transit: $0)
         }
     }
 
@@ -26,23 +26,20 @@ public struct FeatureBuilder<Machines: FeatureMachines, ExtTrigger, ExtEffect> {
     ) -> FeatureBuilder<NewMachines, ExtTrigger, ExtEffect> where NewMachines.Trigger == Machines.Trigger, NewMachines.Effect == Machines.Effect {
         FeatureBuilder<NewMachines, ExtTrigger, ExtEffect> { transit in
 
-            func feature() -> Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> {
-                featureSupplier {
-                    if let transition = function($0, $1) {
-                        return FeatureTransition(
-                                Feature(transition.machines, transit: transit),
-                                effects: transition.effects
-                        )
-                    } else {
-                        return FeatureTransition(feature())
-                    }
+            let feature = featureSupplier {
+                if let transition = function($0, $1) {
+                    return FeatureTransition(
+                            Feature.create(transition.machines, transit: transit),
+                            effects: transition.effects
+                    )
+                } else {
+                    return FeatureTransition(feature)
                 }
             }
 
-            return feature()
+            return feature
         }
     }
-
 
     public func when<NewMachines: FeatureMachines>(
             is trigger: FeatureEvent<Machines.Trigger, ExtTrigger>,
@@ -154,17 +151,15 @@ public struct FeatureBuilder<Machines: FeatureMachines, ExtTrigger, ExtEffect> {
     public func then(
             _ function: @escaping BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, FeatureTransition<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>?>
     ) -> Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> {
-        func feature() -> Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> {
-            featureSupplier { machines, event in
-                if let transition = function(machines, event) {
-                    return transition
-                } else {
-                    return FeatureTransition(feature())
-                }
+        let feature = featureSupplier { machines, event in
+            if let transition = function(machines, event) {
+                return transition
+            } else {
+                return FeatureTransition(feature)
             }
         }
 
-        return feature()
+        return feature
     }
 
     public func then(

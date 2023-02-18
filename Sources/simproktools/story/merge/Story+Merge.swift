@@ -5,39 +5,71 @@
 import simprokstate
 
 public extension Story {
-    static func merge(
-            _ stories: [Story<Event>]
-    ) -> Story<Event> {
-        Story { event in
-            var skippable = true
-            let new: [Story<Event>] = stories.enumerated().map { index, story in
-                if let new = story.transit(event) {
-                    skippable = false
-                    return new
+
+    // isFinaleChecked added to remove unnecessary loops
+    private static func merge(isFinaleChecked: Bool, stories: Set<Story<Event>>) -> Story<Event> {
+        if !isFinaleChecked {
+            func isFinale() -> Bool {
+                for story in stories {
+                    if !story.isFinale {
+                        return false
+                    }
+                }
+
+                return true
+            }
+
+            if isFinale() {
+                return .finale()
+            }
+        }
+
+        return Story.create { event in
+            var isFinale = true
+
+            let mapped = Set(stories.map { story in
+                if let transit = story.transit {
+                    isFinale = false
+                    if let new = transit(event) {
+                        return new
+                    } else {
+                        return story
+                    }
                 } else {
                     return story
                 }
-            }
+            })
 
-            return skippable ? nil : merge(new)
+
+            if isFinale {
+                return .finale()
+            } else {
+                return merge(isFinaleChecked: true, stories: mapped)
+            }
         }
     }
 
     static func merge(
+            _ stories: Set<Story<Event>>
+    ) -> Story<Event> {
+        merge(isFinaleChecked: false, stories: stories)
+    }
+
+    static func merge(
             _ stories: Story<Event>...
     ) -> Story<Event> {
-        merge(stories)
+        merge(Set(stories))
     }
 
     func and(
-            _ stories: [Story<Event>]
+            _ stories: Set<Story<Event>>
     ) -> Story<Event> {
-        .merge([self] + stories)
+        .merge(stories.union([self]))
     }
 
     func and(
             _ stories: Story<Event>...
     ) -> Story<Event> {
-        and(stories)
+        and(Set(stories))
     }
 }

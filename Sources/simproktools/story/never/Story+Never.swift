@@ -7,7 +7,7 @@ import simprokstate
 public extension Story {
 
     static func never() -> Story<Event> {
-        Story { _ in
+        Story.create { _ in
             nil
         }
     }

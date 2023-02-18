@@ -7,14 +7,26 @@ import simprokstate
 public extension Story {
 
     static func split(
-            _ stories: [Story<Event>]
+            _ stories: Set<Story<Event>>
     ) -> Story<Event> {
-        Story { event in
+        func isFinale() -> Bool {
             for story in stories {
-                if let result = story.transit(event) {
+                if !story.isFinale {
+                    return false
+                }
+            }
+
+            return true
+        }
+
+        if isFinale() {
+            return .finale()
+        }
+
+        return Story.create {
+            for story in stories {
+                if let transit = story.transit, let result = transit($0) {
                     return result
-                } else {
-                    continue
                 }
             }
             return nil
@@ -24,18 +36,18 @@ public extension Story {
     static func split(
             _ stories: Story<Event>...
     ) -> Story<Event> {
-        split(stories)
+        split(Set(stories))
     }
 
     func or(
-            _ stories: [Story<Event>]
+            _ stories: Set<Story<Event>>
     ) -> Story<Event> {
-        .split([self] + stories)
+        .split(stories.union([self]))
     }
 
     func or(
             _ stories: Story<Event>...
     ) -> Story<Event> {
-        or(stories)
+        or(Set(stories))
     }
 }
