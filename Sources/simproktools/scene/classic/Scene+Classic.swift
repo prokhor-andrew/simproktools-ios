@@ -15,14 +15,21 @@ public extension Scene {
 
     static func classic<State>(
             _ initial: State,
-            function: @escaping BiMapper<State, Trigger, (State, effects: [Effect])>
+            function: @escaping BiMapper<State, Trigger, (State?, effects: [Effect])>
     ) -> Scene<Trigger, Effect> {
         Scene.create { trigger in
             let (newState, effects) = function(initial, trigger)
-            return SceneTransition(
-                    classic(newState, function: function),
-                    effects: effects
-            )
+            if let newState {
+                return SceneTransition(
+                        classic(newState, function: function),
+                        effects: effects
+                )
+            } else {
+                return SceneTransition(
+                        .finale(),
+                        effects: effects
+                )
+            }
         }
     }
 }

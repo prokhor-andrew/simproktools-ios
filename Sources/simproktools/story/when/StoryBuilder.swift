@@ -43,51 +43,54 @@ public struct StoryBuilder<Event> {
 
     public func `while`(_ function: @escaping Mapper<Event, Bool>) -> StoryBuilder<Event> {
         StoryBuilder { mapper in
-
-            func story() -> Story<Event> {
-                storySupplier {
-                    if function($0) {
-                        return story()
-                    } else {
-                        return Story.create(transit: mapper)
-                    }
+            let story: Story<Event> = storySupplier {
+                if function($0) {
+                    return story
+                } else {
+                    return Story.create(transit: mapper)
                 }
             }
 
-            return story()
+            return story
         }
     }
 
     public func `while`(is event: Event) -> StoryBuilder<Event> where Event: Equatable {
-        `while` { event == $0 }
+        `while` {
+            event == $0
+        }
     }
 
     public func `while`(not event: Event) -> StoryBuilder<Event> where Event: Equatable {
-        `while` { event != $0 }
+        `while` {
+            event != $0
+        }
     }
 
     public func until(_ function: @escaping Mapper<Event, Bool>) -> StoryBuilder<Event> {
         StoryBuilder { mapper in
-            func story() -> Story<Event> {
-                storySupplier {
-                    if function($0) {
-                        return Story.create(transit: mapper)
-                    } else {
-                        return story()
-                    }
+            let story: Story<Event> = storySupplier {
+                if function($0) {
+                    return Story.create(transit: mapper)
+                } else {
+                    return story
                 }
             }
 
-            return story()
+            return story
         }
     }
 
     public func until(is event: Event) -> StoryBuilder<Event> where Event: Equatable {
-        until { $0 == event }
+        until {
+            $0 == event
+        }
     }
 
     public func until(not event: Event) -> StoryBuilder<Event> where Event: Equatable {
-        until { $0 != event }
+        until {
+            $0 != event
+        }
     }
 
     public func then(_ function: @escaping Mapper<Event, Story<Event>?>) -> Story<Event> {

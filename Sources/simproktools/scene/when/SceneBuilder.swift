@@ -40,7 +40,7 @@ public struct SceneBuilder<Trigger, Effect> {
     public func when(
             is trigger: Trigger,
             send effects: [Effect]
-    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable, Effect: Equatable {
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
         when { event in
             if event == trigger {
                 return effects
@@ -53,14 +53,14 @@ public struct SceneBuilder<Trigger, Effect> {
     public func when(
             is trigger: Trigger,
             send effects: Effect...
-    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable, Effect: Equatable {
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
         when(is: trigger, send: effects)
     }
 
     public func when(
             not trigger: Trigger,
             send effects: [Effect]
-    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable, Effect: Equatable {
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
         when { event in
             if event != trigger {
                 return effects
@@ -73,8 +73,101 @@ public struct SceneBuilder<Trigger, Effect> {
     public func when(
             not trigger: Trigger,
             send effects: Effect...
-    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable, Effect: Equatable {
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
         when(not: trigger, send: effects)
+    }
+
+    public func loop(
+            _ function: @escaping Mapper<Trigger, SceneLoop<Effect>>
+    ) -> SceneBuilder<Trigger, Effect> {
+        SceneBuilder { mapper in
+            let scene: Scene<Trigger, Effect> = featureSupplier {
+                switch function($0) {
+                case .loop(let effects):
+                    return SceneTransition(scene, effects: effects)
+                case .exit(let effects):
+                    return SceneTransition(Scene.create(transit: mapper), effects: effects)
+                }
+            }
+
+            return scene
+        }
+    }
+
+    public func loop(
+           is trigger: Trigger,
+           send loopEffects: [Effect],
+           exit exitEffects: [Effect]
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
+        loop {
+           if $0 == trigger {
+               return .exit(loopEffects)
+           } else {
+               return .loop(exitEffects)
+           }
+       }
+    }
+
+    public func loop(
+            is trigger: Trigger,
+            send loopEffects: Effect...,
+            exit exitEffects: [Effect]
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
+        loop(is: trigger, send: loopEffects, exit: exitEffects)
+    }
+
+    public func loop(
+            is trigger: Trigger,
+            send loopEffects: [Effect],
+            exit exitEffects: Effect...
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
+        loop(is: trigger, send: loopEffects, exit: exitEffects)
+    }
+
+    public func loop(
+            is trigger: Trigger,
+            send loopEffects: Effect...,
+            exit exitEffects: Effect...
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
+        loop(is: trigger, send: loopEffects, exit: exitEffects)
+    }
+
+    public func loop(
+            not trigger: Trigger,
+            send loopEffects: [Effect],
+            exit exitEffects: [Effect]
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
+        loop {
+            if $0 != trigger {
+                return .exit(loopEffects)
+            } else {
+                return .loop(exitEffects)
+            }
+        }
+    }
+
+    public func loop(
+            not trigger: Trigger,
+            send loopEffects: Effect...,
+            exit exitEffects: [Effect]
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
+        loop(not: trigger, send: loopEffects, exit: exitEffects)
+    }
+
+    public func loop(
+            not trigger: Trigger,
+            send loopEffects: [Effect],
+            exit exitEffects: Effect...
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
+        loop(not: trigger, send: loopEffects, exit: exitEffects)
+    }
+
+    public func loop(
+            not trigger: Trigger,
+            send loopEffects: Effect...,
+            exit exitEffects: Effect...
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
+        loop(not: trigger, send: loopEffects, exit: exitEffects)
     }
 
     public func then(
@@ -94,7 +187,7 @@ public struct SceneBuilder<Trigger, Effect> {
     public func then(
             is trigger: Trigger,
             execute transition: @autoclosure @escaping Supplier<SceneTransition<Trigger, Effect>>
-    ) -> Scene<Trigger, Effect> where Trigger: Equatable, Effect: Equatable {
+    ) -> Scene<Trigger, Effect> where Trigger: Equatable {
         then { event in
             if event == trigger {
                 return transition()
@@ -107,7 +200,7 @@ public struct SceneBuilder<Trigger, Effect> {
     public func then(
             not trigger: Trigger,
             execute transition: @autoclosure @escaping Supplier<SceneTransition<Trigger, Effect>>
-    ) -> Scene<Trigger, Effect> where Trigger: Equatable, Effect: Equatable {
+    ) -> Scene<Trigger, Effect> where Trigger: Equatable {
         then { event in
             if event != trigger {
                 return transition()

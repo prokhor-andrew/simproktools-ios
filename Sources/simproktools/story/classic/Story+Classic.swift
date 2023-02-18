@@ -9,13 +9,16 @@ public extension Story {
 
     static func classic<State>(
             _ initial: State,
-            function: @escaping BiMapper<State, Event, State?>
+            function: @escaping BiMapper<State, Event, ClassicStoryResult<State>>
     ) -> Story<Event> {
         Story.create {
-            if let new = function(initial, $0) {
-                return classic(new, function: function)
-            } else {
+            switch function(initial, $0) {
+            case .skip:
                 return nil
+            case .finale:
+                return .finale()
+            case .next(let new):
+                return classic(new, function: function)
             }
         }
     }

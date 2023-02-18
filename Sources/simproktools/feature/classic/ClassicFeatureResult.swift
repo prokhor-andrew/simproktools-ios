@@ -6,11 +6,11 @@ import simprokstate
 
 public struct ClassicFeatureResult<State: FeatureMachines, IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
 
-    public let state: State
+    public let state: State?
     public let effects: [FeatureEvent<IntEffect, ExtEffect>]
 
     public init(
-            _ state: State,
+            _ state: State?,
             effects: [FeatureEvent<IntEffect, ExtEffect>]
     ) {
         self.state = state
@@ -18,7 +18,7 @@ public struct ClassicFeatureResult<State: FeatureMachines, IntTrigger, IntEffect
     }
 
     public init(
-            _ state: State,
+            _ state: State?,
             effects: FeatureEvent<IntEffect, ExtEffect>...
     ) {
         self.init(state, effects: effects)

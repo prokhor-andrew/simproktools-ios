@@ -13,13 +13,20 @@ public extension Feature {
     ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where State.Trigger == IntTrigger, State.Effect == IntEffect {
         Feature.create(initial) { machines, event in
             let result = function(machines, event)
-            return FeatureTransition(
-                    classic(
-                            result.state,
-                            function: function
-                    ),
-                    effects: result.effects
-            )
+            if let newState = result.state {
+                return FeatureTransition(
+                        classic(
+                                newState,
+                                function: function
+                        ),
+                        effects: result.effects
+                )
+            } else {
+                return FeatureTransition(
+                        .finale(),
+                        effects: result.effects
+                )
+            }
         }
     }
 }
