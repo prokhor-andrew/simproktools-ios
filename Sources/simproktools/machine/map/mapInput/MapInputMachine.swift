@@ -36,7 +36,7 @@ public extension Machine {
                             case .int(let output):
                                 return ClassicFeatureResult(machines, effects: .ext(output))
                             case .ext(let input):
-                                let mapped = function(state, input)
+                                let mapped = function(machines.data, input)
 
                                 return ClassicFeatureResult(
                                         DataMachines(mapped.state, machines: machines.machines),
