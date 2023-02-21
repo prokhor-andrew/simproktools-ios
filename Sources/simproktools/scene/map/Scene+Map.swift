@@ -54,20 +54,4 @@ public extension Scene {
             return Scene<Trigger, REffect>.finale()
         }
     }
-
-    func mapEffect<REffect>(_ function: @escaping Mapper<Effect, [REffect]>) -> Scene<Trigger, REffect> {
-        if let transit {
-            let scene: Scene<Trigger, REffect> = Scene<Trigger, REffect>.create { trigger in
-                let transition = transit(trigger)
-                let mapped = transition.effects.flatMap {
-                    function($0)
-                }
-                return SceneTransition(transition.state.mapEffect(function), effects: mapped)
-            }
-
-            return scene
-        } else {
-            return Scene<Trigger, REffect>.finale()
-        }
-    }
 }
