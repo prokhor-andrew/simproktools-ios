@@ -2,8 +2,6 @@
 // Created by Andriy Prokhorenko on 18.02.2023.
 //
 
-import Foundation
-
 public struct IdEvent<T> {
 
     public let id: String

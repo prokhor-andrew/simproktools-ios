@@ -4,7 +4,6 @@
 
 import simprokstate
 
-
 public extension Scene {
 
     static func dynamic(_ function: @escaping () -> Scene<Trigger, Effect>) -> Scene<IdEvent<Trigger>, IdEvent<Effect>> {
