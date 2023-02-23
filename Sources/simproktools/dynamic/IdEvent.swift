@@ -2,16 +2,19 @@
 // Created by Andriy Prokhorenko on 18.02.2023.
 //
 
-public struct IdEvent<T> {
+
+
+
+public struct IdEvent<T>: DynamicEvent {
 
     public let id: String
-    public let event: T
+    public let data: T
 
     public init(
             id: String,
-            event: T
+            data: T
     ) {
         self.id = id
-        self.event = event
+        self.data = data
     }
 }

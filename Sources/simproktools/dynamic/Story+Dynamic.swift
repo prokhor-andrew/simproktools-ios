@@ -4,10 +4,12 @@ import simprokstate
 
 public extension Story {
 
-    static func dynamic(_ function: @escaping () -> Story<Event>) -> Story<IdEvent<Event>> {
-        Story<IdEvent<Event>>.classic([String: Story<Event>]()) { dict, trigger in
+    static func dynamic<DE: DynamicEvent>(
+        _ function: @escaping () -> Story<Event>
+    ) -> Story<DE> where DE.Data == Event {
+        Story<DE>.classic([DE.Id: Story<Event>]()) { dict, trigger in
             let id = trigger.id
-            let data = trigger.event
+            let data = trigger.data
 
             if let old = dict[id] {
                 if let transit = old.transit {

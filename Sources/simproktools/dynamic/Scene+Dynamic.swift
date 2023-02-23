@@ -6,10 +6,19 @@ import simprokstate
 
 public extension Scene {
 
-    static func dynamic(_ function: @escaping () -> Scene<Trigger, Effect>) -> Scene<IdEvent<Trigger>, IdEvent<Effect>> {
-        Scene<IdEvent<Trigger>, IdEvent<Effect>>.classic([String: Scene<Trigger, Effect>]()) { dict, trigger in
+    static func dynamic<Id: Hashable, DynamicEventTrigger, DynamicEventEffect>(
+        _ function: @escaping () -> Scene<Trigger, Effect>
+    ) -> Scene<DynamicEventTrigger, DynamicEventEffect> where
+    DynamicEventTrigger: DynamicEvent,
+    DynamicEventEffect: DynamicEvent,
+    DynamicEventTrigger.Data == Trigger,
+    DynamicEventEffect.Data == Effect,
+    DynamicEventTrigger.Id == Id,
+    DynamicEventEffect.Id == Id
+    {
+        Scene<DynamicEventTrigger, DynamicEventEffect>.classic([Id: Scene<Trigger, Effect>]()) { dict, trigger in
             let id = trigger.id
-            let data = trigger.event
+            let data = trigger.data
 
             if let old = dict[id] {
                 if let transit = old.transit {
@@ -24,7 +33,7 @@ public extension Scene {
                         } else {
                             copy[id] = new
                         }
-                        return (copy, effects: effects.map { IdEvent(id: id, event: $0) })
+                        return (copy, effects: effects.map { DynamicEventEffect(id: id, data: $0) })
                     } else {
                         // no transition was executed
                         return (dict, effects: [])
@@ -43,7 +52,7 @@ public extension Scene {
                     if old != new {
                         var copy = dict
                         copy[id] = new
-                        return (copy, effects: effects.map { IdEvent(id: id, event: $0) })
+                        return (copy, effects: effects.map { DynamicEventEffect(id: id, data: $0) })
                     } else {
                         // no transition was executed
                         return (dict, effects: [])
