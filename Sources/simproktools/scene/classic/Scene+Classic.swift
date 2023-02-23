@@ -7,9 +7,15 @@ import simprokstate
 
 public extension Scene {
 
-    static func classic(_ function: @escaping Mapper<Trigger, [Effect]>) -> Scene<Trigger, Effect> {
+    static func classic(_ function: @escaping Mapper<Trigger, ClassicStatelessSceneResult<Effect>>) -> Scene<Trigger, Effect> {
         classic(Void()) { state, event in
-            (state, effects: function(event))
+            let result = function(event)
+            switch result {
+            case .next(let effects):
+                return (state, effects)
+            case .finale(let effects):
+                return (nil, effects)
+            }
         }
     }
 

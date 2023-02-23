@@ -24,4 +24,18 @@ public extension Outline {
             }
         }
     }
+    
+    static func classic(
+        function: @escaping Mapper<FeatureEvent<IntTrigger, ExtTrigger>, ClassicStatelessResult<IntEffect, ExtEffect>>
+    ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        classic(Void()) { state, trigger in
+            let result = function(trigger)
+            switch result {
+            case .next(let effects):
+                return (state, effects)
+            case .finale(let effects):
+                return (nil, effects)
+            }
+        }
+    }
 }
