@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  DynamicEvent.swift
 //  
 //
 //  Created by Andriy Prokhorenko on 23.02.2023.

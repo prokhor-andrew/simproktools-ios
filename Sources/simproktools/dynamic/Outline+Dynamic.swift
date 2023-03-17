@@ -31,8 +31,10 @@ public extension Outline {
                     return (dict, effects: [])
                 }
             } else {
-                // IT IS FINALE
-                return (dict, effects: [])
+                // finale. it should not be there, but if it is there, let's remove it
+                var copy = dict
+                copy[id] = nil
+                return (copy, effects: [])
             }
         } else {
             let old = function()
@@ -76,7 +78,6 @@ public extension Outline {
     {
         Outline<DynamicEventIntTrigger, DynamicEventIntEffect, DynamicEventExtTrigger, DynamicEventExtEffect>
             .classic([Id: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>]()) { dict, trigger in
-
                     switch trigger {
                     case .int(let value):
 
