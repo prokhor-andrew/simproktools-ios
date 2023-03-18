@@ -13,7 +13,7 @@ public extension Machine {
     typealias ExtTrigger = Input
     typealias ExtEffect = Output
     
-    static func source<
+    static func source1<
         IntTrigger, IntEffect, State, Holder: AnyObject, Req: Hashable, Res
     >(
         _ outlines: Set<Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>>,
@@ -21,7 +21,6 @@ public extension Machine {
         mapReq: @escaping BiMapper<State, IntEffect, (State, TransformerOutput<Req>?)>,
         mapRes: @escaping BiMapper<State, TransformerInput<Res>, (State, IntTrigger?)>,
         holder: @escaping Supplier<Holder>,
-        isTriggerOnMain: @escaping Supplier<Bool>,
         onTrigger: @escaping TriHandler<Holder, Req, Handler<Res>>,
         onCancel: @escaping Handler<Holder>
     ) -> Machine<IdEvent<ExtTrigger>, IdEvent<ExtEffect>> where Input == ExtTrigger, Output == ExtEffect {
@@ -32,12 +31,12 @@ public extension Machine {
                             switch trigger {
                             case .ext(let value):
                                 switch value {
-                                case .trigger(let req):
+                                case .trigger(let isTriggerOnMain, let req):
                                     if machines.map[req] != nil {
                                         // ignore
                                         return ClassicFeatureResult(machines)
                                     } else {
-                                        let machine: Machine<Void, (Req, Res)> = Machine<Void, Res>(holder(), isProcessOnMain: isTriggerOnMain()) { object, input, callback in
+                                        let machine: Machine<Void, (Req, Res)> = Machine<Void, Res>(holder(), isProcessOnMain: isTriggerOnMain) { object, input, callback in
                                             if input == nil {
                                                 // do here
                                                 onTrigger(object, req, callback)
@@ -86,7 +85,7 @@ public extension Machine {
                                         let data = input.data
 
                                         switch data {
-                                        case .willTrigger(let tag2, let request):
+                                        case .willTrigger(let tag2, let isTriggerOnMain, let request):
                                             let id = TransformerId(tag1: tag1, tag2: tag2)
 
                                             if state[id] != nil {
@@ -100,7 +99,7 @@ public extension Machine {
                                                 if state.values.contains(request) {
                                                     effects = [.ext(IdEvent(id: tag1, data: .didTrigger(tag2)))]
                                                 } else {
-                                                    effects = [.ext(IdEvent(id: tag1, data: .didTrigger(tag2))), .int(.trigger(request))]
+                                                    effects = [.ext(IdEvent(id: tag1, data: .didTrigger(tag2))), .int(.trigger(isTriggerOnMain, request))]
                                                 }
 
                                                 return (copy, effects: effects)
@@ -205,12 +204,12 @@ public extension Machine {
     }
 
     private enum ExecuteInput<Req: Equatable> {
-        case trigger(Req)
+        case trigger(Bool, Req)
         case cancel(Req)
 
         var request: Req {
             switch self {
-            case .trigger(let req),
+            case .trigger(_, let req),
                  .cancel(let req):
                 return req
             }

@@ -7,6 +7,6 @@
 
 
 public enum TransformerOutput<Request: Equatable> {
-    case willTrigger(String, Request)
-    case willCancel(String)
+    case willTrigger(id: String, isTriggerOnMain: Bool, request: Request)
+    case willCancel(id: String)
 }
