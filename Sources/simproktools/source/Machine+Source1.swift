@@ -16,7 +16,7 @@ public extension Machine {
     static func source1<
         IntTrigger, IntEffect, State, Holder: AnyObject, Req: Hashable, Res
     >(
-        _ outlines: Set<Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>>,
+        _ outlines: [Supplier<Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>>],
         initial: Supplier<State>,
         mapReq: @escaping BiMapper<State, IntEffect, (State, TransformerOutput<Req>?)>,
         mapRes: @escaping BiMapper<State, TransformerInput<Res>, (State, IntTrigger?)>,
@@ -176,10 +176,9 @@ public extension Machine {
         let machine4: Machine<IdEvent<ExtTrigger>, IdEvent<ExtEffect>> = Machine<IdEvent<ExtTrigger>, IdEvent<ExtEffect>>(
                 FeatureTransition(
                         Outline.merge(Set(
-                                        outlines.map { outline in
-                                            Outline.dynamic {
-                                                outline
-                                            }
+                                        outlines.map { 
+                                            Outline.dynamic($0)
+                                            
                                         }
                                 ))
                                 .asFeature(SetOfMachines(machine3))
