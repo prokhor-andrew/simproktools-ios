@@ -7,7 +7,7 @@
 
 import simprokstate
 
-public enum FlexibleEvent<Event, IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+public enum OutlineFlexibleEvent<Event, IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
     case create(OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>)
     case normal(Event)
 }
@@ -26,8 +26,8 @@ public extension Outline {
     IntEffect: DynamicEvent,
     ExtTrigger: DynamicEvent,
     ExtEffect: DynamicEvent,
-    IntTrigger.Data == FlexibleEvent<IT, IT, IE, ET, EE>,
-    ExtTrigger.Data == FlexibleEvent<ET, IT, IE, ET, EE>,
+    IntTrigger.Data == OutlineFlexibleEvent<IT, IT, IE, ET, EE>,
+    ExtTrigger.Data == OutlineFlexibleEvent<ET, IT, IE, ET, EE>,
     IntEffect.Data == IE,
     ExtEffect.Data == EE,
     IntTrigger.Id == Id,
