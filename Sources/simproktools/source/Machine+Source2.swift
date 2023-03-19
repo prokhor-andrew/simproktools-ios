@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Andriy Prokhorenko on 25.02.2023.
 //
@@ -10,19 +10,18 @@ import simprokstate
 
 
 public extension Machine {
-    
-    static func source1<
+
+    static func source2<
         IntTrigger, IntEffect, State, Holder: AnyObject, Req: Hashable, Res
     >(
-        _ outlines: [Supplier<Outline<IntTrigger, IntEffect, Input, Output>>],
         initial: Supplier<State>,
         mapReq: @escaping BiMapper<State, IntEffect, (State, TransformerOutput<Req>?)>,
-        mapRes: @escaping BiMapper<State, TransformerInput<Res>, (State, IntTrigger?)>,
+        mapRes: @escaping BiMapper<State, TransformerInput<Res>, (State, OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, Input, Output>?)>,
         holder: @escaping Supplier<Holder>,
         onTrigger: @escaping TriHandler<Holder, Req, Handler<Res>>,
         onCancel: @escaping Handler<Holder>
-    ) -> Machine<IdEvent<Input>, IdEvent<Output>> {
-        
+    ) -> Machine<IdEvent<OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdEvent<Output>> {
+
         let machine1: Machine<ExecuteInput<Req>, (Req, Res)> = Machine<ExecuteInput<Req>, (Req, Res)>(
                 FeatureTransition<(Req, Res), Void, ExecuteInput<Req>, (Req, Res)>(
                         Feature.classic(MapOfMachines([:])) { machines, trigger in
@@ -140,7 +139,7 @@ public extension Machine {
         )
 
 
-        let machine3: Machine<IdEvent<IntEffect>, IdEvent<IntTrigger>> = Machine<IdEvent<IntEffect>, IdEvent<IntTrigger>>(
+        let machine3: Machine<IdEvent<IntEffect>, IdEvent<OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, Input, Output>>> = Machine<IdEvent<IntEffect>, IdEvent<OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, Input, Output>>>(
                 FeatureTransition(
                         Outline.classic(initial()) { state, trigger in
                                     switch trigger {
@@ -171,22 +170,19 @@ public extension Machine {
                 )
         )
 
-        let machine4: Machine<IdEvent<Input>, IdEvent<Output>> = Machine<IdEvent<Input>, IdEvent<Output>>(
+        
+        let machine4: Machine<IdEvent<OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdEvent<Output>> =
+            Machine<IdEvent<OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdEvent<Output>>(
                 FeatureTransition(
-                        Outline.merge(Set(
-                                        outlines.map {
-                                            Outline.dynamic($0)
-                                            
-                                        }
-                                ))
-                                .asFeature(SetOfMachines(machine3))
+                    Outline.flexible().asFeature(SetOfMachines(machine3))
                 )
-        )
-
+            )
+        
+        
         return machine4
     }
-    
-    
+
+
     private struct MapOfMachines<Key: Hashable, Trigger, Effect>: FeatureMachines {
 
         let map: [Key: Machine<Effect, Trigger>]
@@ -225,13 +221,13 @@ public extension Machine {
             !isTrigger
         }
     }
-    
+
     private enum ExecuteOutput<Req: Equatable, Res> {
         case didTrigger(Req)
         case didCancel(Req)
         case didEmit(Req, Res)
     }
-    
+
     private struct TransformerId: Hashable {
         let tag1: String
         let tag2: String
