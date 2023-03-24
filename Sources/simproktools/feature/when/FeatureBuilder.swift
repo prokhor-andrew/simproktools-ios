@@ -150,19 +150,21 @@ public struct FeatureBuilder<Machines: FeatureMachines, ExtTrigger, ExtEffect> {
             _ function: @escaping BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, FeatureLoop<NewMachines, ExtEffect>>
     ) -> FeatureBuilder<NewMachines, ExtTrigger, ExtEffect> where NewMachines.Trigger == Machines.Trigger, NewMachines.Effect == Machines.Effect {
         FeatureBuilder<NewMachines, ExtTrigger, ExtEffect> { mapper in
-            let feature: Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> = featureSupplier { machines, event in
-                switch function(machines, event) {
-                case .loop(let effects):
-                    return FeatureTransition(feature, effects: effects)
-                case .exit(let machines, let effects):
-                    return FeatureTransition(
-                            Feature.create(machines, transit: mapper),
-                            effects: effects
-                    )
+            func feature() -> Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> {
+                featureSupplier { machines, event in
+                    switch function(machines, event) {
+                    case .loop(let effects):
+                        return FeatureTransition(feature(), effects: effects)
+                    case .exit(let machines, let effects):
+                        return FeatureTransition(
+                                Feature.create(machines, transit: mapper),
+                                effects: effects
+                        )
+                    }
                 }
             }
 
-            return feature
+            return feature()
         }
     }
 
