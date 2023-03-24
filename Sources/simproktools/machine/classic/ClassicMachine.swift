@@ -8,23 +8,22 @@ import simprokstate
 public extension Machine {
 
     static func classic<State>(
-            _ initial: ClassicMachineResult<State, Output>,
-            function: @escaping BiMapper<State, Input, ClassicMachineResult<State, Output>>
+            initialState: State,
+            initialOutputs: [Output] = [],
+            function: @escaping BiMapper<State, Input, (newState: State, outputs: [Output])>
     ) -> Machine<Input, Output> {
         Machine<Input, Output>(
                 FeatureTransition(
-                        Feature<Void, Void, Input, Output>.classic(DataMachines(initial.state)) { machines, event in
+                        Feature<Void, Void, Input, Output>.classic(DataMachines(initialState)) { machines, event in
                             switch event {
                             case .int:
-                                return ClassicFeatureResult(machines)
+                                return (machines, [], false)
                             case .ext(let trigger):
-                                let result = function(machines.data, trigger)
-                                return ClassicFeatureResult(DataMachines(result.state, machines: machines.machines), effects: result.outputs.map {
-                                    .ext($0)
-                                })
+                                let (newState, effects) = function(machines.data, trigger)
+                                return (DataMachines(newState), effects.map { .ext($0) }, false)
                             }
                         },
-                        effects: initial.outputs.map {
+                        effects: initialOutputs.map {
                             .ext($0)
                         }
                 )

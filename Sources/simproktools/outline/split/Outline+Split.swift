@@ -24,17 +24,15 @@ public extension Outline {
             return .finale()
         }
 
-        let outline: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> = Outline.create { trigger in
+        return Outline.create { trigger in
             for outline in outlines {
                 if let transit = outline.transit {
                     return transit(trigger)
                 }
             }
 
-            return OutlineTransition(outline)
+            return nil
         }
-
-        return outline
     }
 
     static func split(

@@ -32,9 +32,12 @@ public extension Scene {
             let mapped = Set(scenes.map { scene in
                 if let transit = scene.transit {
                     isFinale = false
-                    let transition = transit(trigger)
-                    effects.append(contentsOf: transition.effects)
-                    return transition.state
+                    if let transition = transit(trigger) {
+                        effects.append(contentsOf: transition.effects)
+                        return transition.state
+                    } else {
+                        return scene
+                    }
                 } else {
                     return scene
                 }

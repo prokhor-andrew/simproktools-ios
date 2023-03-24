@@ -35,9 +35,12 @@ public extension Outline {
             let mapped = Set(outlines.map { outline in
                 if let transit = outline.transit {
                     isFinale = false
-                    let transition = transit(trigger)
-                    effects.append(contentsOf: transition.effects)
-                    return transition.state
+                    if let transition = transit(trigger) {
+                        effects.append(contentsOf: transition.effects)
+                        return transition.state
+                    } else {
+                        return outline
+                    }
                 } else {
                     return outline
                 }

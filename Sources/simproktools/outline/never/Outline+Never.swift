@@ -9,7 +9,7 @@ public extension Outline {
 
     static func never() -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         Outline.create { _ in
-            OutlineTransition(never())
+            nil
         }
     }
 }

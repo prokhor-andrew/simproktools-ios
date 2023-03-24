@@ -16,14 +16,14 @@ public extension Outline {
         }
 
         let main = Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>.create { trigger in
-            let transition = transit(trigger)
-            if transition.state.id == id {
-                return OutlineTransition(flatMap(initial, function: function))
-            } else {
+            if let transition = transit(trigger) {
+                let effects = transition.effects
                 return OutlineTransition(
-                        transition.state.flatMap(function(initial, transition.effects), function: function),
-                        effects: transition.effects
+                        transition.state.flatMap(function(initial, effects), function: function),
+                        effects: effects
                 )
+            } else {
+                return OutlineTransition(flatMap(initial, function: function))
             }
         }
 

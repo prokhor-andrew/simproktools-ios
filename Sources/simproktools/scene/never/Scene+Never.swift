@@ -9,7 +9,7 @@ public extension Scene {
 
     static func never() -> Scene<Trigger, Effect> {
         Scene.create { _ in
-            SceneTransition(never())
+            nil
         }
     }
 }

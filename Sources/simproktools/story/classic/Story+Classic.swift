@@ -24,17 +24,19 @@ public extension Story {
     }
     
     static func classic(
-        function: @escaping Mapper<Event, ClassicStatelessStoryResult>
+        function: @escaping Mapper<Event, Bool?>
     ) -> Story<Event> {
         classic(Void()) { state, trigger in
-            switch function(trigger) {
-            case .next:
-                return .next(state)
-            case .skip:
+            if let isFinale = function(trigger) {
+                if isFinale {
+                    return .finale
+                } else {
+                    return .next(state)
+                }
+            } else {
                 return .skip
-            case .finale:
-                return .finale
             }
         }
     }
 }
+

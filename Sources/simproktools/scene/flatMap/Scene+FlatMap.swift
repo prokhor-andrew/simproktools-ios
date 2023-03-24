@@ -16,14 +16,14 @@ public extension Scene {
         }
 
         let main = Scene<Trigger, Effect>.create { trigger in
-            let transition = transit(trigger)
-            if transition.state.id == id {
-                return SceneTransition(flatMap(initial, function: function))
-            } else {
+            if let transition = transit(trigger) {
+                let effects = transition.effects
                 return SceneTransition(
-                        transition.state.flatMap(function(initial, transition.effects), function: function),
-                        effects: transition.effects
+                        transition.state.flatMap(function(initial, effects), function: function),
+                        effects: effects
                 )
+            } else {
+                return SceneTransition(flatMap(initial, function: function))
             }
         }
 

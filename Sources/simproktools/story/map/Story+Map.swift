@@ -21,7 +21,7 @@ public extension Story {
 
     func map<State, REvent>(
             with state: State,
-            function: @escaping BiMapper<State, REvent, (State, Event?)?>
+            function: @escaping BiMapper<State, REvent, (newState: State, event: Event?)?>
     ) -> Story<REvent> {
         guard let transit else {
             return .finale()

@@ -13,11 +13,9 @@ public extension Machine {
                         Feature.classic(SetOfMachines(self)) { machines, trigger in
                             switch trigger {
                             case .ext(let input):
-                                return ClassicFeatureResult(machines, effects: .int(input))
+                                return (machines, [.int(input)], false)
                             case .int(let output):
-                                return ClassicFeatureResult(machines, effects: function(output).map {
-                                    .ext($0)
-                                })
+                                return (machines, function(output).map { .ext($0) }, false)
                             }
                         }
                 )
@@ -26,25 +24,17 @@ public extension Machine {
 
     func mapOutput<State, ROutput>(
             with state: State,
-            function: @escaping BiMapper<State, Output, MapWithStateResult<State, ROutput>>
+            function: @escaping BiMapper<State, Output, (newState: State, outputs: [ROutput])>
     ) -> Machine<Input, ROutput> {
         Machine<Input, ROutput>(
                 FeatureTransition(
                         Feature.classic(DataMachines(state, machines: self)) { machines, trigger in
                             switch trigger {
                             case .ext(let input):
-                                return ClassicFeatureResult(
-                                        machines,
-                                        effects: .int(input)
-                                )
+                                return (machines, [.int(input)], false)
                             case .int(let output):
-                                let mapped = function(state, output)
-                                return ClassicFeatureResult(
-                                        DataMachines(mapped.state, machines: machines.machines),
-                                        effects: mapped.events.map {
-                                            .ext($0)
-                                        }
-                                )
+                                let (newState, outputs) = function(machines.data, output)
+                                return (DataMachines(newState, machines: machines.machines), outputs.map { .ext($0) }, false)
                             }
                         }
                 )

@@ -14,11 +14,9 @@ public extension Machine {
                         Feature.classic(SetOfMachines(self)) { machines, trigger in
                             switch trigger {
                             case .int(let output):
-                                return ClassicFeatureResult(machines, effects: .ext(output))
+                                return (machines, [.ext(output)], false)
                             case .ext(let input):
-                                return ClassicFeatureResult(machines, effects: function(input).map {
-                                    .int($0)
-                                })
+                                return (machines, function(input).map { .int($0) }, false)
                             }
                         }
                 )
@@ -27,23 +25,18 @@ public extension Machine {
 
     func mapInput<State, RInput>(
             with state: State,
-            function: @escaping BiMapper<State, RInput, MapWithStateResult<State, Input>>
+            function: @escaping BiMapper<State, RInput, (newState: State, inputs: [Input])>
     ) -> Machine<RInput, Output> {
         Machine<RInput, Output>(
                 FeatureTransition(
                         Feature.classic(DataMachines(state, machines: self)) { machines, trigger in
                             switch trigger {
                             case .int(let output):
-                                return ClassicFeatureResult(machines, effects: .ext(output))
+                                return (machines, [.ext(output)], false)
                             case .ext(let input):
-                                let mapped = function(machines.data, input)
+                                let (newState, inputs) = function(machines.data, input)
 
-                                return ClassicFeatureResult(
-                                        DataMachines(mapped.state, machines: machines.machines),
-                                        effects: mapped.events.map {
-                                            .int($0)
-                                        }
-                                )
+                                return (DataMachines(newState, machines: machines.machines), inputs.map { .int($0) }, false)
                             }
                         }
                 )

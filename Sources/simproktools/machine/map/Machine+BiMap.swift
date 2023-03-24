@@ -10,30 +10,28 @@ public extension Machine {
 
     func biMap<State, RInput, ROutput>(
             _ state: Supplier<State>,
-            mapInput: @escaping BiMapper<State, RInput, (State, [Input])>,
-            mapOutput: @escaping BiMapper<State, Output, (State, [ROutput])>
+            mapInput: @escaping BiMapper<State, RInput, (newState: State, inputs: [Input])>,
+            mapOutput: @escaping BiMapper<State, Output, (newState: State, outputs: [ROutput])>
     ) -> Machine<RInput, ROutput> {
         Machine<RInput, ROutput>(
                 FeatureTransition(
                         Feature.classic(DataMachines(state(), machines: self)) { machines, trigger in
                             switch trigger {
                             case .int(let output):
-                                let (newState, newOutputs) = mapOutput(machines.data, output)
+                                let (newState, outputs) = mapOutput(machines.data, output)
 
-                                return ClassicFeatureResult(
+                                return (
                                         DataMachines(newState, machines: machines.machines),
-                                        effects: newOutputs.map {
-                                            .ext($0)
-                                        }
+                                        outputs.map { .ext($0) },
+                                        false
                                 )
                             case .ext(let input):
-                                let (newState, newInputs) = mapInput(machines.data, input)
+                                let (newState, inputs) = mapInput(machines.data, input)
 
-                                return ClassicFeatureResult(
+                                return (
                                         DataMachines(newState, machines: machines.machines),
-                                        effects: newInputs.map {
-                                            .int($0)
-                                        }
+                                        inputs.map { .int($0) },
+                                        false
                                 )
                             }
                         }

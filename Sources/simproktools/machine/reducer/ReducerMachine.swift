@@ -17,12 +17,12 @@ public extension Machine {
                         Feature<Void, Void, Input, Output>.classic(DataMachines(initial)) { machines, event in
                             switch event {
                             case .int:
-                                return ClassicFeatureResult(machines)
+                                return (machines, [], false)
                             case .ext(let trigger):
                                 if let result = function(machines.data, trigger) {
-                                    return ClassicFeatureResult(DataMachines(result, machines: machines.machines), effects: .ext(result))
+                                    return (machines, [.ext(result)], false)
                                 } else {
-                                    return ClassicFeatureResult(machines)
+                                    return (machines, [], false)
                                 }
                             }
                         },

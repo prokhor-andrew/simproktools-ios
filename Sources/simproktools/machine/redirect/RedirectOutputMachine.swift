@@ -9,20 +9,19 @@ import simprokstate
 public extension Machine {
 
     func redirectOutput(
-            _ function: @escaping Mapper<Output, RedirectResult<Input>>
+            _ function: @escaping Mapper<Output, Input?>
     ) -> Machine<Input, Output> {
         Machine(
                 FeatureTransition(
                         Feature.classic(SetOfMachines(self)) { machines, trigger in
                             switch trigger {
                             case .ext(let input):
-                                return ClassicFeatureResult(machines, effects: .int(input))
+                                return (machines, [.int(input)], false)
                             case .int(let output):
-                                switch function(output) {
-                                case .prop:
-                                    return ClassicFeatureResult(machines, effects: .ext(output))
-                                case .back(let input):
-                                    return ClassicFeatureResult(machines, effects: .int(input))
+                                if let input = function(output) {
+                                    return (machines, [.int(input)], false)
+                                } else {
+                                    return (machines, [.ext(output)], false)
                                 }
                             }
                         }
@@ -32,7 +31,7 @@ public extension Machine {
 
     func redirectInput<State>(
             with state: State,
-            _ function: @escaping BiMapper<State, Output, (State, redirect: RedirectResult<Input>)>
+            _ function: @escaping BiMapper<State, Output, (newState: State, input: Input?)>
     ) -> Machine<Input, Output> {
         Machine(
                 FeatureTransition(
@@ -40,15 +39,13 @@ public extension Machine {
                             switch trigger {
                             case .int(let output):
                                 let (newState, redirectResult) = function(machines.data, output)
-
-                                switch redirectResult {
-                                case .prop:
-                                    return ClassicFeatureResult(DataMachines(newState, machines: machines.machines), effects: .ext(output))
-                                case .back(let input):
-                                    return ClassicFeatureResult(DataMachines(newState, machines: machines.machines), effects: .int(input))
+                                if let input = redirectResult {
+                                    return (DataMachines(newState, machines: machines.machines), [.int(input)], false)
+                                } else {
+                                    return (DataMachines(newState, machines: machines.machines), [.ext(output)], false)
                                 }
                             case .ext(let input):
-                                return ClassicFeatureResult(machines, effects: .int(input))
+                                return (machines, [.int(input)], false)
                             }
                         }
                 )

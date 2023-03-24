@@ -23,5 +23,4 @@ public struct BuilderTransition<Machines: FeatureMachines, ExtEffect> {
     ) {
         self.init(machines, effects: effects)
     }
-
 }

@@ -7,13 +7,12 @@ import simprokstate
 
 public extension Scene {
 
-    static func classic(_ function: @escaping Mapper<Trigger, ClassicStatelessSceneResult<Effect>>) -> Scene<Trigger, Effect> {
+    static func classic(_ function: @escaping Mapper<Trigger, (effects: [Effect], isFinale: Bool)>) -> Scene<Trigger, Effect> {
         classic(Void()) { state, event in
-            let result = function(event)
-            switch result {
-            case .next(let effects):
+            let (effects, isFinale) = function(event)
+            if isFinale {
                 return (state, effects)
-            case .finale(let effects):
+            } else {
                 return (nil, effects)
             }
         }
@@ -21,7 +20,7 @@ public extension Scene {
 
     static func classic<State>(
             _ initial: State,
-            function: @escaping BiMapper<State, Trigger, (State?, effects: [Effect])>
+            function: @escaping BiMapper<State, Trigger, (newState: State?, effects: [Effect])>
     ) -> Scene<Trigger, Effect> {
         Scene.create { trigger in
             let (newState, effects) = function(initial, trigger)

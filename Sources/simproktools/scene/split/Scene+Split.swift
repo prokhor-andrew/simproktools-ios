@@ -22,17 +22,15 @@ public extension Scene {
             return .finale()
         }
 
-        let scene: Scene<Trigger, Effect> = Scene.create { trigger in
+        return Scene.create { trigger in
             for scene in scenes {
                 if let transit = scene.transit {
                     return transit(trigger)
                 }
             }
 
-            return SceneTransition(scene)
+            return nil
         }
-
-        return scene
     }
 
     static func split(_ scenes: Scene<Trigger, Effect>...) -> Scene<Trigger, Effect> {
