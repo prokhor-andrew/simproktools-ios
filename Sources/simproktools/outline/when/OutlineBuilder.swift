@@ -79,16 +79,15 @@ public struct OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
             _ function: @escaping Mapper<FeatureEvent<IntTrigger, ExtTrigger>, OutlineLoop<IntEffect, ExtEffect>>
     ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         OutlineBuilder { mapper in
-            let outline: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> = featureSupplier {
-                switch function($0) {
+            func _transit(_ event: FeatureEvent<IntTrigger, ExtTrigger>) -> OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+                switch function(event) {
                 case .loop(let effects):
-                    return OutlineTransition(outline, effects: effects)
+                    return OutlineTransition(Outline.create(transit: _transit), effects: effects)
                 case .exit(let effects):
                     return OutlineTransition(Outline.create(transit: mapper), effects: effects)
                 }
             }
-
-            return outline
+            return featureSupplier(_transit)
         }
     }
 

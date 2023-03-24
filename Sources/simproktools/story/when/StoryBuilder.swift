@@ -43,15 +43,15 @@ public struct StoryBuilder<Event> {
 
     public func `while`(_ function: @escaping Mapper<Event, Bool>) -> StoryBuilder<Event> {
         StoryBuilder { mapper in
-            let story: Story<Event> = storySupplier {
-                if function($0) {
-                    return story
+            func _transit(_ event: Event) -> Story<Event>? {
+                if function(event) {
+                    return Story.create(transit: _transit)
                 } else {
                     return Story.create(transit: mapper)
                 }
             }
-
-            return story
+            
+            return storySupplier(_transit)
         }
     }
 
@@ -69,15 +69,15 @@ public struct StoryBuilder<Event> {
 
     public func until(_ function: @escaping Mapper<Event, Bool>) -> StoryBuilder<Event> {
         StoryBuilder { mapper in
-            let story: Story<Event> = storySupplier {
-                if function($0) {
+            func _transit(_ event: Event) -> Story<Event>? {
+                if function(event) {
                     return Story.create(transit: mapper)
                 } else {
-                    return story
+                    return Story.create(transit: _transit)
                 }
             }
-
-            return story
+            
+            return storySupplier(_transit)
         }
     }
 

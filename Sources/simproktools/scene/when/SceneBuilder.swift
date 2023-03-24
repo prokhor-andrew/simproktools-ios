@@ -78,16 +78,16 @@ public struct SceneBuilder<Trigger, Effect> {
             _ function: @escaping Mapper<Trigger, SceneLoop<Effect>>
     ) -> SceneBuilder<Trigger, Effect> {
         SceneBuilder { mapper in
-            let scene: Scene<Trigger, Effect> = featureSupplier {
-                switch function($0) {
+            func _transit(_ trigger: Trigger) -> SceneTransition<Trigger, Effect> {
+                switch function(trigger) {
                 case .loop(let effects):
-                    return SceneTransition(scene, effects: effects)
+                    return SceneTransition(Scene.create(transit: _transit), effects: effects)
                 case .exit(let effects):
                     return SceneTransition(Scene.create(transit: mapper), effects: effects)
                 }
             }
-
-            return scene
+            
+            return featureSupplier(_transit)
         }
     }
 
