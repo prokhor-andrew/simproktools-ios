@@ -8,13 +8,13 @@ import simprokstate
 
 public struct OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
 
-    private let featureSupplier: Mapper<Mapper<FeatureEvent<IntTrigger, ExtTrigger>, OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>>, Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>>
+    private let featureSupplier: Mapper<Mapper<FeatureEvent<IntTrigger, ExtTrigger>, OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>?>, Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>>
 
     public init() {
         featureSupplier = Outline.create
     }
 
-    private init(_ featureSupplier: @escaping Mapper<Mapper<FeatureEvent<IntTrigger, ExtTrigger>, OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>>, Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>>) {
+    private init(_ featureSupplier: @escaping Mapper<Mapper<FeatureEvent<IntTrigger, ExtTrigger>, OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>?>, Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>>) {
         self.featureSupplier = featureSupplier
     }
 
@@ -22,19 +22,16 @@ public struct OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
             _ function: @escaping Mapper<FeatureEvent<IntTrigger, ExtTrigger>, [FeatureEvent<IntEffect, ExtEffect>]?>
     ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> { transit in
-
-            let outline = featureSupplier {
+            featureSupplier {
                 if let effects = function($0) {
                     return OutlineTransition(
                             Outline.create(transit: transit),
                             effects: effects
                     )
                 } else {
-                    return OutlineTransition(outline)
+                    return nil
                 }
             }
-
-            return outline
         }
     }
 
@@ -174,15 +171,13 @@ public struct OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
     public func then(
             _ function: @escaping Mapper<FeatureEvent<IntTrigger, ExtTrigger>, OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>?>
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        let outline = featureSupplier { event in
+        featureSupplier { event in
             if let transition = function(event) {
                 return transition
             } else {
-                return OutlineTransition(outline)
+                return nil
             }
         }
-
-        return outline
     }
 
     public func then(

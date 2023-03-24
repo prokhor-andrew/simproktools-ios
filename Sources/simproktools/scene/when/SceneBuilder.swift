@@ -7,13 +7,13 @@ import simprokstate
 
 public struct SceneBuilder<Trigger, Effect> {
 
-    private let featureSupplier: Mapper<Mapper<Trigger, SceneTransition<Trigger, Effect>>, Scene<Trigger, Effect>>
+    private let featureSupplier: Mapper<Mapper<Trigger, SceneTransition<Trigger, Effect>?>, Scene<Trigger, Effect>>
 
     public init() {
         featureSupplier = Scene.create
     }
 
-    private init(_ featureSupplier: @escaping Mapper<Mapper<Trigger, SceneTransition<Trigger, Effect>>, Scene<Trigger, Effect>>) {
+    private init(_ featureSupplier: @escaping Mapper<Mapper<Trigger, SceneTransition<Trigger, Effect>?>, Scene<Trigger, Effect>>) {
         self.featureSupplier = featureSupplier
     }
 
@@ -21,19 +21,16 @@ public struct SceneBuilder<Trigger, Effect> {
             _ function: @escaping Mapper<Trigger, [Effect]?>
     ) -> SceneBuilder<Trigger, Effect> {
         SceneBuilder<Trigger, Effect> { transit in
-
-            let scene = featureSupplier {
+            featureSupplier {
                 if let effects = function($0) {
                     return SceneTransition(
                             Scene.create(transit: transit),
                             effects: effects
                     )
                 } else {
-                    return SceneTransition(scene)
+                    return nil
                 }
             }
-
-            return scene
         }
     }
 
@@ -173,15 +170,13 @@ public struct SceneBuilder<Trigger, Effect> {
     public func then(
             _ function: @escaping Mapper<Trigger, SceneTransition<Trigger, Effect>?>
     ) -> Scene<Trigger, Effect> {
-        let scene = featureSupplier { event in
+        featureSupplier { event in
             if let transition = function(event) {
                 return transition
             } else {
-                return SceneTransition(scene)
+                return nil
             }
         }
-
-        return scene
     }
 
     public func then(

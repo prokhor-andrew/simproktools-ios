@@ -7,7 +7,7 @@ import simprokstate
 
 public struct FeatureBuilder<Machines: FeatureMachines, ExtTrigger, ExtEffect> {
 
-    private let featureSupplier: Mapper<BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, FeatureTransition<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>>, Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>>
+    private let featureSupplier: Mapper<BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, FeatureTransition<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>?>, Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>>
 
     public init(
             _ machines: @autoclosure @escaping Supplier<Machines>
@@ -17,7 +17,7 @@ public struct FeatureBuilder<Machines: FeatureMachines, ExtTrigger, ExtEffect> {
         }
     }
 
-    private init(_ featureSupplier: @escaping Mapper<BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, FeatureTransition<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>>, Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>>) {
+    private init(_ featureSupplier: @escaping Mapper<BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, FeatureTransition<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>?>, Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>>) {
         self.featureSupplier = featureSupplier
     }
 
@@ -25,19 +25,16 @@ public struct FeatureBuilder<Machines: FeatureMachines, ExtTrigger, ExtEffect> {
             _ function: @escaping BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, BuilderTransition<NewMachines, ExtEffect>?>
     ) -> FeatureBuilder<NewMachines, ExtTrigger, ExtEffect> where NewMachines.Trigger == Machines.Trigger, NewMachines.Effect == Machines.Effect {
         FeatureBuilder<NewMachines, ExtTrigger, ExtEffect> { transit in
-
-            let feature = featureSupplier {
+            featureSupplier {
                 if let transition = function($0, $1) {
                     return FeatureTransition(
                             Feature.create(transition.machines, transit: transit),
                             effects: transition.effects
                     )
                 } else {
-                    return FeatureTransition(feature)
+                    return nil
                 }
             }
-
-            return feature
         }
     }
 
@@ -172,15 +169,13 @@ public struct FeatureBuilder<Machines: FeatureMachines, ExtTrigger, ExtEffect> {
     public func then(
             _ function: @escaping BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, FeatureTransition<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect>?>
     ) -> Feature<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> {
-        let feature = featureSupplier { machines, event in
+        featureSupplier { machines, event in
             if let transition = function(machines, event) {
                 return transition
             } else {
-                return FeatureTransition(feature)
+                return nil
             }
         }
-
-        return feature
     }
 
     public func then(
