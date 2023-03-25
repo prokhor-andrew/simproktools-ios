@@ -147,21 +147,20 @@ public struct FeatureBuilder<Machines: FeatureMachines, ExtTrigger, ExtEffect> {
 
 
     public func loop<NewMachines: FeatureMachines>(
-            _ function: @escaping BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, FeatureLoop<NewMachines, ExtEffect>>
+            _ function: @escaping BiMapper<Machines, FeatureEvent<Machines.Trigger, ExtTrigger>, FeatureLoop<Machines, NewMachines, ExtEffect>>
     ) -> FeatureBuilder<NewMachines, ExtTrigger, ExtEffect> where NewMachines.Trigger == Machines.Trigger, NewMachines.Effect == Machines.Effect {
         FeatureBuilder<NewMachines, ExtTrigger, ExtEffect> { mapper in
             func _transit(_ machines: Machines, event: FeatureEvent<Machines.Trigger, ExtTrigger>) -> FeatureTransition<Machines.Trigger, Machines.Effect, ExtTrigger, ExtEffect> {
                 switch function(machines, event) {
-                case .loop(let effects):
-                    
+                case .loop(let machines, let effects):
                     return FeatureTransition(
                         Feature.create(machines, transit: _transit),
                         effects: effects
                     )
                 case .exit(let machines, let effects):
                     return FeatureTransition(
-                            Feature.create(machines, transit: mapper),
-                            effects: effects
+                        Feature.create(machines, transit: mapper),
+                        effects: effects
                     )
                 }
             }
