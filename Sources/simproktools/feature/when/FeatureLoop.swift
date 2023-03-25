@@ -4,7 +4,7 @@
 
 import simprokstate
 
-public enum FeatureLoop<LoopMachines: FeatureMachines, ExitMachines: FeatureMachines, ExtEffect> {
-    case loop(LoopMachines, effects: [FeatureEvent<LoopMachines.Effect, ExtEffect>])
-    case exit(ExitMachines, effects: [FeatureEvent<ExitMachines.Effect, ExtEffect>])
+public enum FeatureLoop<Machines: FeatureMachines, ExtEffect> {
+    case loop([FeatureEvent<Machines.Effect, ExtEffect>])
+    case exit(Machines, effects: [FeatureEvent<Machines.Effect, ExtEffect>])
 }
