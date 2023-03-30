@@ -11,7 +11,7 @@ import simprokstate
 
 public extension Machine {
 
-    static func source2<
+    static func source<
         IntTrigger, IntEffect, State, Holder: AnyObject, Req: Hashable, Res, TriggerReason, CancelReason
     >(
         initial: Supplier<State>,
@@ -20,7 +20,7 @@ public extension Machine {
         holder: @escaping Supplier<Holder>,
         onTrigger: @escaping TriHandler<Holder, Req, Handler<Res>>,
         onCancel: @escaping Handler<Holder>
-    ) -> Machine<IdEvent<OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdEvent<Output>> {
+    ) -> Machine<IdData<String, OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdData<String, Output>> {
 
         let machine1: Machine<ExecuteInput<Req>, (Req, Res)> = Machine<ExecuteInput<Req>, (Req, Res)>(
                 FeatureTransition<(Req, Res), Void, ExecuteInput<Req>, (Req, Res)>(
@@ -68,7 +68,7 @@ public extension Machine {
                 )
         )
 
-        let machine2: Machine<IdEvent<TransformerOutput<TriggerReason, CancelReason, Req>>, IdEvent<TransformerInput<TriggerReason, CancelReason, Res>>> = Machine<IdEvent<TransformerOutput<TriggerReason, CancelReason, Req>>, IdEvent<TransformerInput<TriggerReason, CancelReason, Res>>>(
+        let machine2: Machine<IdData<String, TransformerOutput<TriggerReason, CancelReason, Req>>, IdData<String, TransformerInput<TriggerReason, CancelReason, Res>>> = Machine<IdData<String, TransformerOutput<TriggerReason, CancelReason, Req>>, IdData<String, TransformerInput<TriggerReason, CancelReason, Res>>>(
                 FeatureTransition(
                         Outline.classic([TransformerId: Req]()) { state, trigger in
                                     switch trigger {
@@ -87,11 +87,11 @@ public extension Machine {
                                                 var copy = state
                                                 copy[id] = request
 
-                                                let effects: [FeatureEvent<ExecuteInput<Req>, IdEvent<TransformerInput<TriggerReason, CancelReason, Res>>>]
+                                                let effects: [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformerInput<TriggerReason, CancelReason, Res>>>]
                                                 if state.values.contains(request) {
-                                                    effects = [.ext(IdEvent(id: tag1, data: .didTrigger(tag2, reason)))]
+                                                    effects = [.ext(IdData(id: tag1, data: .didTrigger(tag2, reason)))]
                                                 } else {
-                                                    effects = [.ext(IdEvent(id: tag1, data: .didTrigger(tag2, reason))), .int(.trigger(isTriggerOnMain, request))]
+                                                    effects = [.ext(IdData(id: tag1, data: .didTrigger(tag2, reason))), .int(.trigger(isTriggerOnMain, request))]
                                                 }
 
                                                 return (copy, effects: effects)
@@ -103,11 +103,11 @@ public extension Machine {
                                                 var copy = state
                                                 copy[id] = nil
 
-                                                let effects: [FeatureEvent<ExecuteInput<Req>, IdEvent<TransformerInput<TriggerReason, CancelReason, Res>>>]
+                                                let effects: [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformerInput<TriggerReason, CancelReason, Res>>>]
                                                 if copy.values.contains(request) {
-                                                    effects = [.ext(IdEvent(id: tag1, data: .didCancel(tag2, reason)))]
+                                                    effects = [.ext(IdData(id: tag1, data: .didCancel(tag2, reason)))]
                                                 } else {
-                                                    effects = [.ext(IdEvent(id: tag1, data: .didCancel(tag2, reason))), .int(.cancel(request))]
+                                                    effects = [.ext(IdData(id: tag1, data: .didCancel(tag2, reason))), .int(.cancel(request))]
                                                 }
 
                                                 return (copy, effects: effects)
@@ -118,9 +118,9 @@ public extension Machine {
                                         }
 
                                     case .int(let (req, res)):
-                                        let effects = state.flatMap { key, _req -> [FeatureEvent<ExecuteInput<Req>, IdEvent<TransformerInput<TriggerReason, CancelReason, Res>>>] in
+                                        let effects = state.flatMap { key, _req -> [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformerInput<TriggerReason, CancelReason, Res>>>] in
                                             if _req == req {
-                                                return [.ext(IdEvent(id: key.tag1, data: .didEmit(key.tag2, res)))]
+                                                return [.ext(IdData(id: key.tag1, data: .didEmit(key.tag2, res)))]
                                             } else {
                                                 return []
                                             }
@@ -134,7 +134,7 @@ public extension Machine {
         )
 
 
-        let machine3: Machine<IdEvent<IntEffect>, IdEvent<OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, Input, Output>>> = Machine<IdEvent<IntEffect>, IdEvent<OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, Input, Output>>>(
+        let machine3: Machine<IdData<String, IntEffect>, IdData<String, OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, Input, Output>>> = Machine<IdData<String, IntEffect>, IdData<String, OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, Input, Output>>>(
                 FeatureTransition(
                         Outline.classic(initial()) { state, trigger in
                                     switch trigger {
@@ -146,9 +146,9 @@ public extension Machine {
                                         if let mapped {
                                             switch mapped {
                                             case .first(let data):
-                                                return (newState, [.int(IdEvent(id: id, data: data))])
+                                                return (newState, [.int(IdData(id: id, data: data))])
                                             case .second(let data):
-                                                return (newState, [.ext(IdEvent(id: id, data: data))])
+                                                return (newState, [.ext(IdData(id: id, data: data))])
                                             }
                                         } else {
                                             return (newState, [])
@@ -162,9 +162,9 @@ public extension Machine {
                                         if let mapped {
                                             switch mapped {
                                             case .first(let data):
-                                                return (newState, [.ext(IdEvent(id: id, data: data))])
+                                                return (newState, [.ext(IdData(id: id, data: data))])
                                             case .second(let data):
-                                                return (newState, [.int(IdEvent(id: id, data: data))])
+                                                return (newState, [.int(IdData(id: id, data: data))])
                                             }
                                         } else {
                                             return (newState, [])
@@ -176,8 +176,8 @@ public extension Machine {
         )
 
         
-        let machine4: Machine<IdEvent<OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdEvent<Output>> =
-            Machine<IdEvent<OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdEvent<Output>>(
+        let machine4: Machine<IdData<String, OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdData<String, Output>> =
+            Machine<IdData<String, OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdData<String, Output>>(
                 FeatureTransition(
                     Outline.flexible().asFeature(SetOfMachines(machine3))
                 )

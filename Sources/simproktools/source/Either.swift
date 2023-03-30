@@ -5,8 +5,6 @@
 //  Created by Andriy Prokhorenko on 24.03.2023.
 //
 
-import Foundation
-
 
 public enum Either<First, Second> {
     case first(First)

@@ -8,32 +8,19 @@
 import simprokstate
 
 public enum OutlineFlexibleEvent<Event, IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-    case create(OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>)
+    case launch(OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>)
     case normal(Event)
 }
-
 
 
 public extension Outline {
     
     
-    static func flexible<
-        IT, IE, ET, EE,
-        Id: Hashable
-    >(
-    ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where
-    IntTrigger: DynamicEvent,
-    IntEffect: DynamicEvent,
-    ExtTrigger: DynamicEvent,
-    ExtEffect: DynamicEvent,
-    IntTrigger.Data == OutlineFlexibleEvent<IT, IT, IE, ET, EE>,
-    ExtTrigger.Data == OutlineFlexibleEvent<ET, IT, IE, ET, EE>,
-    IntEffect.Data == IE,
-    ExtEffect.Data == EE,
-    IntTrigger.Id == Id,
-    IntEffect.Id == Id,
-    ExtTrigger.Id == Id,
-    ExtEffect.Id == Id {
+    static func flexible<IT, IE, ET, EE, Id: Hashable>() -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where
+    IntTrigger == IdData<Id, OutlineFlexibleEvent<IT, IT, IE, ET, EE>>,
+    IntEffect == IdData<Id, IE>,
+    ExtTrigger == IdData<Id, OutlineFlexibleEvent<ET, IT, IE, ET, EE>>,
+    ExtEffect == IdData<Id, EE> {
         func create(
             dict: [Id: Outline<IT, IE, ET, EE>],
             id: Id,
@@ -100,12 +87,13 @@ public extension Outline {
             }
         }
         
-        return Outline.classic([Id: Outline<IT, IE, ET, EE>]()) { dict, trigger in
+        
+        return Outline.classic([Id: Outline<IT, IE, ET, EE>]()) { dict, trigger -> ([Id: Outline<IT, IE, ET, EE>], [FeatureEvent<IntEffect, ExtEffect>]) in
             switch trigger {
             case .int(let event):
                 let id = event.id
                 switch event.data {
-                case .create(let transition):
+                case .launch(let transition):
                     return create(dict: dict, id: id, transition: transition)
                 case .normal(let data):
                     return normal(dict: dict, id: id, data: .int(data))
@@ -113,7 +101,7 @@ public extension Outline {
             case .ext(let event):
                 let id = event.id
                 switch event.data {
-                case .create(let transition):
+                case .launch(let transition):
                     return create(dict: dict, id: id, transition: transition)
                 case .normal(let data):
                     return normal(dict: dict, id: id, data: .ext(data))

@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Andriy Prokhorenko on 18.03.2023.
 //
@@ -9,24 +9,16 @@ import simprokstate
 
 
 public enum SceneFlexibleEvent<Trigger, Effect> {
-    case create(SceneTransition<Trigger, Effect>)
+    case launch(SceneTransition<Trigger, Effect>)
     case normal(Trigger)
 }
 
 public extension Scene {
     
     
-    static func flexible<
-        T, E,
-        Id: Hashable
-    >(
-    ) -> Scene<Trigger, Effect> where
-    Trigger: DynamicEvent,
-    Effect: DynamicEvent,
-    Trigger.Data == SceneFlexibleEvent<T, E>,
-    Effect.Data == E,
-    Trigger.Id == Id,
-    Effect.Id == Id {
+    static func flexible<T, E, Id: Hashable>() -> Scene<Trigger, Effect> where
+    Trigger == IdData<Id, SceneFlexibleEvent<T, E>>,
+    Effect == IdData<Id, E>  {
         func create(
             dict: [Id: Scene<T, E>],
             id: Id,
@@ -82,7 +74,7 @@ public extension Scene {
         return Scene.classic([Id: Scene<T, E>]()) { dict, trigger in
             let id = trigger.id
             switch trigger.data {
-            case .create(let transition):
+            case .launch(let transition):
                 return create(dict: dict, id: id, transition: transition)
             case .normal(let data):
                 return normal(dict: dict, id: id, data: data)

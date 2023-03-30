@@ -3,14 +3,14 @@
 //
 
 
-public struct IdEvent<T>: DynamicEvent {
+public struct IdData<Id, Data> {
 
-    public let id: String
-    public let data: T
+    public let id: Id
+    public let data: Data
 
     public init(
-            id: String,
-            data: T
+            id: Id,
+            data: Data
     ) {
         self.id = id
         self.data = data
