@@ -34,20 +34,25 @@ public extension Outline {
 
             let mapped = Set(outlines.map { outline in
                 if let transit = outline.transit {
-                    isFinale = false
                     if let transition = transit(trigger) {
                         effects.append(contentsOf: transition.effects)
+                        if !transition.state.isFinale {
+                            isFinale = false
+                        }
+                        
                         return transition.state
                     } else {
+                        isFinale = false
                         return outline
                     }
                 } else {
                     return outline
                 }
             })
+            
 
             if isFinale {
-                return OutlineTransition(.finale())
+                return OutlineTransition(.finale(), effects: effects)
             } else {
                 return OutlineTransition(merge(isFinaleChecked: true, outlines: mapped), effects: effects)
             }

@@ -29,10 +29,13 @@ public extension Story {
 
             let mapped = Set(stories.map { story in
                 if let transit = story.transit {
-                    isFinale = false
                     if let new = transit(event) {
+                        if !new.isFinale {
+                            isFinale = false
+                        }
                         return new
                     } else {
+                        isFinale = false
                         return story
                     }
                 } else {

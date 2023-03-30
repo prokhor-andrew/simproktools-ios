@@ -31,11 +31,15 @@ public extension Scene {
 
             let mapped = Set(scenes.map { scene in
                 if let transit = scene.transit {
-                    isFinale = false
                     if let transition = transit(trigger) {
                         effects.append(contentsOf: transition.effects)
+                        if !transition.state.isFinale {
+                            isFinale = false
+                        }
+                        
                         return transition.state
                     } else {
+                        isFinale = false
                         return scene
                     }
                 } else {
@@ -44,7 +48,7 @@ public extension Scene {
             })
 
             if isFinale {
-                return SceneTransition(.finale())
+                return SceneTransition(.finale(), effects: effects)
             } else {
                 return SceneTransition(merge(isFinaleChecked: true, scenes: mapped), effects: effects)
             }
