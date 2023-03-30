@@ -179,7 +179,12 @@ public extension Machine {
         let machine4: Machine<IdData<String, OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdData<String, Output>> =
             Machine<IdData<String, OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdData<String, Output>>(
                 FeatureTransition(
-                    Outline.flexible().asFeature(SetOfMachines(machine3))
+                    Outline.flexible(
+                        typeInternalTrigger: IntTrigger.self,
+                        typeInternalEffect: IntEffect.self,
+                        typeExternalTrigger: Input.self,
+                        typeExternalEffect: Output.self
+                    ).asFeature(SetOfMachines(machine3))
                 )
             )
         

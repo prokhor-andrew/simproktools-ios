@@ -15,8 +15,25 @@ public enum OutlineFlexibleEvent<Event, IntTrigger, IntEffect, ExtTrigger, ExtEf
 
 public extension Outline {
     
-    
     static func flexible<IT, IE, ET, EE, Id: Hashable>() -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where
+    IntTrigger == IdData<Id, OutlineFlexibleEvent<IT, IT, IE, ET, EE>>,
+    IntEffect == IdData<Id, IE>,
+    ExtTrigger == IdData<Id, OutlineFlexibleEvent<ET, IT, IE, ET, EE>>,
+    ExtEffect == IdData<Id, EE> {
+        flexible(
+            typeInternalTrigger: IT.self,
+            typeInternalEffect: IE.self,
+            typeExternalTrigger: ET.self,
+            typeExternalEffect: EE.self
+        )
+    }
+    
+    static func flexible<IT, IE, ET, EE, Id: Hashable>(
+        typeInternalTrigger: IT.Type,
+        typeInternalEffect: IE.Type,
+        typeExternalTrigger: ET.Type,
+        typeExternalEffect: EE.Type
+    ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where
     IntTrigger == IdData<Id, OutlineFlexibleEvent<IT, IT, IE, ET, EE>>,
     IntEffect == IdData<Id, IE>,
     ExtTrigger == IdData<Id, OutlineFlexibleEvent<ET, IT, IE, ET, EE>>,
