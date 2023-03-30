@@ -180,6 +180,7 @@ public extension Machine {
             Machine<IdData<String, OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdData<String, Output>>(
                 FeatureTransition(
                     Outline.flexible(
+                        typeId: String.self,
                         typeInternalTrigger: IntTrigger.self,
                         typeInternalEffect: IntEffect.self,
                         typeExternalTrigger: Input.self,

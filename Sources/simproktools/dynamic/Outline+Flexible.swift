@@ -21,6 +21,7 @@ public extension Outline {
     ExtTrigger == IdData<Id, OutlineFlexibleEvent<ET, IT, IE, ET, EE>>,
     ExtEffect == IdData<Id, EE> {
         flexible(
+            typeId: Id.self,
             typeInternalTrigger: IT.self,
             typeInternalEffect: IE.self,
             typeExternalTrigger: ET.self,
@@ -29,6 +30,7 @@ public extension Outline {
     }
     
     static func flexible<IT, IE, ET, EE, Id: Hashable>(
+        typeId: Id.Type,
         typeInternalTrigger: IT.Type,
         typeInternalEffect: IE.Type,
         typeExternalTrigger: ET.Type,
