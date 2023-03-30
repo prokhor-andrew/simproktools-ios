@@ -14,16 +14,12 @@ public extension Story {
     
     func switchOnFinale(to story: Story<Event>) -> Story<Event> {
         guard let transit else {
-            return .finale()
+            return story
         }
       
         return Story.create { trigger in
             if let new = transit(trigger) {
-                if new.isFinale {
-                    return story
-                } else {
-                    return new.switchOnFinale(to: story)
-                }
+               return new.switchOnFinale(to: story)
             } else {
                 return nil
             }
