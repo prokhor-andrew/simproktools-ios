@@ -36,4 +36,22 @@ public extension Machine {
             return (newState, shouldPass ? [output] : [])
         }
     }
+    
+    func biFilter<State>(
+            _ state: Supplier<State>,
+            filterInput: @escaping BiMapper<State, Input, (State, Bool)>,
+            filterOutput: @escaping BiMapper<State, Output, (State, Bool)>
+    ) -> Machine<Input, Output> {
+        biMap {
+            state()
+        } mapInput: {
+            let (newState, shouldPass) = filterInput($0, $1)
+            
+            return (newState, shouldPass ? [$1] : [])
+        } mapOutput: {
+            let (newState, shouldPass) = filterOutput($0, $1)
+                
+            return (newState, shouldPass ? [$1] : [])
+        }
+    }
 }
