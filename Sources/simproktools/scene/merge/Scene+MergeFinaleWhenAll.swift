@@ -7,7 +7,7 @@ import simprokstate
 public extension Scene {
 
     // isFinaleChecked added to remove unnecessary loops
-    private static func merge(isFinaleChecked: Bool, scenes: Set<Scene<Trigger, Effect>>) -> Scene<Trigger, Effect> {
+    private static func mergeFinaleWhenAll(isFinaleChecked: Bool, scenes: Set<Scene<Trigger, Effect>>) -> Scene<Trigger, Effect> {
         if !isFinaleChecked {
             func isFinale() -> Bool {
                 for scene in scenes {
@@ -50,24 +50,24 @@ public extension Scene {
             if isFinale {
                 return SceneTransition(.finale(), effects: effects)
             } else {
-                return SceneTransition(merge(isFinaleChecked: true, scenes: mapped), effects: effects)
+                return SceneTransition(mergeFinaleWhenAll(isFinaleChecked: true, scenes: mapped), effects: effects)
             }
         }
     }
 
-    static func merge(_ scenes: Set<Scene<Trigger, Effect>>) -> Scene<Trigger, Effect> {
-        merge(isFinaleChecked: false, scenes: scenes)
+    static func mergeFinaleWhenAll(_ scenes: Set<Scene<Trigger, Effect>>) -> Scene<Trigger, Effect> {
+        mergeFinaleWhenAll(isFinaleChecked: false, scenes: scenes)
     }
 
-    static func merge(_ scenes: Scene<Trigger, Effect>...) -> Scene<Trigger, Effect> {
-        merge(Set(scenes))
+    static func mergeFinaleWhenAll(_ scenes: Scene<Trigger, Effect>...) -> Scene<Trigger, Effect> {
+        mergeFinaleWhenAll(Set(scenes))
     }
 
-    func and(_ scenes: Set<Scene<Trigger, Effect>>) -> Scene<Trigger, Effect> {
-        .merge(scenes.union([self]))
+    func andFinaleWhenAll(_ scenes: Set<Scene<Trigger, Effect>>) -> Scene<Trigger, Effect> {
+        .mergeFinaleWhenAll(scenes.union([self]))
     }
 
     func and(_ scenes: Scene<Trigger, Effect>...) -> Scene<Trigger, Effect> {
-        and(Set(scenes))
+        andFinaleWhenAll(Set(scenes))
     }
 }

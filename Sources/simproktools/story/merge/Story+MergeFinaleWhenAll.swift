@@ -7,7 +7,7 @@ import simprokstate
 public extension Story {
 
     // isFinaleChecked added to remove unnecessary loops
-    private static func merge(isFinaleChecked: Bool, stories: Set<Story<Event>>) -> Story<Event> {
+    private static func mergeFinaleWhenAll(isFinaleChecked: Bool, stories: Set<Story<Event>>) -> Story<Event> {
         if !isFinaleChecked {
             func isFinale() -> Bool {
                 for story in stories {
@@ -47,32 +47,32 @@ public extension Story {
             if isFinale {
                 return .finale()
             } else {
-                return merge(isFinaleChecked: true, stories: mapped)
+                return mergeFinaleWhenAll(isFinaleChecked: true, stories: mapped)
             }
         }
     }
 
-    static func merge(
+    static func mergeFinaleWhenAll(
             _ stories: Set<Story<Event>>
     ) -> Story<Event> {
-        merge(isFinaleChecked: false, stories: stories)
+        mergeFinaleWhenAll(isFinaleChecked: false, stories: stories)
     }
 
-    static func merge(
+    static func mergeFinaleWhenAll(
             _ stories: Story<Event>...
     ) -> Story<Event> {
-        merge(Set(stories))
+        mergeFinaleWhenAll(Set(stories))
     }
 
-    func and(
+    func andFinaleWhenAll(
             _ stories: Set<Story<Event>>
     ) -> Story<Event> {
-        .merge(stories.union([self]))
+        .mergeFinaleWhenAll(stories.union([self]))
     }
 
-    func and(
+    func andFinaleWhenAll(
             _ stories: Story<Event>...
     ) -> Story<Event> {
-        and(Set(stories))
+        andFinaleWhenAll(Set(stories))
     }
 }

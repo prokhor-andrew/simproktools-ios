@@ -11,7 +11,7 @@ import simprokstate
 public extension Scene {
     
     // isFinaleChecked added to remove unnecessary loops
-    private static func merge2(
+    private static func mergeFinaleWhenOne(
             isFinaleChecked: Bool,
             scenes: Set<Scene<Trigger, Effect>>
     ) -> Scene<Trigger, Effect> {
@@ -59,32 +59,32 @@ public extension Scene {
             if isFinale {
                 return SceneTransition(.finale(), effects: effects)
             } else {
-                return SceneTransition(merge2(isFinaleChecked: true, scenes: mapped), effects: effects)
+                return SceneTransition(mergeFinaleWhenOne(isFinaleChecked: true, scenes: mapped), effects: effects)
             }
         }
     }
 
-    static func merge2(
+    static func mergeFinaleWhenOne(
             _ scenes: Set<Scene<Trigger, Effect>>
     ) -> Scene<Trigger, Effect> {
-        merge2(isFinaleChecked: false, scenes: scenes)
+        mergeFinaleWhenOne(isFinaleChecked: false, scenes: scenes)
     }
     
-    static func merge2(
+    static func mergeFinaleWhenOne(
             _ scenes: Scene<Trigger, Effect>...
     ) -> Scene<Trigger, Effect> {
-        merge2(Set(scenes))
+        mergeFinaleWhenOne(Set(scenes))
     }
 
-    func and2(
+    func andFinaleWhenOne(
             _ scenes: Set<Scene<Trigger, Effect>>
     ) -> Scene<Trigger, Effect> {
-        .merge2(scenes.union([self]))
+        .mergeFinaleWhenOne(scenes.union([self]))
     }
 
-    func and2(
+    func andFinaleWhenOne(
             _ scenes: Scene<Trigger, Effect>...
     ) -> Scene<Trigger, Effect> {
-        and2(Set(scenes))
+        andFinaleWhenOne(Set(scenes))
     }
 }
