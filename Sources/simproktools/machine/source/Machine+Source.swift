@@ -12,15 +12,44 @@ import simprokstate
 public extension Machine {
 
     static func source<
-        IntTrigger, IntEffect, State, Holder: AnyObject, Req: Hashable, Res, TriggerReason, CancelReason
+        IntTrigger, IntEffect, ExtTrigger, ExtEffect, State, Holder: AnyObject, Req: Hashable, Res, LaunchReason, CancelReason
     >(
-        initial: Supplier<State>,
-        mapReq: @escaping BiMapper<State, IntEffect, (State, Either<TransformerOutput<TriggerReason, CancelReason, Req>, OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, Input, Output>>?)>,
-        mapRes: @escaping BiMapper<State, TransformerInput<TriggerReason, CancelReason, Res>, (State, Either<OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, Input, Output>, TransformerOutput<TriggerReason, CancelReason, Req>>?)>,
+        typeIntTrigger : IntTrigger.Type,
+        typeIntEffect : IntEffect.Type,
+        typeExtTrigger : ExtTrigger.Type,
+        typeExtEffect : ExtEffect.Type,
+        typeRequest : Req.Type,
+        typeResponse : Res.Type,
+        typeLaunchReason : LaunchReason.Type,
+        typeCancelReason : CancelReason.Type,
+        
+        initialState: Supplier<State>,
+        mapReq: @escaping BiMapper<
+            State,
+            IntEffect,
+            (
+                State,
+                FeatureEvent<
+                    TransformOutput<LaunchReason, CancelReason, Req>,
+                    OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, ExtTrigger, ExtEffect>
+                >?
+            )
+        >,
+        mapRes: @escaping BiMapper<
+            State,
+            TransformInput<LaunchReason, CancelReason, Res>,
+            (
+                State,
+                FeatureEvent<
+                    TransformOutput<LaunchReason, CancelReason, Req>,
+                    OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, ExtTrigger, ExtEffect>
+                >?
+            )
+        >,
         holder: @escaping Supplier<Holder>,
-        onTrigger: @escaping TriHandler<Holder, Req, Handler<Res>>,
+        onLaunch: @escaping TriHandler<Holder, Req, Handler<Res>>,
         onCancel: @escaping Handler<Holder>
-    ) -> Machine<IdData<String, OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdData<String, Output>> {
+    ) -> Machine<IdData<String, OutlineFlexibleEvent<ExtTrigger, IntTrigger, IntEffect, ExtTrigger, ExtEffect>>, IdData<String, ExtEffect>> {
 
         let machine1: Machine<ExecuteInput<Req>, (Req, Res)> = Machine<ExecuteInput<Req>, (Req, Res)>(
                 FeatureTransition<(Req, Res), Void, ExecuteInput<Req>, (Req, Res)>(
@@ -28,15 +57,15 @@ public extension Machine {
                             switch trigger {
                             case .ext(let value):
                                 switch value {
-                                case .trigger(let isTriggerOnMain, let req):
+                                case .launch(let isLaunchOnMain, let req):
                                     if machines.map[req] != nil {
                                         // ignore
                                         return (machines, [], false)
                                     } else {
-                                        let machine: Machine<Void, (Req, Res)> = Machine<Void, Res>(holder(), isProcessOnMain: isTriggerOnMain) { object, input, callback in
+                                        let machine: Machine<Void, (Req, Res)> = Machine<Void, Res>(holder(), isProcessOnMain: isLaunchOnMain) { object, input, callback in
                                             if input == nil {
                                                 // do here
-                                                onTrigger(object, req, callback)
+                                                onLaunch(object, req, callback)
                                             }
                                         } onClearUp: { object in
                                             onCancel(object)
@@ -68,7 +97,7 @@ public extension Machine {
                 )
         )
 
-        let machine2: Machine<IdData<String, TransformerOutput<TriggerReason, CancelReason, Req>>, IdData<String, TransformerInput<TriggerReason, CancelReason, Res>>> = Machine<IdData<String, TransformerOutput<TriggerReason, CancelReason, Req>>, IdData<String, TransformerInput<TriggerReason, CancelReason, Res>>>(
+        let machine2: Machine<IdData<String, TransformOutput<LaunchReason, CancelReason, Req>>, IdData<String, TransformInput<LaunchReason, CancelReason, Res>>> = Machine<IdData<String, TransformOutput<LaunchReason, CancelReason, Req>>, IdData<String, TransformInput<LaunchReason, CancelReason, Res>>>(
                 FeatureTransition(
                         Outline.classic([TransformerId: Req]()) { state, trigger in
                                     switch trigger {
@@ -77,7 +106,7 @@ public extension Machine {
                                         let data = input.data
 
                                         switch data {
-                                        case .willTrigger(let tag2, let reason, let isTriggerOnMain, let request):
+                                        case .willLaunch(let tag2, let reason, let isLaunchOnMain, let request):
                                             let id = TransformerId(tag1: tag1, tag2: tag2)
 
                                             if state[id] != nil {
@@ -87,11 +116,11 @@ public extension Machine {
                                                 var copy = state
                                                 copy[id] = request
 
-                                                let effects: [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformerInput<TriggerReason, CancelReason, Res>>>]
+                                                let effects: [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformInput<LaunchReason, CancelReason, Res>>>]
                                                 if state.values.contains(request) {
-                                                    effects = [.ext(IdData(id: tag1, data: .didTrigger(tag2, reason)))]
+                                                    effects = [.ext(IdData(id: tag1, data: .didLaunch(tag2, reason)))]
                                                 } else {
-                                                    effects = [.ext(IdData(id: tag1, data: .didTrigger(tag2, reason))), .int(.trigger(isTriggerOnMain, request))]
+                                                    effects = [.ext(IdData(id: tag1, data: .didLaunch(tag2, reason))), .int(.launch(isLaunchOnMain, request))]
                                                 }
 
                                                 return (copy, effects: effects)
@@ -103,7 +132,7 @@ public extension Machine {
                                                 var copy = state
                                                 copy[id] = nil
 
-                                                let effects: [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformerInput<TriggerReason, CancelReason, Res>>>]
+                                                let effects: [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformInput<LaunchReason, CancelReason, Res>>>]
                                                 if copy.values.contains(request) {
                                                     effects = [.ext(IdData(id: tag1, data: .didCancel(tag2, reason)))]
                                                 } else {
@@ -118,7 +147,7 @@ public extension Machine {
                                         }
 
                                     case .int(let (req, res)):
-                                        let effects = state.flatMap { key, _req -> [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformerInput<TriggerReason, CancelReason, Res>>>] in
+                                        let effects = state.flatMap { key, _req -> [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformInput<LaunchReason, CancelReason, Res>>>] in
                                             if _req == req {
                                                 return [.ext(IdData(id: key.tag1, data: .didEmit(key.tag2, res)))]
                                             } else {
@@ -134,9 +163,9 @@ public extension Machine {
         )
 
 
-        let machine3: Machine<IdData<String, IntEffect>, IdData<String, OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, Input, Output>>> = Machine<IdData<String, IntEffect>, IdData<String, OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, Input, Output>>>(
+        let machine3: Machine<IdData<String, IntEffect>, IdData<String, OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, ExtTrigger, ExtEffect>>> = Machine<IdData<String, IntEffect>, IdData<String, OutlineFlexibleEvent<IntTrigger, IntTrigger, IntEffect, ExtTrigger, ExtEffect>>>(
                 FeatureTransition(
-                        Outline.classic(initial()) { state, trigger in
+                        Outline.classic(initialState()) { state, trigger in
                                     switch trigger {
                                     case .ext(let event):
                                         let id = event.id
@@ -145,9 +174,9 @@ public extension Machine {
 
                                         if let mapped {
                                             switch mapped {
-                                            case .first(let data):
+                                            case .int(let data):
                                                 return (newState, [.int(IdData(id: id, data: data))])
-                                            case .second(let data):
+                                            case .ext(let data):
                                                 return (newState, [.ext(IdData(id: id, data: data))])
                                             }
                                         } else {
@@ -161,9 +190,9 @@ public extension Machine {
 
                                         if let mapped {
                                             switch mapped {
-                                            case .first(let data):
+                                            case .ext(let data):
                                                 return (newState, [.ext(IdData(id: id, data: data))])
-                                            case .second(let data):
+                                            case .int(let data):
                                                 return (newState, [.int(IdData(id: id, data: data))])
                                             }
                                         } else {
@@ -176,19 +205,18 @@ public extension Machine {
         )
 
         
-        let machine4: Machine<IdData<String, OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdData<String, Output>> =
-            Machine<IdData<String, OutlineFlexibleEvent<Input, IntTrigger, IntEffect, Input, Output>>, IdData<String, Output>>(
+        let machine4: Machine<IdData<String, OutlineFlexibleEvent<ExtTrigger, IntTrigger, IntEffect, ExtTrigger, ExtEffect>>, IdData<String, ExtEffect>> =
+            Machine<IdData<String, OutlineFlexibleEvent<ExtTrigger, IntTrigger, IntEffect, ExtTrigger, ExtEffect>>, IdData<String, ExtEffect>>(
                 FeatureTransition(
                     Outline.flexible(
                         typeId: String.self,
                         typeInternalTrigger: IntTrigger.self,
                         typeInternalEffect: IntEffect.self,
-                        typeExternalTrigger: Input.self,
-                        typeExternalEffect: Output.self
+                        typeExternalTrigger: ExtTrigger.self,
+                        typeExternalEffect: ExtEffect.self
                     ).asFeature(SetOfMachines(machine3))
                 )
             )
-        
         
         return machine4
     }
@@ -208,33 +236,20 @@ public extension Machine {
     }
 
     private enum ExecuteInput<Req: Equatable> {
-        case trigger(Bool, Req)
+        case launch(Bool, Req)
         case cancel(Req)
 
         var request: Req {
             switch self {
-            case .trigger(_, let req),
+            case .launch(_, let req),
                  .cancel(let req):
                 return req
             }
         }
-
-        var isTrigger: Bool {
-            switch self {
-            case .trigger:
-                return true
-            case .cancel:
-                return false
-            }
-        }
-
-        var isCancel: Bool {
-            !isTrigger
-        }
     }
 
     private enum ExecuteOutput<Req: Equatable, Res> {
-        case didTrigger(Req)
+        case didLaunch(Req)
         case didCancel(Req)
         case didEmit(Req, Res)
     }

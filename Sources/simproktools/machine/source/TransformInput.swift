@@ -6,8 +6,8 @@
 //
 
 
-public enum TransformerInput<TriggerReason, CancelReason, Response> {
-    case didTrigger(String, TriggerReason)
+public enum TransformInput<LaunchReason, CancelReason, Response> {
+    case didLaunch(String, LaunchReason)
     case didCancel(String, CancelReason)
     case didEmit(String, Response)
 }
