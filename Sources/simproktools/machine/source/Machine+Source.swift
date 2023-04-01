@@ -49,7 +49,10 @@ public extension Machine {
         holder: @escaping Supplier<Holder>,
         onLaunch: @escaping TriHandler<Holder, Req, Handler<Res>>,
         onCancel: @escaping Handler<Holder>
-    ) -> Machine<IdData<String, OutlineFlexibleEvent<ExtTrigger, IntTrigger, IntEffect, ExtTrigger, ExtEffect>>, IdData<String, ExtEffect>> {
+    ) -> Machine<Input, Output> where
+    Input == IdData<String, OutlineFlexibleEvent<ExtTrigger, IntTrigger, IntEffect, ExtTrigger, ExtEffect>>,
+    Output == IdData<String, ExtEffect>
+    {
 
         let machine1: Machine<ExecuteInput<Req>, (Req, Res)> = Machine<ExecuteInput<Req>, (Req, Res)>(
                 FeatureTransition<(Req, Res), Void, ExecuteInput<Req>, (Req, Res)>(
