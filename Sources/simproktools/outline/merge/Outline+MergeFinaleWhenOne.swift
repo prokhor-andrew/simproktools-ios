@@ -1,25 +1,29 @@
 //
-// Created by Andriy Prokhorenko on 19.02.2023.
+//  File.swift
+//
+//
+//  Created by Andriy Prokhorenko on 29.03.2023.
 //
 
 import simprokstate
 
-public extension Outline {
 
+public extension Outline {
+    
     // isFinaleChecked added to remove unnecessary loops
-    private static func merge(
+    private static func mergeFinaleWhenOne(
             isFinaleChecked: Bool,
             outlines: Set<Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>>
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         if !isFinaleChecked {
             func isFinale() -> Bool {
                 for outline in outlines {
-                    if !outline.isFinale {
-                        return false
+                    if outline.isFinale {
+                        return true
                     }
                 }
 
-                return true
+                return false
             }
 
             if isFinale() {
@@ -28,58 +32,58 @@ public extension Outline {
         }
 
         return Outline.create { trigger in
-            var isFinale = true
+            var isFinale = false
 
             var effects: [FeatureEvent<IntEffect, ExtEffect>] = []
-
+            
             let mapped = Set(outlines.map { outline in
                 if let transit = outline.transit {
                     if let transition = transit(trigger) {
                         effects.append(contentsOf: transition.effects)
-                        if !transition.state.isFinale {
-                            isFinale = false
+                        if transition.state.isFinale {
+                            isFinale = true
                         }
                         
                         return transition.state
                     } else {
-                        isFinale = false
                         return outline
                     }
                 } else {
+                    isFinale = true
                     return outline
                 }
             })
             
-
+            
             if isFinale {
                 return OutlineTransition(.finale(), effects: effects)
             } else {
-                return OutlineTransition(merge(isFinaleChecked: true, outlines: mapped), effects: effects)
+                return OutlineTransition(mergeFinaleWhenOne(isFinaleChecked: true, outlines: mapped), effects: effects)
             }
         }
     }
 
-    static func merge(
+    static func mergeFinaleWhenOne(
             _ outlines: Set<Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>>
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        merge(isFinaleChecked: false, outlines: outlines)
+        mergeFinaleWhenOne(isFinaleChecked: false, outlines: outlines)
     }
-
-    static func merge(
+    
+    static func mergeFinaleWhenOne(
             _ outlines: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>...
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        merge(Set(outlines))
+        mergeFinaleWhenOne(Set(outlines))
     }
 
-    func and(
+    func andFinaleWhenOne(
             _ outlines: Set<Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>>
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        .merge(outlines.union([self]))
+        .mergeFinaleWhenOne(outlines.union([self]))
     }
 
-    func and(
+    func andFinaleWhenOne(
             _ outlines: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>...
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        and(Set(outlines))
+        andFinaleWhenOne(Set(outlines))
     }
 }
