@@ -12,36 +12,63 @@ public extension Outline {
     
     
     func switchOnTransition(
-        to outline: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>
+        to outline: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>,
+        doneOnFinale: Bool = true
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        if let outlineTransit = outline.transit {
-            return Outline.create { trigger in
-                if let transition = outlineTransit(trigger) {
-                    return transition
+        if doneOnFinale {
+            if let transit {
+                if let outlineTransit = outline.transit {
+                    return Outline.create { trigger in
+                        if let transition = outlineTransit(trigger) {
+                            return transition
+                        } else {
+                            if let transition = transit(trigger) {
+                                return OutlineTransition(
+                                    transition.state.switchOnTransition(to: outline),
+                                    effects: transition.effects
+                                )
+                            } else {
+                                return nil
+                            }
+                        }
+                    }
                 } else {
-                    if let transit {
-                        if let transition = transit(trigger) {
-                            return OutlineTransition(
-                                transition.state.switchOnTransition(to: outline),
-                                effects: transition.effects
-                            )
+                    return self
+                }
+            } else {
+                return .finale()
+            }
+        } else {
+            if let outlineTransit = outline.transit {
+                return Outline.create { trigger in
+                    if let transition = outlineTransit(trigger) {
+                        return transition
+                    } else {
+                        if let transit {
+                            if let transition = transit(trigger) {
+                                return OutlineTransition(
+                                    transition.state.switchOnTransition(to: outline),
+                                    effects: transition.effects
+                                )
+                            } else {
+                                return nil
+                            }
                         } else {
                             return nil
                         }
-                    } else {
-                        return nil
                     }
                 }
+            } else {
+                return self
             }
-        } else {
-            return self
         }
     }
     
     
     func switchOnTransition(
-        from outline: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>
+        from outline: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>,
+        doneOnFinale: Bool = true
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        outline.switchOnTransition(to: self)
+        outline.switchOnTransition(to: self, doneOnFinale: doneOnFinale)
     }
 }

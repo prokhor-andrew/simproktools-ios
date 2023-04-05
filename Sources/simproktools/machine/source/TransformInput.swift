@@ -10,4 +10,8 @@ public enum TransformInput<LaunchReason, CancelReason, Response> {
     case didLaunch(String, LaunchReason)
     case didCancel(String, CancelReason)
     case didEmit(String, Response)
+    case didPause(String)
+    case didResume(String)
+    case didPauseAll
+    case didResumeAll
 }
