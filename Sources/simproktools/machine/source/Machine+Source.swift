@@ -119,16 +119,16 @@ public extension Machine {
                             
                             if state[id] != nil {
                                 // do nothing
-                                return (state, effects: [.ext(IdData(id: tag1, data: .didLaunchFail(tag2)))])
+                                return (state, effects: [.ext(IdData(id: tag1, data: .didLaunch(tag2, reason)))])
                             } else {
                                 var copy = state
                                 copy[id] = request
                                 
                                 let effects: [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformInput<LaunchReason, CancelReason, Res>>>]
                                 if state.values.contains(request) {
-                                    effects = [.ext(IdData(id: tag1, data: .didLaunchSucceed(tag2, reason)))]
+                                    effects = [.ext(IdData(id: tag1, data: .didLaunch(tag2, reason)))]
                                 } else {
-                                    effects = [.ext(IdData(id: tag1, data: .didLaunchSucceed(tag2, reason))), .int(.launch(isLaunchOnMain, request))]
+                                    effects = [.ext(IdData(id: tag1, data: .didLaunch(tag2, reason))), .int(.launch(isLaunchOnMain, request))]
                                 }
                                 
                                 return (copy, effects: effects)
@@ -144,15 +144,15 @@ public extension Machine {
                                 let effects: [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformInput<LaunchReason, CancelReason, Res>>>]
                                 
                                 if copy.values.contains(request) {
-                                    effects = [.ext(IdData(id: tag1, data: .didCancelSucceed(tag2, reason)))]
+                                    effects = [.ext(IdData(id: tag1, data: .didCancel(tag2, reason)))]
                                 } else {
-                                    effects = [.ext(IdData(id: tag1, data: .didCancelSucceed(tag2, reason))), .int(.cancel(request))]
+                                    effects = [.ext(IdData(id: tag1, data: .didCancel(tag2, reason))), .int(.cancel(request))]
                                 }
                                 
                                 return (copy, effects: effects)
                             } else {
                                 // do nothing
-                                return (state, effects: [.ext(IdData(id: tag1, data: .didCancelFail(tag2)))])
+                                return (state, effects: [.ext(IdData(id: tag1, data: .didCancel(tag2, reason)))])
                             }
                         }
                         
