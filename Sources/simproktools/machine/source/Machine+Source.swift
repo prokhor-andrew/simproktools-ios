@@ -50,9 +50,7 @@ public extension Machine {
         >,
         holder: @escaping Supplier<Holder>,
         onLaunch: @escaping TriHandler<Holder, Req, Handler<Res>>,
-        onCancel: @escaping Handler<Holder>,
-        onPause: @escaping Handler<Holder>,
-        onResume: @escaping Handler<Holder>
+        onCancel: @escaping Handler<Holder>
     ) -> Machine<Input, Output> where Input == IdData<String, ExtTrigger>, Output == IdData<String, ExtEffect> {
         
         let machine1: Machine<ExecuteInput<Req>, (Req, Res)> = Machine<ExecuteInput<Req>, (Req, Res)>(
@@ -67,13 +65,7 @@ public extension Machine {
                                         return (machines, [], false)
                                     } else {
                                         let machine: Machine<Bool, (Req, Res)> = Machine<Bool, Res>(holder(), isProcessOnMain: isLaunchOnMain) { object, input, callback in
-                                            if let input {
-                                                if input {
-                                                    onPause(object)
-                                                } else {
-                                                    onResume(object)
-                                                }
-                                            } else {
+                                            if input != nil {
                                                 // do here
                                                 onLaunch(object, req, callback)
                                             }
