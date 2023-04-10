@@ -49,13 +49,13 @@ public extension Machine {
             )
         >,
         holder: @escaping Supplier<Holder>,
-        onLaunch: @escaping TriHandler<Holder, Req, Handler<Res>>,
+        onLaunch: @escaping TriHandler<Holder, Req, Handler<(Res, Bool)>>,
         onCancel: @escaping Handler<Holder>
     ) -> Machine<Input, Output> where Input == IdData<String, ExtTrigger>, Output == IdData<String, ExtEffect> {
         
-        let machine1: Machine<ExecuteInput<Req>, (Req, Res)> = Machine<ExecuteInput<Req>, (Req, Res)>(
-                FeatureTransition<(Req, Res), Bool, ExecuteInput<Req>, (Req, Res)>(
-                    Feature.classic(MapOfMachines<Req, (Req, Res), Bool>([:])) { machines, trigger in
+        let machine1: Machine<ExecuteInput<Req>, (Req, Res, Bool)> = Machine<ExecuteInput<Req>, (Req, Res, Bool)>(
+                FeatureTransition<(Req, Res, Bool), Bool, ExecuteInput<Req>, (Req, Res, Bool)>(
+                    Feature.classic(MapOfMachines<Req, (Req, Res, Bool), Bool>([:])) { machines, trigger in
                             switch trigger {
                             case .ext(let value):
                                 switch value {
@@ -64,7 +64,7 @@ public extension Machine {
                                         // ignore
                                         return (machines, [], false)
                                     } else {
-                                        let machine: Machine<Bool, (Req, Res)> = Machine<Bool, Res>(holder(), isProcessOnMain: isLaunchOnMain) { object, input, callback in
+                                        let machine: Machine<Bool, (Req, Res, Bool)> = Machine<Bool, (Res, Bool)>(holder(), isProcessOnMain: isLaunchOnMain) { object, input, callback in
                                             if input != nil {
                                                 // do here
                                                 onLaunch(object, req, callback)
@@ -72,7 +72,7 @@ public extension Machine {
                                         } onClearUp: { object in
                                             onCancel(object)
                                         }.mapOutput { output in
-                                            [(req, output)]
+                                            [(req, output.0, output.1)]
                                         }
                                         
                                         var copy = machines.map
@@ -92,8 +92,7 @@ public extension Machine {
                                     }
                                 }
                             case .int(let value):
-                                let (req, res) = value
-                                return (machines, [.ext((req, res))], false)
+                                return (machines, [.ext(value)], false)
                             }
                         }
                 )
@@ -156,16 +155,38 @@ public extension Machine {
                             }
                         }
                         
-                    case .int(let (req, res)):
-                        let effects = state.flatMap { key, _req -> [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformInput<LaunchReason, CancelReason, Res>>>] in
-                            if _req == req {
-                                return [.ext(IdData(id: key.tag1, data: .didEmit(key.tag2, res)))]
-                            } else {
-                                return []
+                    case .int(let (req, res, isDone)):
+                        if isDone {
+                            return state.reduce((
+                                [TransformerId: Req](),
+                                [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformInput<LaunchReason, CancelReason, Res>>>]()
+                            )) { acc, event in
+                                let (dict, effects) = acc
+                                let (key, _req) = event
+
+                                if _req == req {
+                                    let id = TransformerId(tag1: key.tag1, tag2: key.tag2)
+
+                                    var copyDict = dict
+                                    copyDict[id] = nil
+
+                                    var copyEffects = effects
+                                    copyEffects.append(.ext(IdData(id: key.tag1, data: .didEmit(key.tag2, res))))
+
+                                    return (copyDict, copyEffects)
+                                } else {
+                                    return acc
+                                }
                             }
+                        } else {
+                            return (state, state.flatMap { key, _req -> [FeatureEvent<ExecuteInput<Req>, IdData<String, TransformInput<LaunchReason, CancelReason, Res>>>] in
+                                if _req == req {
+                                    return [.ext(IdData(id: key.tag1, data: .didEmit(key.tag2, res)))]
+                                } else {
+                                    return []
+                                }
+                            })
                         }
-                        
-                        return (state, effects: effects)
                     }
                 }.asFeature(SetOfMachines(machine1))
             )
@@ -177,42 +198,42 @@ public extension Machine {
             IdData<String, IntTrigger>
         > = Machine<IdData<String, IntEffect>, IdData<String, IntTrigger>>(
                 FeatureTransition(
-                        Outline.classic(initialState()) { state, trigger in
-                                    switch trigger {
-                                    case .ext(let event):
-                                        let id = event.id
-                                        let data = event.data
-                                        let (newState, mapped) = mapReq(state, data)
+                    Outline.classic(initialState()) { state, trigger in
+                        switch trigger {
+                        case .ext(let event):
+                            let id = event.id
+                            let data = event.data
+                            let (newState, mapped) = mapReq(state, data)
 
-                                        if let mapped {
-                                            switch mapped {
-                                            case .int(let data):
-                                                return (newState, [.int(IdData(id: id, data: data))])
-                                            case .ext(let data):
-                                                return (newState, [.ext(IdData(id: id, data: data))])
-                                            }
-                                        } else {
-                                            return (newState, [])
-                                        }
-                                    case .int(let event):
-                                        let id = event.id
-                                        let data = event.data
-
-                                        let (newState, mapped) = mapRes(state, data)
-
-                                        if let mapped {
-                                            switch mapped {
-                                            case .ext(let data):
-                                                return (newState, [.ext(IdData(id: id, data: data))])
-                                            case .int(let data):
-                                                return (newState, [.int(IdData(id: id, data: data))])
-                                            }
-                                        } else {
-                                            return (newState, [])
-                                        }
-                                    }
+                            if let mapped {
+                                switch mapped {
+                                case .int(let data):
+                                    return (newState, [.int(IdData(id: id, data: data))])
+                                case .ext(let data):
+                                    return (newState, [.ext(IdData(id: id, data: data))])
                                 }
-                                .asFeature(SetOfMachines(machine2))
+                            } else {
+                                return (newState, [])
+                            }
+                        case .int(let event):
+                            let id = event.id
+                            let data = event.data
+
+                            let (newState, mapped) = mapRes(state, data)
+
+                            if let mapped {
+                                switch mapped {
+                                case .ext(let data):
+                                    return (newState, [.ext(IdData(id: id, data: data))])
+                                case .int(let data):
+                                    return (newState, [.int(IdData(id: id, data: data))])
+                                }
+                            } else {
+                                return (newState, [])
+                            }
+                        }
+                    }
+                    .asFeature(SetOfMachines(machine2))
                 )
         )
 
