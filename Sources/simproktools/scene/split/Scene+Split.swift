@@ -24,8 +24,9 @@ public extension Scene {
 
         return Scene.create { trigger in
             for scene in scenes {
-                if let transit = scene.transit {
-                    return transit(trigger)
+                if let transit = scene.transit,
+                    let result = transit(trigger) {
+                    return result
                 }
             }
 

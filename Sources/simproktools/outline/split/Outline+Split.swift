@@ -26,8 +26,9 @@ public extension Outline {
 
         return Outline.create { trigger in
             for outline in outlines {
-                if let transit = outline.transit {
-                    return transit(trigger)
+                if let transit = outline.transit,
+                   let result = transit(trigger) {
+                    return result
                 }
             }
 
