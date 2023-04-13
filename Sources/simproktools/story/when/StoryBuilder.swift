@@ -116,4 +116,42 @@ public struct StoryBuilder<Event> {
             }
         }
     }
+    
+    public func side(
+        function: @escaping Mapper<Event, Story<Event>?>
+    ) -> StoryBuilder<Event> {
+        StoryBuilder { transit in
+            storySupplier {
+                if let transition = function($0) {
+                    return transition
+                } else {
+                    return transit($0)
+                }
+            }
+        }
+    }
+    
+    public func side(
+        is trigger: Event, to story: Story<Event> = .finale()
+    ) -> StoryBuilder<Event> where Event: Equatable {
+        side {
+            if trigger == $0 {
+                return story
+            } else {
+                return nil
+            }
+        }
+    }
+    
+    public func side(
+        not trigger: Event, to story: Story<Event> = .finale()
+    ) -> StoryBuilder<Event> where Event: Equatable {
+        side {
+            if trigger != $0 {
+                return story
+            } else {
+                return nil
+            }
+        }
+    }
 }

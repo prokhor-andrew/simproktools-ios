@@ -204,4 +204,42 @@ public struct SceneBuilder<Trigger, Effect> {
             }
         }
     }
+    
+    public func side(
+        function: @escaping Mapper<Trigger, SceneTransition<Trigger, Effect>?>
+    ) -> SceneBuilder<Trigger, Effect> {
+        SceneBuilder { transit in
+            featureSupplier {
+                if let transition = function($0) {
+                    return transition
+                } else {
+                    return transit($0)
+                }
+            }
+        }
+    }
+    
+    public func side(
+        is trigger: Trigger, send effects: [Effect], to scene: Scene<Trigger, Effect> = .finale()
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
+        side {
+            if trigger == $0 {
+                return SceneTransition(scene, effects: effects)
+            } else {
+                return nil
+            }
+        }
+    }
+    
+    public func side(
+        not trigger: Trigger, send effects: [Effect], to scene: Scene<Trigger, Effect> = .finale()
+    ) -> SceneBuilder<Trigger, Effect> where Trigger: Equatable {
+        side {
+            if trigger != $0 {
+                return SceneTransition(scene, effects: effects)
+            } else {
+                return nil
+            }
+        }
+    }
 }

@@ -25,8 +25,8 @@ public struct OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
             featureSupplier {
                 if let effects = function($0) {
                     return OutlineTransition(
-                            Outline.create(transit: transit),
-                            effects: effects
+                        Outline.create(transit: transit),
+                        effects: effects
                     )
                 } else {
                     return nil
@@ -170,13 +170,7 @@ public struct OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
     public func then(
             _ function: @escaping Mapper<FeatureEvent<IntTrigger, ExtTrigger>, OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>?>
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        featureSupplier { event in
-            if let transition = function(event) {
-                return transition
-            } else {
-                return nil
-            }
-        }
+        featureSupplier(function)
     }
 
     public func then(
@@ -199,6 +193,45 @@ public struct OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         then { event in
             if event != trigger {
                 return transition()
+            } else {
+                return nil
+            }
+        }
+    }
+    
+    
+    public func side(
+        function: @escaping Mapper<FeatureEvent<IntTrigger, ExtTrigger>, OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>?>
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        OutlineBuilder { transit in
+            featureSupplier {
+                if let transition = function($0) {
+                    return transition
+                } else {
+                    return transit($0)
+                }
+            }
+        }
+    }
+    
+    public func side(
+        is trigger: FeatureEvent<IntTrigger, ExtTrigger>, send effects: [FeatureEvent<IntEffect, ExtEffect>], to outline: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> = .finale()
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where IntTrigger: Equatable, ExtTrigger: Equatable {
+        side {
+            if trigger == $0 {
+                return OutlineTransition(outline, effects: effects)
+            } else {
+                return nil
+            }
+        }
+    }
+    
+    public func side(
+        not trigger: FeatureEvent<IntTrigger, ExtTrigger>, send effects: [FeatureEvent<IntEffect, ExtEffect>], to outline: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> = .finale()
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where IntTrigger: Equatable, ExtTrigger: Equatable {
+        side {
+            if trigger != $0 {
+                return OutlineTransition(outline, effects: effects)
             } else {
                 return nil
             }
