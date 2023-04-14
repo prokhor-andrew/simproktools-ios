@@ -242,4 +242,21 @@ public struct SceneBuilder<Trigger, Effect> {
             }
         }
     }
+    
+    public func switchTo(doneOnFinale: Bool = true, function: @escaping Mapper<Trigger, SceneTransition<Trigger, Effect>?>) -> SceneBuilder<Trigger, Effect> {
+        SceneBuilder { transit in
+            featureSupplier {
+                if let transition = transit($0) {
+                    return SceneTransition(
+                        transition.state.switchTo(doneOnFinale: doneOnFinale) { _, event in
+                            function(event)
+                        },
+                        effects: transition.effects
+                    )
+                } else {
+                    return nil
+                }
+            }
+        }
+    }
 }

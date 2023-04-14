@@ -237,4 +237,21 @@ public struct OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
             }
         }
     }
+    
+    public func switchTo(doneOnFinale: Bool = true, function: @escaping Mapper<FeatureEvent<IntTrigger, ExtTrigger>, OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>?>) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        OutlineBuilder { transit in
+            featureSupplier {
+                if let transition = transit($0) {
+                    return OutlineTransition(
+                        transition.state.switchTo(doneOnFinale: doneOnFinale) { _, event in
+                            function(event)
+                        },
+                        effects: transition.effects
+                    )
+                } else {
+                    return nil
+                }
+            }
+        }
+    }
 }

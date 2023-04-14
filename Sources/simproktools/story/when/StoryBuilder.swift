@@ -154,4 +154,18 @@ public struct StoryBuilder<Event> {
             }
         }
     }
+    
+    public func switchTo(doneOnFinale: Bool = true, function: @escaping Mapper<Event, Story<Event>?>) -> StoryBuilder<Event> {
+        StoryBuilder { transit in
+            storySupplier {
+                if let new = transit($0) {
+                    return new.switchTo(doneOnFinale: doneOnFinale) { _, event in
+                        function(event)
+                    }
+                } else {
+                    return nil
+                }
+            }
+        }
+    }
 }
