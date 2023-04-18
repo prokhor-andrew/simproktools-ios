@@ -24,7 +24,7 @@ public extension Scene {
                         } else {
                             if let transition = transit(trigger) {
                                 return SceneTransition(
-                                    transition.state.switchOnTransition(to: scene),
+                                    transition.state.switchOnTransition(to: scene, doneOnFinale: doneOnFinale),
                                     effects: transition.effects
                                 )
                             } else {
@@ -47,7 +47,7 @@ public extension Scene {
                         if let transit {
                             if let transition = transit(trigger) {
                                 return SceneTransition(
-                                    transition.state.switchOnTransition(to: scene),
+                                    transition.state.switchOnTransition(to: scene, doneOnFinale: doneOnFinale),
                                     effects: transition.effects
                                 )
                             } else {
@@ -62,14 +62,6 @@ public extension Scene {
                 return self
             }
         }
-    }
-    
-    
-    func switchOnTransition(
-        from scene: Scene<Trigger, Effect>,
-        doneOnFinale: Bool = true
-    ) -> Scene<Trigger, Effect> {
-        scene.switchOnTransition(to: self, doneOnFinale: doneOnFinale)
     }
 }
 

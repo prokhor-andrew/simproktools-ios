@@ -24,7 +24,7 @@ public extension Outline {
                         } else {
                             if let transition = transit(trigger) {
                                 return OutlineTransition(
-                                    transition.state.switchOnTransition(to: outline),
+                                    transition.state.switchOnTransition(to: outline, doneOnFinale: doneOnFinale),
                                     effects: transition.effects
                                 )
                             } else {
@@ -47,7 +47,7 @@ public extension Outline {
                         if let transit {
                             if let transition = transit(trigger) {
                                 return OutlineTransition(
-                                    transition.state.switchOnTransition(to: outline),
+                                    transition.state.switchOnTransition(to: outline, doneOnFinale: doneOnFinale),
                                     effects: transition.effects
                                 )
                             } else {
@@ -62,13 +62,5 @@ public extension Outline {
                 return self
             }
         }
-    }
-    
-    
-    func switchOnTransition(
-        from outline: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>,
-        doneOnFinale: Bool = true
-    ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        outline.switchOnTransition(to: self, doneOnFinale: doneOnFinale)
     }
 }

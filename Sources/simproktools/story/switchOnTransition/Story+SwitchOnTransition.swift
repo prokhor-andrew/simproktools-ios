@@ -23,7 +23,7 @@ public extension Story {
                             return new
                         } else {
                             if let new = transit(trigger) {
-                                return new.switchOnTransition(to: story)
+                                return new.switchOnTransition(to: story, doneOnFinale: doneOnFinale)
                             } else {
                                 return nil
                             }
@@ -43,7 +43,7 @@ public extension Story {
                     } else {
                         if let transit {
                             if let new = transit(trigger) {
-                                return new.switchOnTransition(to: story)
+                                return new.switchOnTransition(to: story, doneOnFinale: doneOnFinale)
                             } else {
                                 return nil
                             }
@@ -56,14 +56,6 @@ public extension Story {
                 return self
             }
         }
-    }
-    
-    
-    func switchOnTransition(
-        from story: Story<Event>,
-        doneOnFinale: Bool = true
-    ) -> Story<Event> {
-        story.switchOnTransition(to: self, doneOnFinale: doneOnFinale)
     }
 }
 
