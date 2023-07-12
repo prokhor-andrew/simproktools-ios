@@ -12,7 +12,7 @@ import simprokstate
 
 public extension StoryBuilder {
     
-    func loop(_ function: @escaping Mapper<Event, Bool>) -> StoryBuilder<Event> {
+    func loop(_ function: @escaping (Event) -> Bool) -> StoryBuilder<Event> {
         handle { state in
             func provide() -> Story<Event> {
                 Story.create {

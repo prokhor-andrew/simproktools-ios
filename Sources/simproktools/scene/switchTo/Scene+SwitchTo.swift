@@ -13,11 +13,7 @@ public extension Scene {
     
     func switchTo(
         doneOnFinale: Bool = true,
-        function: @escaping BiMapper<
-            Scene<Trigger, Effect>,
-            Trigger,
-            SceneTransition<Trigger, Effect>?
-        >
+        function: @escaping (Scene<Trigger, Effect>, Trigger) -> SceneTransition<Trigger, Effect>?
     ) -> Scene<Trigger, Effect> {
         if doneOnFinale {
             if let transit {

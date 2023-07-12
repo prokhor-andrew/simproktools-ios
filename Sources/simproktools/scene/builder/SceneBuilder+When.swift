@@ -12,7 +12,7 @@ import simprokstate
 public extension SceneBuilder {
     
     func when(
-            _ function: @escaping Mapper<Trigger, [Effect]?>
+            _ function: @escaping (Trigger) -> [Effect]?
     ) -> SceneBuilder<Trigger, Effect> {
         handle { state in
             Scene.create {

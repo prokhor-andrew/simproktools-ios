@@ -12,7 +12,7 @@ import simprokstate
 
 public extension StoryBuilder {
     
-    func when(_ function: @escaping Mapper<Event, Bool>) -> StoryBuilder<Event> {
+    func when(_ function: @escaping (Event) -> Bool) -> StoryBuilder<Event> {
         handle { state in
             Story.create {
                 if function($0) {

@@ -7,21 +7,9 @@ import simprokmachine
 
 public extension Machine where Input == Output {
 
-    static func valueNoNil() -> Machine<Input, Output> {
-        Machine { input, callback in
-            if let input = input {
-                callback(input)
-            }
-        }
-    }
-}
-
-
-public extension Machine where Input? == Output {
-
-    static func valueWithNil() -> Machine<Input, Output> {
-        Machine { input, callback in
-            callback(input)
+    static func value() -> Machine<Input, Output> {
+        .pure { input, callback in
+            await callback(input)
         }
     }
 }

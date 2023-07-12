@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "simproktools",
+    platforms: [
+        .macOS(.v10_15)
+    ],
     products: [
         .library(
             name: "simproktools",
@@ -14,7 +17,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/simprok-dev/simprokstate-ios.git",
-            exact: .init(1, 2, 27)
+            exact: .init(1, 2, 33)
         ),
     ],
     targets: [

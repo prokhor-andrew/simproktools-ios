@@ -8,7 +8,7 @@ import simprokstate
 public extension Outline {
 
     func mapTrigger<RIntTrigger, RExtTrigger>(
-            function: @escaping Mapper<FeatureEvent<RIntTrigger, RExtTrigger>, FeatureEvent<IntTrigger, ExtTrigger>?>
+            function: @escaping (FeatureEvent<RIntTrigger, RExtTrigger>) -> FeatureEvent<IntTrigger, ExtTrigger>?
     ) -> Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect> {
         mapTrigger(with: Void()) {
             ($0, function($1))
@@ -17,7 +17,7 @@ public extension Outline {
 
     func mapTrigger<State, RIntTrigger, RExtTrigger>(
             with state: State,
-            function: @escaping BiMapper<State, FeatureEvent<RIntTrigger, RExtTrigger>, (newState: State, trigger: FeatureEvent<IntTrigger, ExtTrigger>?)>
+            function: @escaping (State, FeatureEvent<RIntTrigger, RExtTrigger>) -> (newState: State, trigger: FeatureEvent<IntTrigger, ExtTrigger>?)
     ) -> Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect> {
         if let transit {
             return Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect>.create { trigger in
@@ -41,7 +41,7 @@ public extension Outline {
     }
 
     func mapIntTrigger<RIntTrigger>(
-            function: @escaping Mapper<RIntTrigger, IntTrigger?>
+            function: @escaping (RIntTrigger) -> IntTrigger?
     ) -> Outline<RIntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         mapTrigger { trigger in
             switch trigger {
@@ -58,7 +58,7 @@ public extension Outline {
     }
 
     func mapExtTrigger<RExtTrigger>(
-            function: @escaping Mapper<RExtTrigger, ExtTrigger?>
+            function: @escaping (RExtTrigger) -> ExtTrigger?
     ) -> Outline<IntTrigger, IntEffect, RExtTrigger, ExtEffect> {
         mapTrigger { trigger in
             switch trigger {
@@ -76,7 +76,7 @@ public extension Outline {
 
     func mapIntTrigger<State, RIntTrigger>(
             with state: State,
-            function: @escaping BiMapper<State, RIntTrigger, (newState: State, trigger: IntTrigger?)>
+            function: @escaping (State, RIntTrigger) -> (newState: State, trigger: IntTrigger?)
     ) -> Outline<RIntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         mapTrigger(with: state) { state, event in
             switch event {
@@ -95,7 +95,7 @@ public extension Outline {
 
     func mapExtTrigger<State, RExtTrigger>(
             with state: State,
-            function: @escaping BiMapper<State, RExtTrigger, (newState: State, trigger: ExtTrigger?)>
+            function: @escaping (State, RExtTrigger) -> (newState: State, trigger: ExtTrigger?)
     ) -> Outline<IntTrigger, IntEffect, RExtTrigger, ExtEffect> {
         mapTrigger(with: state) { state, event in
             switch event {
@@ -113,7 +113,7 @@ public extension Outline {
     }
 
     func mapEffects<RIntEffect, RExtEffect>(
-            function: @escaping Mapper<[FeatureEvent<IntEffect, ExtEffect>], [FeatureEvent<RIntEffect, RExtEffect>]>
+            function: @escaping ([FeatureEvent<IntEffect, ExtEffect>]) -> [FeatureEvent<RIntEffect, RExtEffect>]
     ) -> Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> {
         mapEffects(with: Void()) {
             ($0, effects: function($1))
@@ -122,7 +122,7 @@ public extension Outline {
 
     func mapEffects<State, RIntEffect, RExtEffect>(
             with state: State,
-            function: @escaping BiMapper<State, [FeatureEvent<IntEffect, ExtEffect>], (newState: State, effects: [FeatureEvent<RIntEffect, RExtEffect>])>
+            function: @escaping (State, [FeatureEvent<IntEffect, ExtEffect>]) -> (newState: State, effects: [FeatureEvent<RIntEffect, RExtEffect>])
     ) -> Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> {
         if let transit {
             return Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect>.create { trigger in

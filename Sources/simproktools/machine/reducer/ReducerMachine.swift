@@ -8,26 +8,22 @@ import simprokstate
 public extension Machine {
 
     static func reducer(
-            _ initial: Output,
-            sendInitial: Bool = false,
-            function: @escaping BiMapper<Output, Input, Output?>
+            _ initial: @escaping @autoclosure () -> Output,
+            function: @escaping (Output, Input) -> Output?
     ) -> Machine<Input, Output> {
-        Machine<Input, Output>(
-                FeatureTransition(
-                        Feature<Void, Void, Input, Output>.classic(DataMachines(initial)) { machines, event in
-                            switch event {
-                            case .int:
-                                return (machines, [], false)
-                            case .ext(let trigger):
-                                if let result = function(machines.data, trigger) {
-                                    return (machines, [.ext(result)], false)
-                                } else {
-                                    return (machines, [], false)
-                                }
-                            }
-                        },
-                        effects: sendInitial ? [.ext(initial)] : []
-                )
-        )
+        Machine<Input, Output> {
+            Feature<Void, Void, Input, Output>.classic(DataMachines(initial())) { machines, event in
+                switch event {
+                case .int:
+                    return (machines, [], false)
+                case .ext(let trigger):
+                    if let result = function(machines.data, trigger) {
+                        return (machines, [.ext(result)], false)
+                    } else {
+                        return (machines, [], false)
+                    }
+                }
+            }
+        }
     }
 }

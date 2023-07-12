@@ -11,7 +11,7 @@ import simprokstate
 public extension OutlineBuilder {
     
     func loop(
-            _ function: @escaping Mapper<FeatureEvent<IntTrigger, ExtTrigger>, (Bool, [FeatureEvent<IntEffect, ExtEffect>])>
+            _ function: @escaping (FeatureEvent<IntTrigger, ExtTrigger>) -> (Bool, [FeatureEvent<IntEffect, ExtEffect>])
     ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         handle { state in
             func provide() -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {

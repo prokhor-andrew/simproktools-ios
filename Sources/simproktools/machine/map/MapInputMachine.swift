@@ -8,38 +8,34 @@ import simprokstate
 
 public extension Machine {
 
-    func mapInput<RInput>(_ function: @escaping Mapper<RInput, [Input]>) -> Machine<RInput, Output> {
-        Machine<RInput, Output>(
-                FeatureTransition(
-                        Feature.classic(SetOfMachines(self)) { machines, trigger in
-                            switch trigger {
-                            case .int(let output):
-                                return (machines, [.ext(output)], false)
-                            case .ext(let input):
-                                return (machines, function(input).map { .int($0) }, false)
-                            }
-                        }
-                )
-        )
+    func mapInput<RInput>(_ function: @escaping (RInput) -> [Input]) -> Machine<RInput, Output> {
+        Machine<RInput, Output> {
+            Feature.classic(SetOfMachines(self)) { machines, trigger in
+                switch trigger {
+                case .int(let output):
+                    return (machines, [.ext(output)], false)
+                case .ext(let input):
+                    return (machines, function(input).map { .int($0) }, false)
+                }
+            }
+        }
     }
 
     func mapInput<State, RInput>(
-            with state: State,
-            function: @escaping BiMapper<State, RInput, (newState: State, inputs: [Input])>
+            with state: @escaping @autoclosure () -> State,
+            function: @escaping (State, RInput) -> (newState: State, inputs: [Input])
     ) -> Machine<RInput, Output> {
-        Machine<RInput, Output>(
-                FeatureTransition(
-                        Feature.classic(DataMachines(state, machines: self)) { machines, trigger in
-                            switch trigger {
-                            case .int(let output):
-                                return (machines, [.ext(output)], false)
-                            case .ext(let input):
-                                let (newState, inputs) = function(machines.data, input)
-
-                                return (DataMachines(newState, machines: machines.machines), inputs.map { .int($0) }, false)
-                            }
-                        }
-                )
-        )
+        Machine<RInput, Output> {
+            Feature.classic(DataMachines(state(), machines: self)) { machines, trigger in
+                switch trigger {
+                case .int(let output):
+                    return (machines, [.ext(output)], false)
+                case .ext(let input):
+                    let (newState, inputs) = function(machines.data, input)
+                    
+                    return (DataMachines(newState, machines: machines.machines), inputs.map { .int($0) }, false)
+                }
+            }
+        }
     }
 }

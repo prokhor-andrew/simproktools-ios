@@ -13,11 +13,7 @@ public extension Story {
     
     func switchTo(
         doneOnFinale: Bool = true,
-        function: @escaping BiMapper<
-            Story<Event>,
-            Event,
-            Story<Event>?
-        >
+        function: @escaping (Story<Event>, Event) -> Story<Event>? 
     ) -> Story<Event> {
         if doneOnFinale {
             if let transit {

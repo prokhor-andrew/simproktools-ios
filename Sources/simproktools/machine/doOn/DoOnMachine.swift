@@ -11,7 +11,7 @@ import simprokmachine
 public extension Machine {
     
     
-    func doOnInput(function: @escaping Handler<Input>) -> Machine<Input, Output> {
+    func doOnInput(function: @escaping (Input) -> Void) -> Machine<Input, Output> {
         doOnInput(with: Void()) {
             function($1)
             return $0
@@ -19,16 +19,16 @@ public extension Machine {
     }
     
     func doOnInput<State>(
-        with state: State,
-        function: @escaping BiMapper<State, Input, State>
+        with state: @escaping @autoclosure () -> State,
+        function: @escaping (State, Input) -> State
     ) -> Machine<Input, Output> {
-        mapInput(with: state) {
+        mapInput(with: state()) {
             (function($0, $1), [$1])
         }
     }
     
     
-    func doOnOutput(function: @escaping Handler<Output>) -> Machine<Input, Output> {
+    func doOnOutput(function: @escaping (Output) -> Void) -> Machine<Input, Output> {
         doOnOutput(with: Void()) {
             function($1)
             return $0
@@ -36,18 +36,18 @@ public extension Machine {
     }
     
     func doOnOutput<State>(
-        with state: State,
-        function: @escaping BiMapper<State, Output, State>
+        with state: @escaping @autoclosure () -> State,
+        function: @escaping (State, Output) -> State
     ) -> Machine<Input, Output> {
-        mapOutput(with: state) {
+        mapOutput(with: state()) {
             (function($0, $1), [$1])
         }
     }
     
     func biDoOn<State>(
-            _ state: Supplier<State>,
-            doOnInput: @escaping BiMapper<State, Input, State>,
-            doOnOutput: @escaping BiMapper<State, Output, State>
+            _ state: @escaping () -> State,
+            doOnInput: @escaping (State, Input) -> State,
+            doOnOutput: @escaping (State, Output) -> State
     ) -> Machine<Input, Output> {
         biMap {
             state()

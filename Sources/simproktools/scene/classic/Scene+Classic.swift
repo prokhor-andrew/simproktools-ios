@@ -7,7 +7,7 @@ import simprokstate
 
 public extension Scene {
 
-    static func classic(_ function: @escaping Mapper<Trigger, (effects: [Effect], isFinale: Bool)>) -> Scene<Trigger, Effect> {
+    static func classic(_ function: @escaping (Trigger) -> (effects: [Effect], isFinale: Bool)) -> Scene<Trigger, Effect> {
         classic(Void()) { state, event in
             let (effects, isFinale) = function(event)
             if isFinale {
@@ -20,7 +20,7 @@ public extension Scene {
 
     static func classic<State>(
             _ initial: State,
-            function: @escaping BiMapper<State, Trigger, (newState: State?, effects: [Effect])>
+            function: @escaping (State, Trigger) -> (newState: State?, effects: [Effect])
     ) -> Scene<Trigger, Effect> {
         Scene.create { trigger in
             let (newState, effects) = function(initial, trigger)

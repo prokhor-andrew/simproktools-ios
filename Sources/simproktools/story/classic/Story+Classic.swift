@@ -9,7 +9,7 @@ public extension Story {
 
     static func classic<State>(
             _ initial: State,
-            function: @escaping BiMapper<State, Event, ClassicStoryResult<State>>
+            function: @escaping (State, Event) -> ClassicStoryResult<State>
     ) -> Story<Event> {
         Story.create {
             switch function(initial, $0) {
@@ -24,7 +24,7 @@ public extension Story {
     }
     
     static func classic(
-        function: @escaping Mapper<Event, Bool?>
+        function: @escaping (Event) -> Bool?
     ) -> Story<Event> {
         classic(Void()) { state, trigger in
             if let isFinale = function(trigger) {

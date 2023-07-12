@@ -8,7 +8,7 @@ import simprokmachine
 public extension Machine {
 
     static func never() -> Machine<Input, Output> {
-        Machine { _, _ in
+        .pure { _, _ in
 
         }
     }

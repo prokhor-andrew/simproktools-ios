@@ -13,11 +13,9 @@ public extension Outline {
     
     func switchTo(
         doneOnFinale: Bool = true,
-        function: @escaping BiMapper<
-            Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>,
-            FeatureEvent<IntTrigger, ExtTrigger>,
+        function: @escaping (Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>, FeatureEvent<IntTrigger, ExtTrigger>) ->
             OutlineTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>?
-        >
+        
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         if doneOnFinale {
             if let transit {

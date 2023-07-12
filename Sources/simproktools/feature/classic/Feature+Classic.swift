@@ -11,7 +11,7 @@ public extension Feature {
     
     static func classic<State: FeatureMachines>(
             _ initial: State,
-            function: @escaping BiMapper<State, FeatureEvent<IntTrigger, ExtTrigger>, (newState: State, effects: [FeatureEvent<IntEffect, ExtEffect>], isFinale: Bool)>
+            function: @escaping (State, FeatureEvent<IntTrigger, ExtTrigger>) -> (newState: State, effects: [FeatureEvent<IntEffect, ExtEffect>], isFinale: Bool)
     ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where State.Trigger == IntTrigger, State.Effect == IntEffect {
         Feature.create(initial) { machines, trigger in
             let result = function(machines, trigger)
