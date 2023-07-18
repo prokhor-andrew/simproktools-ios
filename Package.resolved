@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/simprok-dev/simprokmachine-ios.git",
       "state" : {
-        "revision" : "2e2eba4bbd0051f9937f0bb357d1232a2c7b4857",
-        "version" : "1.2.19"
+        "revision" : "227820ae2d03498f34539f6963dc6b10611b59e1",
+        "version" : "1.2.20"
       }
     },
     {
@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/simprok-dev/simprokstate-ios.git",
       "state" : {
-        "revision" : "11d96ce43b9b919cd171d031b8a02025f11480e3",
-        "version" : "1.2.34"
+        "revision" : "29e80e5a6ca7455cc566fa94679fab4aa7d44ebb",
+        "version" : "1.2.35"
       }
     }
   ],
