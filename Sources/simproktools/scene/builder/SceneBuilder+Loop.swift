@@ -15,6 +15,8 @@ public extension SceneBuilder {
             _ function: @escaping (Trigger) -> (Bool, [Effect])
     ) -> SceneBuilder<Trigger, Effect> {
         handle { state in
+            
+            @Sendable
             func provide() -> Scene<Trigger, Effect> {
                 Scene.create {
                     let (isLoop, effects) = function($0)

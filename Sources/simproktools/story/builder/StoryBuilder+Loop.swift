@@ -14,6 +14,8 @@ public extension StoryBuilder {
     
     func loop(_ function: @escaping (Event) -> Bool) -> StoryBuilder<Event> {
         handle { state in
+            
+            @Sendable
             func provide() -> Story<Event> {
                 Story.create {
                     if function($0) {
