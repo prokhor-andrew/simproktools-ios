@@ -17,5 +17,11 @@ public extension Machine {
             outline.asFeature(SetOfMachines(self))
         }
     }
+    
+    func navigate<RInput, ROutput>(
+        function: @escaping @Sendable (FeatureEvent<Output, RInput>) -> OutlineTransition<Output, Input, RInput, ROutput>
+    ) -> Machine<RInput, ROutput> {
+        navigate(Outline.create(transit: function))
+    }
 }
 
