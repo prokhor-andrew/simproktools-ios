@@ -9,7 +9,7 @@ import simprokmachine
 
 public extension Machine {
     
-    private actor Dummy<Output> {
+    private actor Dummy {
         
         var callback: ((Output) async -> Void)?
     }
