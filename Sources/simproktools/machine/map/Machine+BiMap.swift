@@ -8,6 +8,17 @@ import simprokstate
 
 public extension Machine {
 
+    func biMap<RInput, ROutput>(
+        mapInput: @escaping (RInput) -> [Input],
+        mapOutput: @escaping (Output) -> [ROutput]
+    ) -> Machine<RInput, ROutput> {
+        biMap { Void() } mapInput: { state, input in
+            (state, mapInput(input))
+        } mapOutput: { state, output in
+            (state, mapOutput(output))
+        }
+    }
+    
     func biMap<State, RInput, ROutput>(
             _ state: @escaping () -> State,
             mapInput: @escaping (State, RInput) -> (newState: State, inputs: [Input]),
