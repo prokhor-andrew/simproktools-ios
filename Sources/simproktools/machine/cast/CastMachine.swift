@@ -11,26 +11,28 @@ import simprokmachine
 public extension Machine {
     
     func cast<RInput>(input: RInput.Type) -> Machine<RInput, Output> {
-        mapInput { value in
-            if let value = value as? Input {
-                return [value]
-            } else {
-                return []
-            }
-        }
+        cast(input: input, output: Output.self)
     }
     
     func cast<ROutput>(output: ROutput.Type) -> Machine<Input, ROutput> {
-        mapOutput { value in
-            if let value = value as? ROutput {
-                return [value]
-            } else {
-                return []
-            }
-        }
+        cast(input: Input.self, output: output)
     }
     
     func cast<RInput, ROutput>(input: RInput.Type, output: ROutput.Type) -> Machine<RInput, ROutput> {
-        cast(output: output).cast(input: input)
+        biMap(
+            mapInput: { value in
+                if let value = value as? Input {
+                    return [value]
+                } else {
+                    return []
+                }
+            }, mapOutput: { value in
+                if let value = value as? ROutput {
+                    return [value]
+                } else {
+                    return []
+                }
+            }
+        )
     }
 }
