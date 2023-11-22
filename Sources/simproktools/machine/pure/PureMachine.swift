@@ -11,11 +11,11 @@ public extension Machine {
     
     private actor Dummy {
         
-        var callback: ((Output) async -> Void)?
+        var callback: MachineCallback<Output>?
     }
     
-    static func pure(onProcess: @escaping (Input, (Output) async -> Void) async -> Void) -> Machine<Input, Output> {
-        Machine {
+    static func pure(onProcess: @escaping (Input, MachineCallback<Output>) async -> Void) -> Machine<Input, Output> {
+        Machine { _ in
             Dummy()
         } onChange: {
             $0.callback = $1

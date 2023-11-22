@@ -13,7 +13,7 @@ public extension Machine {
     func navigate<RInput, ROutput>(
         _ outline: Outline<Output, Input, RInput, ROutput>
     ) -> Machine<RInput, ROutput> {
-        Machine<RInput, ROutput> {
+        Machine<RInput, ROutput> { _ in
             outline.asFeature(SetOfMachines(self))
         }
     }

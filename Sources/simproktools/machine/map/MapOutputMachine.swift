@@ -8,7 +8,7 @@ import simprokstate
 public extension Machine {
 
     func mapOutput<ROutput>(_ function: @escaping (Output) -> [ROutput]) -> Machine<Input, ROutput> {
-        Machine<Input, ROutput> {
+        Machine<Input, ROutput> { _ in
             Feature.classic(SetOfMachines(self)) { machines, trigger in
                 switch trigger {
                 case .ext(let input):
@@ -24,7 +24,7 @@ public extension Machine {
             with state: @escaping @autoclosure () -> State,
             function: @escaping (State, Output) -> (newState: State, outputs: [ROutput])
     ) -> Machine<Input, ROutput> {
-        Machine<Input, ROutput> {
+        Machine<Input, ROutput> { _ in
             Feature.classic(DataMachines(state(), machines: self)) { machines, trigger in
                 switch trigger {
                 case .ext(let input):

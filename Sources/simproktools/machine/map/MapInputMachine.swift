@@ -9,7 +9,7 @@ import simprokstate
 public extension Machine {
 
     func mapInput<RInput>(_ function: @escaping (RInput) -> [Input]) -> Machine<RInput, Output> {
-        Machine<RInput, Output> {
+        Machine<RInput, Output> { _ in
             Feature.classic(SetOfMachines(self)) { machines, trigger in
                 switch trigger {
                 case .int(let output):
@@ -25,7 +25,7 @@ public extension Machine {
             with state: @escaping @autoclosure () -> State,
             function: @escaping (State, RInput) -> (newState: State, inputs: [Input])
     ) -> Machine<RInput, Output> {
-        Machine<RInput, Output> {
+        Machine<RInput, Output> { _ in
             Feature.classic(DataMachines(state(), machines: self)) { machines, trigger in
                 switch trigger {
                 case .int(let output):
