@@ -20,7 +20,7 @@ public extension Machine {
     }
     
     func biMap<State, RInput, ROutput>(
-            _ state: @escaping () -> State,
+            with state: @escaping () -> State,
             mapInput: @escaping (State, RInput) -> (newState: State, inputs: [Input]),
             mapOutput: @escaping (State, Output) -> (newState: State, outputs: [ROutput])
     ) -> Machine<RInput, ROutput> {
