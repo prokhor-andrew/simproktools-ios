@@ -8,8 +8,6 @@ import simprokstate
 public extension Outline {
 
     static func never() -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        Outline.create { _ in
-            nil
-        }
+        Outline { _ in OutlineTransition(never()) }
     }
 }

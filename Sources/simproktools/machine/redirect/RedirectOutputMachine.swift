@@ -15,12 +15,12 @@ public extension Machine {
             Feature.classic(SetOfMachines(self)) { machines, trigger in
                 switch trigger {
                 case .ext(let input):
-                    return (machines, [.int(input)], false)
+                    return (machines, [.int(input)])
                 case .int(let output):
                     if let input = function(output) {
-                        return (machines, [.int(input)], false)
+                        return (machines, [.int(input)])
                     } else {
-                        return (machines, [.ext(output)], false)
+                        return (machines, [.ext(output)])
                     }
                 }
             }
@@ -37,12 +37,12 @@ public extension Machine {
                 case .int(let output):
                     let (newState, redirectResult) = function(machines.data, output)
                     if let input = redirectResult {
-                        return (DataMachines(newState, machines: machines.machines), [.int(input)], false)
+                        return (DataMachines(newState, machines: machines.machines), [.int(input)])
                     } else {
-                        return (DataMachines(newState, machines: machines.machines), [.ext(output)], false)
+                        return (DataMachines(newState, machines: machines.machines), [.ext(output)])
                     }
                 case .ext(let input):
-                    return (machines, [.int(input)], false)
+                    return (machines, [.int(input)])
                 }
             }
         }

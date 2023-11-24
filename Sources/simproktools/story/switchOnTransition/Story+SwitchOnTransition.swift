@@ -9,51 +9,21 @@ import simprokstate
 
 
 public extension Story {
-    
-    
+        
+    // this functions tests event on param story every time, and once the transition happens
+    // it switches to that story
     func switchOnTransition(
-        to story: Story<Event>,
-        doneOnFinale: Bool = true
+        to story: Story<Event>
     ) -> Story<Event> {
-        if doneOnFinale {
-            if let transit {
-                if let storyTransit = story.transit {
-                    return Story.create { trigger in
-                        if let new = storyTransit(trigger) {
-                            return new
-                        } else {
-                            if let new = transit(trigger) {
-                                return new.switchOnTransition(to: story, doneOnFinale: doneOnFinale)
-                            } else {
-                                return nil
-                            }
-                        }
-                    }
+        Story { trigger in
+            if let new = story.transit(trigger) {
+                return new
+            } else {
+                if let new = transit(trigger) {
+                    return new.switchOnTransition(to: story)
                 } else {
-                    return self
+                    return nil
                 }
-            } else {
-                return .finale()
-            }
-        } else {
-            if let storyTransit = story.transit {
-                return Story.create { trigger in
-                    if let new = storyTransit(trigger) {
-                        return new
-                    } else {
-                        if let transit {
-                            if let new = transit(trigger) {
-                                return new.switchOnTransition(to: story, doneOnFinale: doneOnFinale)
-                            } else {
-                                return nil
-                            }
-                        } else {
-                            return nil
-                        }
-                    }
-                }
-            } else {
-                return self
             }
         }
     }

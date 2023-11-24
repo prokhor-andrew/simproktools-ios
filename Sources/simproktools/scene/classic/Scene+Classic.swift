@@ -2,39 +2,26 @@
 // Created by Andriy Prokhorenko on 17.02.2023.
 //
 
-import simprokmachine
 import simprokstate
 
 public extension Scene {
 
-    static func classic(_ function: @escaping (Trigger) -> (effects: [Effect], isFinale: Bool)) -> Scene<Trigger, Effect> {
+    static func classic(_ function: @escaping (Trigger) -> [Effect]) -> Scene<Trigger, Effect> {
         classic(Void()) { state, event in
-            let (effects, isFinale) = function(event)
-            if isFinale {
-                return (state, effects)
-            } else {
-                return (nil, effects)
-            }
+            (state, function(event))
         }
     }
 
     static func classic<State>(
-            _ initial: State,
-            function: @escaping (State, Trigger) -> (newState: State?, effects: [Effect])
+        _ initial: State,
+        function: @escaping (State, Trigger) -> (newState: State, effects: [Effect])
     ) -> Scene<Trigger, Effect> {
-        Scene.create { trigger in
+        Scene { trigger in
             let (newState, effects) = function(initial, trigger)
-            if let newState {
-                return SceneTransition(
-                        classic(newState, function: function),
-                        effects: effects
-                )
-            } else {
-                return SceneTransition(
-                        .finale(),
-                        effects: effects
-                )
-            }
+            return SceneTransition(
+                classic(newState, function: function),
+                effects: effects
+            )
         }
     }
 }

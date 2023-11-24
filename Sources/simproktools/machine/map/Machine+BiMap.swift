@@ -32,16 +32,14 @@ public extension Machine {
 
                     return (
                             DataMachines(newState, machines: machines.machines),
-                            outputs.map { .ext($0) },
-                            false
+                            outputs.map { .ext($0) }
                     )
                 case .ext(let input):
                     let (newState, inputs) = mapInput(machines.data, input)
 
                     return (
                             DataMachines(newState, machines: machines.machines),
-                            inputs.map { .int($0) },
-                            false
+                            inputs.map { .int($0) }
                     )
                 }
             }

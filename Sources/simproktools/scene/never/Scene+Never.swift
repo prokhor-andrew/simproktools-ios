@@ -6,10 +6,7 @@ import simprokstate
 
 public extension Scene {
 
-
     static func never() -> Scene<Trigger, Effect> {
-        Scene.create { _ in
-            nil
-        }
+        Scene { _ in SceneTransition(never()) }
     }
 }

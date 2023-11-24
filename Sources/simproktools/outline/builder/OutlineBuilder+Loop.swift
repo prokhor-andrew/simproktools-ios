@@ -15,7 +15,7 @@ public extension OutlineBuilder {
         handle { state in
             @Sendable
             func provide() -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-                Outline.create {
+                Outline {
                     let (isLoop, effects) = function($0)
                     
                     if isLoop {

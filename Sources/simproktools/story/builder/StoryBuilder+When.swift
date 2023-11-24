@@ -12,7 +12,7 @@ public extension StoryBuilder {
     
     func when(_ function: @escaping (Event) -> Bool) -> StoryBuilder<Event> {
         handle { state in
-            Story.create {
+            Story {
                 if function($0) {
                     return state
                 } else {

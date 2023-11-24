@@ -13,16 +13,22 @@ public extension OutlineBuilder {
             _ function: @escaping (FeatureEvent<IntTrigger, ExtTrigger>) -> [FeatureEvent<IntEffect, ExtEffect>]?
     ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         handle { state in
-            Outline.create {
-                if let effects = function($0) {
-                    return OutlineTransition(
-                        state,
-                        effects: effects
-                    )
-                } else {
-                    return nil
+            
+            @Sendable
+            func currentState() -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+                Outline {
+                    if let effects = function($0) {
+                        return OutlineTransition(
+                            state,
+                            effects: effects
+                        )
+                    } else {
+                        return OutlineTransition(currentState())
+                    }
                 }
             }
+            
+            return currentState()
         }
     }
     

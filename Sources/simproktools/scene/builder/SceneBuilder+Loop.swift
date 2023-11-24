@@ -17,7 +17,7 @@ public extension SceneBuilder {
             
             @Sendable
             func provide() -> Scene<Trigger, Effect> {
-                Scene.create {
+                Scene {
                     let (isLoop, effects) = function($0)
                     if isLoop {
                         return SceneTransition(

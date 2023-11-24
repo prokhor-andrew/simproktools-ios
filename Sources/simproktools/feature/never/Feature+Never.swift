@@ -8,8 +8,6 @@ import simprokstate
 public extension Feature {
 
     static func never() -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        Feature.create(SetOfMachines()) { _, _ in
-            nil
-        }
+        Feature.create(SetOfMachines()) { _, _ in FeatureTransition(never()) }
     }
 }

@@ -16,12 +16,12 @@ public extension Machine {
                 switch trigger {
                 case .ext(let input):
                     if let output = function(input) {
-                        return (machines, [.ext(output)], false)
+                        return (machines, [.ext(output)])
                     } else {
-                        return (machines, [.int(input)], false)
+                        return (machines, [.int(input)])
                     }
                 case .int(let output):
-                    return (machines, [.ext(output)], false)
+                    return (machines, [.ext(output)])
                 }
             }
         }
@@ -37,12 +37,12 @@ public extension Machine {
                 case .ext(let input):
                     let (newState, redirectResult) = function(machines.data, input)
                     if let output = redirectResult {
-                        return (DataMachines(newState, machines: machines.machines), [.ext(output)], false)
+                        return (DataMachines(newState, machines: machines.machines), [.ext(output)])
                     } else {
-                        return (DataMachines(newState, machines: machines.machines), [.int(input)], false)
+                        return (DataMachines(newState, machines: machines.machines), [.int(input)])
                     }
                 case .int(let output):
-                    return (machines, [.ext(output)], false)
+                    return (machines, [.ext(output)])
                 }
             }
         }

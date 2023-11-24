@@ -12,9 +12,9 @@ public extension Machine {
             Feature.classic(SetOfMachines(machines())) { machines, trigger in
                 switch trigger {
                 case .ext(let input):
-                    return (machines, effects: [.int(input)], false)
+                    return (machines, effects: [.int(input)])
                 case .int(let output):
-                    return (machines, effects: [.ext(output)], false)
+                    return (machines, effects: [.ext(output)])
                 }
             }
         }

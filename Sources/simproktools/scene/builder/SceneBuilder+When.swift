@@ -14,16 +14,22 @@ public extension SceneBuilder {
         _ function: @escaping (Trigger) -> [Effect]?
     ) -> SceneBuilder<Trigger, Effect> {
         handle { state in
-            Scene.create {
-                if let effects = function($0) {
-                    return SceneTransition(
-                        state,
-                        effects: effects
-                    )
-                } else {
-                    return nil
+            
+            @Sendable
+            func currentState() -> Scene<Trigger, Effect> {
+                Scene {
+                    if let effects = function($0) {
+                        return SceneTransition(
+                            state,
+                            effects: effects
+                        )
+                    } else {
+                        return SceneTransition(currentState())
+                    }
                 }
             }
+            
+            return currentState()
         }
     }
     

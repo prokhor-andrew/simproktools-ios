@@ -2,9 +2,8 @@
 // Created by Andriy Prokhorenko on 17.02.2023.
 //
 
-import simprokmachine
-import simprokstate
 
+import simprokstate
 
 
 public struct SceneBuilder<Trigger, Effect> {

@@ -2,7 +2,6 @@
 // Created by Andriy Prokhorenko on 12.02.2023.
 //
 
-import simprokmachine
 import simprokstate
 
 public struct StoryBuilder<Event> {
