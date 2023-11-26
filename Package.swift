@@ -18,9 +18,12 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/simprok-dev/simprokstate-ios.git",
-            branch: "non_optional_transition"
-//            exact: .init(1, 2, 43)
+            exact: .init(1, 2, 44)
         ),
+        .package(
+            url: "https://github.com/pointfreeco/swift-case-paths.git",
+            exact: .init(1, 1, 0)
+        )
     ],
     targets: [
         .target(
@@ -29,6 +32,10 @@ let package = Package(
                 .product(
                     name: "simprokstate",
                     package: "simprokstate-ios"
+                ),
+                .product(
+                    name: "CasePaths",
+                    package: "swift-case-paths"
                 )
             ]
         )

@@ -6,7 +6,7 @@
 //
 
 import simprokstate
-
+import CasePaths
 
 public extension StoryBuilder {
     
@@ -46,6 +46,33 @@ public extension StoryBuilder {
     
     func when<T: Equatable>(_ keyPath: KeyPath<Event, T>, not value: T) -> StoryBuilder<Event> {
         when(keyPath, !=, value)
+    }
+}
+
+public extension StoryBuilder where Event: CasePathable {
+    
+    func when<T>(_ casePath: CaseKeyPath<Event, T>, function: @escaping (T) -> Bool) -> StoryBuilder<Event> {
+        when {
+            if let val = $0[case: casePath] {
+                function(val)
+            } else {
+                false
+            }
+        }
+    }
+    
+    func when<T>(_ casePath: CaseKeyPath<Event, T>, _ operation: @escaping (T, T) -> Bool, _ value: T) -> StoryBuilder<Event> {
+        when(casePath) {
+            operation($0, value)
+        }
+    }
+    
+    func when<T: Equatable>(_ casePath: CaseKeyPath<Event, T>, is value: T) -> StoryBuilder<Event> {
+        when(casePath, ==, value)
+    }
+    
+    func when<T: Equatable>(_ casePath: CaseKeyPath<Event, T>, not value: T) -> StoryBuilder<Event> {
+        when(casePath, !=, value)
     }
 }
 

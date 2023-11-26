@@ -6,7 +6,7 @@
 //
 
 import simprokstate
-
+import CasePaths
 
 public extension SceneBuilder {
     
@@ -146,5 +146,75 @@ public extension SceneBuilder {
         send effects: Effect...
     ) -> SceneBuilder<Trigger, Effect> {
         when(keyPath, !=, value, send: effects)
+    }
+}
+
+
+
+public extension SceneBuilder where Trigger: CasePathable {
+    
+    func when<T>(
+        _ casePath: CaseKeyPath<Trigger, T>,
+        function: @escaping (T) -> [Effect]?
+    ) -> SceneBuilder<Trigger, Effect> {
+        when {
+            if let val = $0[case: casePath] {
+                function(val)
+            } else {
+                nil
+            }
+        }
+    }
+    
+    func when<T>(
+        _ casePath: CaseKeyPath<Trigger, T>,
+        _ operation: @escaping (T, T) -> Bool,
+        _ value: T,
+        send effects: [Effect]
+    ) -> SceneBuilder<Trigger, Effect> {
+        when(casePath) {
+            operation($0, value) ? effects : nil
+        }
+    }
+    
+    func when<T>(
+        _ casePath: CaseKeyPath<Trigger, T>,
+        _ operation: @escaping (T, T) -> Bool,
+        _ value: T,
+        send effects: Effect...
+    ) -> SceneBuilder<Trigger, Effect> {
+        when(casePath, operation, value, send: effects)
+    }
+    
+    func when<T: Equatable>(
+        _ casePath: CaseKeyPath<Trigger, T>,
+        is value: T,
+        send effects: [Effect]
+    ) -> SceneBuilder<Trigger, Effect> {
+        when(casePath, ==, value, send: effects)
+    }
+    
+    func when<T: Equatable>(
+        _ casePath: CaseKeyPath<Trigger, T>,
+        is value: T,
+        send effects: Effect...
+    ) -> SceneBuilder<Trigger, Effect> {
+        when(casePath, ==, value, send: effects)
+    }
+    
+    func when<T: Equatable>(
+        _ casePath: CaseKeyPath<Trigger, T>,
+        not value: T,
+        send effects: [Effect]
+    ) -> SceneBuilder<Trigger, Effect> {
+        when(casePath, !=, value, send: effects)
+    }
+    
+    func when<T: Equatable>(
+        _ casePath: CaseKeyPath<Trigger, T>,
+        not value: T,
+        send effects: Effect...
+    ) -> SceneBuilder<Trigger, Effect> {
+        when(casePath, !=, value, send: effects)
     }
 }

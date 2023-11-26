@@ -6,6 +6,7 @@
 //
 
 import simprokstate
+import CasePaths
 
 public extension OutlineBuilder {
     
@@ -215,5 +216,157 @@ public extension OutlineBuilder {
         send effects: FeatureEvent<IntEffect, ExtEffect>...
     ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         when(ext: keyPath, !=, value, send: effects)
+    }
+}
+
+public extension OutlineBuilder where IntTrigger: CasePathable {
+    
+    func when<T>(
+        int casePath: CaseKeyPath<IntTrigger, T>,
+        function: @escaping (T) -> [FeatureEvent<IntEffect, ExtEffect>]?
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when {
+            switch $0 {
+            case .int(let val):
+                if let val = val[case: casePath] {
+                    function(val)
+                } else {
+                    nil
+                }
+            case .ext:
+                nil
+            }
+        }
+    }
+    
+    
+    func when<T>(
+        int casePath: CaseKeyPath<IntTrigger, T>,
+        _ operation: @escaping (T, T) -> Bool,
+        _ value: T,
+        send effects: [FeatureEvent<IntEffect, ExtEffect>]
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when(int: casePath) {
+            operation($0, value) ? effects : nil
+        }
+    }
+    
+    
+    func when<T>(
+        int casePath: CaseKeyPath<IntTrigger, T>,
+        _ operation: @escaping (T, T) -> Bool,
+        _ value: T,
+        send effects: FeatureEvent<IntEffect, ExtEffect>...
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when(int: casePath, operation, value, send: effects)
+    }
+    
+    func when<T: Equatable>(
+        int casePath: CaseKeyPath<IntTrigger, T>,
+        is value: T,
+        send effects: [FeatureEvent<IntEffect, ExtEffect>]
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when(int: casePath, ==, value, send: effects)
+    }
+    
+    
+    func when<T: Equatable>(
+        int casePath: CaseKeyPath<IntTrigger, T>,
+        is value: T,
+        send effects: FeatureEvent<IntEffect, ExtEffect>...
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when(int: casePath, ==, value, send: effects)
+    }
+    func when<T: Equatable>(
+        int casePath: CaseKeyPath<IntTrigger, T>,
+        not value: T,
+        send effects: [FeatureEvent<IntEffect, ExtEffect>]
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when(int: casePath, !=, value, send: effects)
+    }
+    
+    func when<T: Equatable>(
+        int casePath: CaseKeyPath<IntTrigger, T>,
+        not value: T,
+        send effects: FeatureEvent<IntEffect, ExtEffect>...
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when(int: casePath, !=, value, send: effects)
+    }
+}
+
+public extension OutlineBuilder where ExtTrigger: CasePathable {
+    
+
+    
+    func when<T>(
+        ext casePath: CaseKeyPath<ExtTrigger, T>,
+        function: @escaping (T) -> [FeatureEvent<IntEffect, ExtEffect>]?
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when {
+            switch $0 {
+            case .int:
+                nil
+            case .ext(let val):
+                if let val = val[case: casePath] {
+                    function(val)
+                } else {
+                    nil
+                }
+            }
+        }
+    }
+
+    func when<T>(
+        ext casePath: CaseKeyPath<ExtTrigger, T>,
+        _ operation: @escaping (T, T) -> Bool,
+        _ value: T,
+        send effects: [FeatureEvent<IntEffect, ExtEffect>]
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when(ext: casePath) {
+            operation($0, value) ? effects : nil
+        }
+    }
+    
+    func when<T>(
+        ext casePath: CaseKeyPath<ExtTrigger, T>,
+        _ operation: @escaping (T, T) -> Bool,
+        _ value: T,
+        send effects: FeatureEvent<IntEffect, ExtEffect>...
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when(ext: casePath, operation, value, send: effects)
+    }
+
+    func when<T: Equatable>(
+        ext casePath: CaseKeyPath<ExtTrigger, T>,
+        is value: T,
+        send effects: [FeatureEvent<IntEffect, ExtEffect>]
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when(ext: casePath, ==, value, send: effects)
+    }
+    
+        
+    func when<T: Equatable>(
+        ext casePath: CaseKeyPath<ExtTrigger, T>,
+        is value: T,
+        send effects: FeatureEvent<IntEffect, ExtEffect>...
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when(ext: casePath, ==, value, send: effects)
+    }
+    
+    
+    func when<T: Equatable>(
+        ext casePath: CaseKeyPath<ExtTrigger, T>,
+        not value: T,
+        send effects: [FeatureEvent<IntEffect, ExtEffect>]
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when(ext: casePath, !=, value, send: effects)
+    }
+        
+    func when<T: Equatable>(
+        ext casePath: CaseKeyPath<ExtTrigger, T>,
+        not value: T,
+        send effects: FeatureEvent<IntEffect, ExtEffect>...
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        when(ext: casePath, !=, value, send: effects)
     }
 }
