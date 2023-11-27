@@ -7,7 +7,7 @@ import simprokstate
 
 public extension Outline {
 
-    static func never(doOn: @escaping ((String) -> Void) -> Void = { _ in }) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+    static func never(doOn: @escaping ((Message) -> Void) -> Void = { _ in }) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> {
         Outline { _, logger in
             doOn(logger)
             return OutlineTransition(never(doOn: doOn))

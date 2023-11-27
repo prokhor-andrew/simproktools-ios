@@ -36,30 +36,30 @@ infix operator => : AssignmentPrecedence
 infix operator !> : AssignmentPrecedence
 
 
-public func =><Event>(
+public func =><Event, Message>(
     lhs: @escaping (Event) -> Bool,
-    rhs: @autoclosure @escaping () -> Story<Event>
-) -> Story<Event> {
+    rhs: @autoclosure @escaping () -> Story<Event, Message>
+) -> Story<Event, Message> {
     Story { event, logger in lhs(event) ? rhs() : nil }
 }
 
-public func =><Event>(
+public func =><Event, Message>(
     lhs: @escaping (Event) -> Bool,
-    rhs: @escaping () -> Story<Event>
-) -> Story<Event> {
+    rhs: @escaping () -> Story<Event, Message>
+) -> Story<Event, Message> {
     lhs => rhs()
 }
 
-public func !><Event>(
+public func !><Event, Message>(
     lhs: @escaping (Event) -> Bool,
-    rhs: @autoclosure @escaping () -> Story<Event>
-) -> Story<Event> {
+    rhs: @autoclosure @escaping () -> Story<Event, Message>
+) -> Story<Event, Message> {
     Story { event, logger in !lhs(event) ? rhs() : nil }
 }
 
-public func !><Event>(
+public func !><Event, Message>(
     lhs: @escaping (Event) -> Bool,
-    rhs: @escaping () -> Story<Event>
-) -> Story<Event> {
+    rhs: @escaping () -> Story<Event, Message>
+) -> Story<Event, Message> {
     lhs !> rhs()
 }

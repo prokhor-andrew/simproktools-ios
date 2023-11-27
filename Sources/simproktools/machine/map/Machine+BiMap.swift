@@ -9,9 +9,9 @@ import simprokstate
 public extension Machine {
 
     func biMap<RInput, ROutput>(
-        mapInput: @escaping (RInput, (String) -> Void) -> [Input],
-        mapOutput: @escaping (Output, (String) -> Void) -> [ROutput]
-    ) -> Machine<RInput, ROutput> {
+        mapInput: @escaping (RInput, (Message) -> Void) -> [Input],
+        mapOutput: @escaping (Output, (Message) -> Void) -> [ROutput]
+    ) -> Machine<RInput, ROutput, Message> {
         biMap { Void() } mapInput: { state, input, logger in
             (state, mapInput(input, logger))
         } mapOutput: { state, output, logger in
@@ -21,10 +21,10 @@ public extension Machine {
     
     func biMap<State, RInput, ROutput>(
             with state: @escaping () -> State,
-            mapInput: @escaping (State, RInput, (String) -> Void) -> (newState: State, inputs: [Input]),
-            mapOutput: @escaping (State, Output, (String) -> Void) -> (newState: State, outputs: [ROutput])
-    ) -> Machine<RInput, ROutput> {
-        Machine<RInput, ROutput> { 
+            mapInput: @escaping (State, RInput, (Message) -> Void) -> (newState: State, inputs: [Input]),
+            mapOutput: @escaping (State, Output, (Message) -> Void) -> (newState: State, outputs: [ROutput])
+    ) -> Machine<RInput, ROutput, Message> {
+        Machine<RInput, ROutput, Message> { 
             Feature.classic(DataMachines(state(), machines: self)) { machines, trigger, logger in
                 switch trigger {
                 case .int(let output):

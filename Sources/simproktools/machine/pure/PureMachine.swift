@@ -11,16 +11,16 @@ public extension Machine {
     
     private actor Dummy {
         
-        let logger: (String) -> Void
+        let logger: (Message) -> Void
         
         var callback: MachineCallback<Output>?
         
-        init(_ logger: @escaping (String) -> Void) {
+        init(_ logger: @escaping (Message) -> Void) {
             self.logger = logger
         }
     }
     
-    static func pure(onProcess: @escaping (Input, MachineCallback<Output>, (String) -> Void) async -> Void) -> Machine<Input, Output> {
+    static func pure(onProcess: @escaping (Input, MachineCallback<Output>, (Message) -> Void) async -> Void) -> Machine<Input, Output, Message> {
         Machine { logger in
             Dummy(logger)
         } onChange: {

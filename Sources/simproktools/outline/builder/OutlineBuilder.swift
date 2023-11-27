@@ -4,31 +4,31 @@
 
 import simprokstate
 
-public struct OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+public struct OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> {
  
-    private let _function: (Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>
+    private let _function: (Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message>) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message>
     
     public init() {
         _function = { $0 }
     }
     
     private init(
-        _function: @escaping (Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>
+        _function: @escaping (Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message>) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message>
     ) {
         self._function = _function
     }
     
     public func handle(
-        function: @escaping (Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>
-    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        function: @escaping (Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message>) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message>
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> {
         OutlineBuilder {
             _function(function($0))
         }
     }
     
     public func build(
-        _ supplier: @autoclosure () -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>
-    ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        _ supplier: @autoclosure () -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message>
+    ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> {
         _function(supplier())
     }
 }

@@ -7,8 +7,8 @@ import simprokstate
 public extension Outline {
 
     func mapTrigger<RIntTrigger, RExtTrigger>(
-        function: @escaping (FeatureEvent<RIntTrigger, RExtTrigger>, (String) -> Void) -> FeatureEvent<IntTrigger, ExtTrigger>?
-    ) -> Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect> {
+        function: @escaping (FeatureEvent<RIntTrigger, RExtTrigger>, (Message) -> Void) -> FeatureEvent<IntTrigger, ExtTrigger>?
+    ) -> Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect, Message> {
         mapTrigger(with: Void()) {
             ($0, function($1, $2))
         }
@@ -16,9 +16,9 @@ public extension Outline {
 
     func mapTrigger<State, RIntTrigger, RExtTrigger>(
         with state: @autoclosure @escaping () -> State,
-        function: @escaping (State, FeatureEvent<RIntTrigger, RExtTrigger>, (String) -> Void) -> (newState: State, trigger: FeatureEvent<IntTrigger, ExtTrigger>?)
-    ) -> Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect> {
-        Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect> { trigger, logger in
+        function: @escaping (State, FeatureEvent<RIntTrigger, RExtTrigger>, (Message) -> Void) -> (newState: State, trigger: FeatureEvent<IntTrigger, ExtTrigger>?)
+    ) -> Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect, Message> {
+        Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect, Message> { trigger, logger in
             let (newState, mapped) = function(state(), trigger, logger)
 
             if let mapped {
@@ -36,16 +36,16 @@ public extension Outline {
     }
 
     func mapIntTrigger<RIntTrigger>(
-        function: @escaping (RIntTrigger, (String) -> Void) -> IntTrigger?
-    ) -> Outline<RIntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        function: @escaping (RIntTrigger, (Message) -> Void) -> IntTrigger?
+    ) -> Outline<RIntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> {
         mapIntTrigger(with: Void()) { state, trigger, logger in
             (state, function(trigger, logger))
         }
     }
 
     func mapExtTrigger<RExtTrigger>(
-        function: @escaping (RExtTrigger, (String) -> Void) -> ExtTrigger?
-    ) -> Outline<IntTrigger, IntEffect, RExtTrigger, ExtEffect> {
+        function: @escaping (RExtTrigger, (Message) -> Void) -> ExtTrigger?
+    ) -> Outline<IntTrigger, IntEffect, RExtTrigger, ExtEffect, Message> {
         mapExtTrigger(with: Void()) { state, trigger, logger in
             (state, function(trigger, logger))
         }
@@ -53,8 +53,8 @@ public extension Outline {
 
     func mapIntTrigger<State, RIntTrigger>(
         with state: @autoclosure @escaping () -> State,
-        function: @escaping (State, RIntTrigger, (String) -> Void) -> (newState: State, trigger: IntTrigger?)
-    ) -> Outline<RIntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        function: @escaping (State, RIntTrigger, (Message) -> Void) -> (newState: State, trigger: IntTrigger?)
+    ) -> Outline<RIntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> {
         mapTrigger(with: state()) { state, event, logger in
             switch event {
             case .int(let value):
@@ -72,8 +72,8 @@ public extension Outline {
 
     func mapExtTrigger<State, RExtTrigger>(
         with state: @autoclosure @escaping () -> State,
-        function: @escaping (State, RExtTrigger, (String) -> Void) -> (newState: State, trigger: ExtTrigger?)
-    ) -> Outline<IntTrigger, IntEffect, RExtTrigger, ExtEffect> {
+        function: @escaping (State, RExtTrigger, (Message) -> Void) -> (newState: State, trigger: ExtTrigger?)
+    ) -> Outline<IntTrigger, IntEffect, RExtTrigger, ExtEffect, Message> {
         mapTrigger(with: state()) { state, event, logger in
             switch event {
             case .ext(let value):
@@ -91,7 +91,7 @@ public extension Outline {
 
     func mapEffects<RIntEffect, RExtEffect>(
         function: @escaping ([FeatureEvent<IntEffect, ExtEffect>]) -> [FeatureEvent<RIntEffect, RExtEffect>]
-    ) -> Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> {
+    ) -> Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect, Message> {
         mapEffects(with: Void()) {
             ($0, effects: function($1))
         }
@@ -100,8 +100,8 @@ public extension Outline {
     func mapEffects<State, RIntEffect, RExtEffect>(
         with state: @autoclosure @escaping () -> State,
         function: @escaping (State, [FeatureEvent<IntEffect, ExtEffect>]) -> (newState: State, effects: [FeatureEvent<RIntEffect, RExtEffect>])
-    ) -> Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> {
-        Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> { trigger, logger in
+    ) -> Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect, Message> {
+        Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect, Message> { trigger, logger in
             let transition = transit(trigger, logger)
             let (newState, mapped) = function(state(), transition.effects)
             return OutlineTransition(

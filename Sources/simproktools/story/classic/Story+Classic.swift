@@ -8,8 +8,8 @@ public extension Story {
 
     static func classic<State>(
         _ initial: @autoclosure @escaping () -> State,
-        function: @escaping (State, Event, (String) -> Void) -> State?
-    ) -> Story<Event> {
+        function: @escaping (State, Event, (Message) -> Void) -> State?
+    ) -> Story<Event, Message> {
         Story { event, logger in
             if let new = function(initial(), event, logger) {
                 return classic(new, function: function)

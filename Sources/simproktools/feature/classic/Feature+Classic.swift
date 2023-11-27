@@ -13,9 +13,9 @@ public extension Feature {
         function: @escaping (
             State,
             FeatureEvent<IntTrigger, ExtTrigger>,
-            (String) -> Void
+            (Message) -> Void
         ) -> (newState: State, effects: [FeatureEvent<IntEffect, ExtEffect>])
-    ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where State.Trigger == IntTrigger, State.Effect == IntEffect {
+    ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> where State.Trigger == IntTrigger, State.Effect == IntEffect, State.Message == Message {
         Feature.create(initial) { machines, trigger, logger in
             let result = function(machines, trigger, logger)
             return FeatureTransition(.classic(result.newState, function: function), effects: result.effects)

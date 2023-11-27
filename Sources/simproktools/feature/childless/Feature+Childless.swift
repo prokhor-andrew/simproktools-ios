@@ -7,8 +7,8 @@ import simprokstate
 public extension Feature {
 
     static func childless(
-        transit: @escaping (ExtTrigger, (String) -> Void) -> FeatureTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>
-    ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        transit: @escaping (ExtTrigger, (Message) -> Void) -> FeatureTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message>
+    ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> {
         Feature.create(SetOfMachines()) { _, trigger, logger in
             switch trigger {
             case .int:

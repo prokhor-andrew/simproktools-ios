@@ -11,7 +11,7 @@ import simprokmachine
 public extension Machine {
     
     
-    func doOnInput(function: @escaping (Input, (String) -> Void) -> Void) -> Machine<Input, Output> {
+    func doOnInput(function: @escaping (Input, (Message) -> Void) -> Void) -> Machine<Input, Output, Message> {
         doOnInput(with: Void()) {
             function($1, $2)
             return $0
@@ -20,15 +20,15 @@ public extension Machine {
     
     func doOnInput<State>(
         with state: @escaping @autoclosure () -> State,
-        function: @escaping (State, Input, (String) -> Void) -> State
-    ) -> Machine<Input, Output> {
+        function: @escaping (State, Input, (Message) -> Void) -> State
+    ) -> Machine<Input, Output, Message> {
         mapInput(with: state()) {
             (function($0, $1, $2), [$1])
         }
     }
     
     
-    func doOnOutput(function: @escaping (Output, (String) -> Void) -> Void) -> Machine<Input, Output> {
+    func doOnOutput(function: @escaping (Output, (Message) -> Void) -> Void) -> Machine<Input, Output, Message> {
         doOnOutput(with: Void()) {
             function($1, $2)
             return $0
@@ -37,8 +37,8 @@ public extension Machine {
     
     func doOnOutput<State>(
         with state: @escaping @autoclosure () -> State,
-        function: @escaping (State, Output, (String) -> Void) -> State
-    ) -> Machine<Input, Output> {
+        function: @escaping (State, Output, (Message) -> Void) -> State
+    ) -> Machine<Input, Output, Message> {
         mapOutput(with: state()) {
             (function($0, $1, $2), [$1])
         }
@@ -46,9 +46,9 @@ public extension Machine {
     
     func biDoOn<State>(
         _ state: @escaping () -> State,
-        doOnInput: @escaping (State, Input, (String) -> Void) -> State,
-        doOnOutput: @escaping (State, Output, (String) -> Void) -> State
-    ) -> Machine<Input, Output> {
+        doOnInput: @escaping (State, Input, (Message) -> Void) -> State,
+        doOnOutput: @escaping (State, Output, (Message) -> Void) -> State
+    ) -> Machine<Input, Output, Message> {
         biMap {
             state()
         } mapInput: {

@@ -12,8 +12,8 @@ public extension Story {
 
     
     static func merge(
-        _ stories: [Story<Event>]
-    ) -> Story<Event> {
+        _ stories: [Story<Event, Message>]
+    ) -> Story<Event, Message> {
         Story { trigger, logger in
             let mapped = stories.map { story in
                 if let newStory = story.transit(trigger, logger) {
@@ -28,8 +28,8 @@ public extension Story {
     }
     
     static func merge(
-        _ stories: Story<Event>...
-    ) -> Story<Event> {
+        _ stories: Story<Event, Message>...
+    ) -> Story<Event, Message> {
         merge(stories)
     }
 }

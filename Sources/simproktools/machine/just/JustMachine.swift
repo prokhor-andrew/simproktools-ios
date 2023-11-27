@@ -7,7 +7,7 @@ import simprokmachine
 
 public extension Machine {
 
-    static func just(_ value: Output, doOn: @escaping ((String) -> Void) -> Void = { _ in }) -> Machine<Input, Output> {
+    static func just(_ value: Output, doOn: @escaping ((Message) -> Void) -> Void = { _ in }) -> Machine<Input, Output, Message> {
         .pure { input, callback, logger in
             doOn(logger)
             await callback(value)

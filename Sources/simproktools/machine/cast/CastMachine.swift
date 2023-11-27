@@ -10,20 +10,20 @@ import simprokmachine
 
 public extension Machine {
     
-    func cast<RInput>(input: RInput.Type, doOn: @escaping ((String) -> Void) -> Void = { _ in }) -> Machine<RInput, Output> {
+    func cast<RInput>(input: RInput.Type, doOn: @escaping ((Message) -> Void) -> Void = { _ in }) -> Machine<RInput, Output, Message> {
         cast(input: input, output: Output.self, doOnInput: doOn)
     }
     
-    func cast<ROutput>(output: ROutput.Type, doOn: @escaping ((String) -> Void) -> Void = { _ in }) -> Machine<Input, ROutput> {
+    func cast<ROutput>(output: ROutput.Type, doOn: @escaping ((Message) -> Void) -> Void = { _ in }) -> Machine<Input, ROutput, Message> {
         cast(input: Input.self, output: output, doOnOutput: doOn)
     }
     
     func cast<RInput, ROutput>(
         input: RInput.Type,
         output: ROutput.Type,
-        doOnInput: @escaping ((String) -> Void) -> Void = { _ in },
-        doOnOutput: @escaping ((String) -> Void) -> Void = { _ in }
-    ) -> Machine<RInput, ROutput> {
+        doOnInput: @escaping ((Message) -> Void) -> Void = { _ in },
+        doOnOutput: @escaping ((Message) -> Void) -> Void = { _ in }
+    ) -> Machine<RInput, ROutput, Message> {
         biMap(
             mapInput: { value, logger in
                 doOnInput(logger)

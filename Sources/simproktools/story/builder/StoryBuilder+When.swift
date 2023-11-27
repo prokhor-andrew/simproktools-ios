@@ -10,7 +10,7 @@ import CasePaths
 
 public extension StoryBuilder {
     
-    func when(_ function: @escaping (Event) -> Bool) -> StoryBuilder<Event> {
+    func when(_ function: @escaping (Event) -> Bool) -> StoryBuilder<Event, Message> {
         handle { state in
             Story { event, logger in
                 if function(event) {
@@ -22,36 +22,36 @@ public extension StoryBuilder {
         }
     }
     
-    func when(_ operation: @escaping (Event, Event) -> Bool, _ value: Event) -> StoryBuilder<Event> {
+    func when(_ operation: @escaping (Event, Event) -> Bool, _ value: Event) -> StoryBuilder<Event, Message> {
         when {
             operation($0, value)
         }
     }
     
-    func when<T>(_ keyPath: KeyPath<Event, T>, function: @escaping (T) -> Bool) -> StoryBuilder<Event> {
+    func when<T>(_ keyPath: KeyPath<Event, T>, function: @escaping (T) -> Bool) -> StoryBuilder<Event, Message> {
         when {
             function($0[keyPath: keyPath])
         }
     }
     
-    func when<T>(_ keyPath: KeyPath<Event, T>, _ operation: @escaping (T, T) -> Bool, _ value: T) -> StoryBuilder<Event> {
+    func when<T>(_ keyPath: KeyPath<Event, T>, _ operation: @escaping (T, T) -> Bool, _ value: T) -> StoryBuilder<Event, Message> {
         when(keyPath) {
             operation($0, value)
         }
     }
     
-    func when<T: Equatable>(_ keyPath: KeyPath<Event, T>, is value: T) -> StoryBuilder<Event> {
+    func when<T: Equatable>(_ keyPath: KeyPath<Event, T>, is value: T) -> StoryBuilder<Event, Message> {
         when(keyPath, ==, value)
     }
     
-    func when<T: Equatable>(_ keyPath: KeyPath<Event, T>, not value: T) -> StoryBuilder<Event> {
+    func when<T: Equatable>(_ keyPath: KeyPath<Event, T>, not value: T) -> StoryBuilder<Event, Message> {
         when(keyPath, !=, value)
     }
 }
 
 public extension StoryBuilder where Event: CasePathable {
     
-    func when<T>(_ casePath: CaseKeyPath<Event, T>, function: @escaping (T) -> Bool) -> StoryBuilder<Event> {
+    func when<T>(_ casePath: CaseKeyPath<Event, T>, function: @escaping (T) -> Bool) -> StoryBuilder<Event, Message> {
         when {
             if let val = $0[case: casePath] {
                 function(val)
@@ -61,28 +61,28 @@ public extension StoryBuilder where Event: CasePathable {
         }
     }
     
-    func when<T>(_ casePath: CaseKeyPath<Event, T>, _ operation: @escaping (T, T) -> Bool, _ value: T) -> StoryBuilder<Event> {
+    func when<T>(_ casePath: CaseKeyPath<Event, T>, _ operation: @escaping (T, T) -> Bool, _ value: T) -> StoryBuilder<Event, Message> {
         when(casePath) {
             operation($0, value)
         }
     }
     
-    func when<T: Equatable>(_ casePath: CaseKeyPath<Event, T>, is value: T) -> StoryBuilder<Event> {
+    func when<T: Equatable>(_ casePath: CaseKeyPath<Event, T>, is value: T) -> StoryBuilder<Event, Message> {
         when(casePath, ==, value)
     }
     
-    func when<T: Equatable>(_ casePath: CaseKeyPath<Event, T>, not value: T) -> StoryBuilder<Event> {
+    func when<T: Equatable>(_ casePath: CaseKeyPath<Event, T>, not value: T) -> StoryBuilder<Event, Message> {
         when(casePath, !=, value)
     }
 }
 
 public extension StoryBuilder where Event: Equatable {
         
-    func when(is event: Event) -> StoryBuilder<Event> {
+    func when(is event: Event) -> StoryBuilder<Event, Message> {
         when(==, event)
     }
 
-    func when(not event: Event) -> StoryBuilder<Event> {
+    func when(not event: Event) -> StoryBuilder<Event, Message> {
         when(!=, event)
     }
 }

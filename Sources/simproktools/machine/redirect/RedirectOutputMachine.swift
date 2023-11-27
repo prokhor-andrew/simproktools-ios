@@ -9,8 +9,8 @@ import simprokstate
 public extension Machine {
 
     func redirectOutput(
-        _ function: @escaping (Output, (String) -> Void) -> Input?
-    ) -> Machine<Input, Output> {
+        _ function: @escaping (Output, (Message) -> Void) -> Input?
+    ) -> Machine<Input, Output, Message> {
         Machine {
             Feature.classic(SetOfMachines(self)) { machines, trigger, logger in
                 switch trigger {
@@ -29,8 +29,8 @@ public extension Machine {
 
     func redirectInput<State>(
         with state: @escaping @autoclosure () -> State,
-        _ function: @escaping (State, Output, (String) -> Void) -> (newState: State, input: Input?)
-    ) -> Machine<Input, Output> {
+        _ function: @escaping (State, Output, (Message) -> Void) -> (newState: State, input: Input?)
+    ) -> Machine<Input, Output, Message> {
         Machine { 
             Feature.classic(DataMachines(state(), machines: self)) { machines, trigger, logger in
                 switch trigger {

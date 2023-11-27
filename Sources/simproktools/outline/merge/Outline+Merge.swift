@@ -12,8 +12,8 @@ public extension Outline {
 
     
     static func merge(
-        _ outlines: [Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>]
-    ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        _ outlines: [Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message>]
+    ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> {
         Outline { trigger, logger in
             var effects: [FeatureEvent<IntEffect, ExtEffect>] = []
             
@@ -28,8 +28,8 @@ public extension Outline {
     }
     
     static func merge(
-        _ outlines: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>...
-    ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        _ outlines: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message>...
+    ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> {
         merge(outlines)
     }
 }

@@ -10,7 +10,7 @@ import simprokstate
 
 public extension Story {
     
-    func doOn(function: @escaping @Sendable (Event, (String) -> Void) -> Void) -> Story<Event> {
+    func doOn(function: @escaping @Sendable (Event, (Message) -> Void) -> Void) -> Story<Event, Message> {
         Story { event, logger in
             function(event, logger)
             if let newStory = transit(event, logger) {
@@ -21,7 +21,7 @@ public extension Story {
         }
     }
     
-    func doOn(function: @escaping @Sendable (Event, Bool, (String) -> Void) -> Void) -> Story<Event> {
+    func doOn(function: @escaping @Sendable (Event, Bool, (Message) -> Void) -> Void) -> Story<Event, Message> {
         Story { event, logger in
             if let newStory = transit(event, logger) {
                 function(event, false, logger)
@@ -33,7 +33,7 @@ public extension Story {
         }
     }
     
-    func doOnEffect(function: @escaping @Sendable (Event, (String) -> Void) -> Void) -> Story<Event> {
+    func doOnEffect(function: @escaping @Sendable (Event, (Message) -> Void) -> Void) -> Story<Event, Message> {
         Story { event, logger in
             if let newStory = transit(event, logger) {
                 function(event, logger)
@@ -44,7 +44,7 @@ public extension Story {
         }
     }
     
-    func doOnGuard(function: @escaping @Sendable (Event, (String) -> Void) -> Void) -> Story<Event> {
+    func doOnGuard(function: @escaping @Sendable (Event, (Message) -> Void) -> Void) -> Story<Event, Message> {
         Story { event, logger in
             if let newStory = transit(event, logger) {
                 return newStory.doOnGuard(function: function)
