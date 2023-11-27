@@ -7,14 +7,14 @@ import simprokstate
 
 public extension Machine {
 
-    func mapOutput<ROutput>(_ function: @escaping (Output) -> [ROutput]) -> Machine<Input, ROutput> {
-        mapOutput(with: Void(), function: { ($0, function($1)) })
+    func mapOutput<ROutput>(_ function: @escaping (Output, (String) -> Void) -> [ROutput]) -> Machine<Input, ROutput> {
+        mapOutput(with: Void(), function: { ($0, function($1, $2)) })
     }
 
     func mapOutput<State, ROutput>(
-            with state: @escaping @autoclosure () -> State,
-            function: @escaping (State, Output) -> (newState: State, outputs: [ROutput])
+        with state: @escaping @autoclosure () -> State,
+        function: @escaping (State, Output, (String) -> Void) -> (newState: State, outputs: [ROutput])
     ) -> Machine<Input, ROutput> {
-        biMap(with: state, mapInput: { ($0, [$1]) }, mapOutput: function)
+        biMap(with: state, mapInput: { state, input, logger in (state, [input]) }, mapOutput: function)
     }
 }

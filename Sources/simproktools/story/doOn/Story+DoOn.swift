@@ -10,10 +10,10 @@ import simprokstate
 
 public extension Story {
     
-    func doOn(function: @escaping @Sendable (Event) -> Void) -> Story<Event> {
-        Story { event in
-            function(event)
-            if let newStory = transit(event) {
+    func doOn(function: @escaping @Sendable (Event, (String) -> Void) -> Void) -> Story<Event> {
+        Story { event, logger in
+            function(event, logger)
+            if let newStory = transit(event, logger) {
                 return newStory.doOn(function: function)
             } else {
                 return nil
@@ -21,22 +21,22 @@ public extension Story {
         }
     }
     
-    func doOn(function: @escaping @Sendable (Event, Bool) -> Void) -> Story<Event> {
-        Story { event in
-            if let newStory = transit(event) {
-                function(event, false)
+    func doOn(function: @escaping @Sendable (Event, Bool, (String) -> Void) -> Void) -> Story<Event> {
+        Story { event, logger in
+            if let newStory = transit(event, logger) {
+                function(event, false, logger)
                 return newStory.doOn(function: function)
             } else {
-                function(event, true)
+                function(event, true, logger)
                 return nil
             }
         }
     }
     
-    func doOnEffect(function: @escaping @Sendable (Event) -> Void) -> Story<Event> {
-        Story { event in
-            if let newStory = transit(event) {
-                function(event)
+    func doOnEffect(function: @escaping @Sendable (Event, (String) -> Void) -> Void) -> Story<Event> {
+        Story { event, logger in
+            if let newStory = transit(event, logger) {
+                function(event, logger)
                 return newStory.doOnEffect(function: function)
             } else {
                 return nil
@@ -44,12 +44,12 @@ public extension Story {
         }
     }
     
-    func doOnGuard(function: @escaping @Sendable (Event) -> Void) -> Story<Event> {
-        Story { event in
-            if let newStory = transit(event) {
+    func doOnGuard(function: @escaping @Sendable (Event, (String) -> Void) -> Void) -> Story<Event> {
+        Story { event, logger in
+            if let newStory = transit(event, logger) {
                 return newStory.doOnGuard(function: function)
             } else {
-                function(event)
+                function(event, logger)
                 return nil
             }
         }

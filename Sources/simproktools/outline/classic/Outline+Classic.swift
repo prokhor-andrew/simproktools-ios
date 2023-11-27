@@ -7,23 +7,23 @@ import simprokstate
 public extension Outline {
 
     static func classic<State>(
-        _ initial: State,
-        function: @escaping (State, FeatureEvent<IntTrigger, ExtTrigger>) -> (newState: State, effects: [FeatureEvent<IntEffect, ExtEffect>])
+        _ initial: @autoclosure @escaping () -> State,
+        function: @escaping (State, FeatureEvent<IntTrigger, ExtTrigger>, (String) -> Void) -> (newState: State, effects: [FeatureEvent<IntEffect, ExtEffect>])
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        Outline { trigger in
-            let (newState, effects) = function(initial, trigger)
+        Outline { trigger, logger in
+            let (newState, effects) = function(initial(), trigger, logger)
             return OutlineTransition(
-                    classic(newState, function: function),
-                    effects: effects
+                classic(newState, function: function),
+                effects: effects
             )
         }
     }
     
     static func classic(
-        function: @escaping (FeatureEvent<IntTrigger, ExtTrigger>) -> [FeatureEvent<IntEffect, ExtEffect>]
+        function: @escaping (FeatureEvent<IntTrigger, ExtTrigger>, (String) -> Void) -> [FeatureEvent<IntEffect, ExtEffect>]
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        classic(Void()) { state, trigger in
-            (state, function(trigger))
+        classic(Void()) { state, trigger, logger in
+            (state, function(trigger, logger))
         }
     }
 }

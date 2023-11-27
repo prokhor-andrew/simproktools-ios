@@ -8,8 +8,8 @@ import simprokstate
 public extension Machine {
 
     static func merge(_ machines: @escaping @autoclosure () -> Set<Machine<Input, Output>>) -> Machine<Input, Output> {
-        Machine { _ in
-            Feature.classic(SetOfMachines(machines())) { machines, trigger in
+        Machine {
+            Feature.classic(SetOfMachines(machines())) { machines, trigger, logger in
                 switch trigger {
                 case .ext(let input):
                     return (machines, effects: [.int(input)])

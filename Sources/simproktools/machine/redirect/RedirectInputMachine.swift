@@ -9,13 +9,13 @@ import simprokstate
 public extension Machine {
 
     func redirectInput(
-            _ function: @escaping (Input) -> Output?
+        _ function: @escaping (Input, (String) -> Void) -> Output?
     ) -> Machine<Input, Output> {
-        Machine { _ in
-            Feature.classic(SetOfMachines(self)) { machines, trigger in
+        Machine {
+            Feature.classic(SetOfMachines(self)) { machines, trigger, logger in
                 switch trigger {
                 case .ext(let input):
-                    if let output = function(input) {
+                    if let output = function(input, logger) {
                         return (machines, [.ext(output)])
                     } else {
                         return (machines, [.int(input)])
@@ -28,14 +28,14 @@ public extension Machine {
     }
 
     func redirectInput<State>(
-            with state: @escaping @autoclosure () -> State,
-            _ function: @escaping (State, Input) -> (newState: State, output: Output?)
+        with state: @escaping @autoclosure () -> State,
+        _ function: @escaping (State, Input, (String) -> Void) -> (newState: State, output: Output?)
     ) -> Machine<Input, Output> {
-        Machine { _ in
-            Feature.classic(DataMachines(state(), machines: self)) { machines, trigger in
+        Machine { 
+            Feature.classic(DataMachines(state(), machines: self)) { machines, trigger, logger in
                 switch trigger {
                 case .ext(let input):
-                    let (newState, redirectResult) = function(machines.data, input)
+                    let (newState, redirectResult) = function(machines.data, input, logger)
                     if let output = redirectResult {
                         return (DataMachines(newState, machines: machines.machines), [.ext(output)])
                     } else {

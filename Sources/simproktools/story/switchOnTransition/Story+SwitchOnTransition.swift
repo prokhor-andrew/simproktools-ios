@@ -15,11 +15,11 @@ public extension Story {
     func switchOnTransition(
         to story: Story<Event>
     ) -> Story<Event> {
-        Story { trigger in
-            if let new = story.transit(trigger) {
+        Story { trigger, logger in
+            if let new = story.transit(trigger, logger) {
                 return new
             } else {
-                if let new = transit(trigger) {
+                if let new = transit(trigger, logger) {
                     return new.switchOnTransition(to: story)
                 } else {
                     return nil

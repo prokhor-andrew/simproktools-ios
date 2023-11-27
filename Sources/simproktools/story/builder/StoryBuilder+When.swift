@@ -12,8 +12,8 @@ public extension StoryBuilder {
     
     func when(_ function: @escaping (Event) -> Bool) -> StoryBuilder<Event> {
         handle { state in
-            Story {
-                if function($0) {
+            Story { event, logger in
+                if function(event) {
                     return state
                 } else {
                     return nil

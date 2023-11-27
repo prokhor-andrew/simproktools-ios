@@ -6,18 +6,18 @@ import simprokstate
 
 public extension Scene {
 
-    static func classic(_ function: @escaping (Trigger) -> [Effect]) -> Scene<Trigger, Effect> {
-        classic(Void()) { state, event in
-            (state, function(event))
+    static func classic(_ function: @escaping (Trigger, (String) -> Void) -> [Effect]) -> Scene<Trigger, Effect> {
+        classic(Void()) { state, event, logger in
+            (state, function(event, logger))
         }
     }
 
     static func classic<State>(
-        _ initial: State,
-        function: @escaping (State, Trigger) -> (newState: State, effects: [Effect])
+        _ initial: @autoclosure @escaping () -> State,
+        function: @escaping (State, Trigger, (String) -> Void) -> (newState: State, effects: [Effect])
     ) -> Scene<Trigger, Effect> {
-        Scene { trigger in
-            let (newState, effects) = function(initial, trigger)
+        Scene { trigger, logger in
+            let (newState, effects) = function(initial(), trigger, logger)
             return SceneTransition(
                 classic(newState, function: function),
                 effects: effects

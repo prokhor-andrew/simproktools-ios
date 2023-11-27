@@ -6,7 +6,10 @@ import simprokstate
 
 public extension Story {
 
-    static func never() -> Story<Event> {
-        Story { _ in nil }
+    static func never(doOn: @escaping ((String) -> Void) -> Void = { _ in }) -> Story<Event> {
+        Story { _, logger in
+            doOn(logger)
+            return nil
+        }
     }
 }

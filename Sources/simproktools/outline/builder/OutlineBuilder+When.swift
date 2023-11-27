@@ -11,14 +11,14 @@ import CasePaths
 public extension OutlineBuilder {
     
     func when(
-            _ function: @escaping (FeatureEvent<IntTrigger, ExtTrigger>) -> [FeatureEvent<IntEffect, ExtEffect>]?
+        _ function: @escaping (FeatureEvent<IntTrigger, ExtTrigger>) -> [FeatureEvent<IntEffect, ExtEffect>]?
     ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         handle { state in
             
             @Sendable
             func currentState() -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-                Outline {
-                    if let effects = function($0) {
+                Outline { trigger, logger in
+                    if let effects = function(trigger) {
                         return OutlineTransition(
                             state,
                             effects: effects
@@ -55,29 +55,29 @@ public extension OutlineBuilder {
 public extension OutlineBuilder where IntTrigger: Equatable, ExtTrigger: Equatable {
     
     func when(
-            is trigger: FeatureEvent<IntTrigger, ExtTrigger>,
-            send effects: [FeatureEvent<IntEffect, ExtEffect>]
+        is trigger: FeatureEvent<IntTrigger, ExtTrigger>,
+        send effects: [FeatureEvent<IntEffect, ExtEffect>]
     ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         when(==, trigger, send: effects)
     }
 
     func when(
-            is trigger:  FeatureEvent<IntTrigger, ExtTrigger>,
-            send effects: FeatureEvent<IntEffect, ExtEffect>...
+        is trigger:  FeatureEvent<IntTrigger, ExtTrigger>,
+        send effects: FeatureEvent<IntEffect, ExtEffect>...
     ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         when(is: trigger, send: effects)
     }
 
     func when(
-            not trigger: FeatureEvent<IntTrigger, ExtTrigger>,
-            send effects: [FeatureEvent<IntEffect, ExtEffect>]
+        not trigger: FeatureEvent<IntTrigger, ExtTrigger>,
+        send effects: [FeatureEvent<IntEffect, ExtEffect>]
     ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         when(!=, trigger, send: effects) 
     }
 
     func when(
-            not trigger: FeatureEvent<IntTrigger, ExtTrigger>,
-            send effects: FeatureEvent<IntEffect, ExtEffect>...
+        not trigger: FeatureEvent<IntTrigger, ExtTrigger>,
+        send effects: FeatureEvent<IntEffect, ExtEffect>...
     ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         when(not: trigger, send: effects)
     }

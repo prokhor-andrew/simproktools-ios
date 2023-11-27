@@ -6,7 +6,10 @@ import simprokstate
 
 public extension Scene {
 
-    static func never() -> Scene<Trigger, Effect> {
-        Scene { _ in SceneTransition(never()) }
+    static func never(doOn: @escaping ((String) -> Void) -> Void = { _ in }) -> Scene<Trigger, Effect> {
+        Scene { _, logger in
+            doOn(logger)
+            return SceneTransition(never(doOn: doOn))
+        }
     }
 }

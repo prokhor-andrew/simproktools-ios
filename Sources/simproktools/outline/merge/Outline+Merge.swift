@@ -14,11 +14,11 @@ public extension Outline {
     static func merge(
         _ outlines: [Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>]
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        Outline { trigger in
+        Outline { trigger, logger in
             var effects: [FeatureEvent<IntEffect, ExtEffect>] = []
             
             let mapped = outlines.map { outline in
-                let transition = outline.transit(trigger)
+                let transition = outline.transit(trigger, logger)
                 effects.append(contentsOf: transition.effects)
                 return transition.state
             }

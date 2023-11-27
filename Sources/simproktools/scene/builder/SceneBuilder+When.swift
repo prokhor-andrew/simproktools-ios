@@ -17,8 +17,8 @@ public extension SceneBuilder {
             
             @Sendable
             func currentState() -> Scene<Trigger, Effect> {
-                Scene {
-                    if let effects = function($0) {
+                Scene { event, logger in
+                    if let effects = function(event) {
                         return SceneTransition(
                             state,
                             effects: effects
@@ -56,29 +56,29 @@ public extension SceneBuilder {
 public extension SceneBuilder where Trigger: Equatable {
     
     func when(
-            is trigger: Trigger,
-            send effects: [Effect]
+        is trigger: Trigger,
+        send effects: [Effect]
     ) -> SceneBuilder<Trigger, Effect> {
         when(==, trigger, send: effects)
     }
 
     func when(
-            is trigger: Trigger,
-            send effects: Effect...
+        is trigger: Trigger,
+        send effects: Effect...
     ) -> SceneBuilder<Trigger, Effect> {
         when(is: trigger, send: effects)
     }
 
     func when(
-            not trigger: Trigger,
-            send effects: [Effect]
+        not trigger: Trigger,
+        send effects: [Effect]
     ) -> SceneBuilder<Trigger, Effect> {
         when(!=, trigger, send: effects)
     }
 
     func when(
-            not trigger: Trigger,
-            send effects: Effect...
+        not trigger: Trigger,
+        send effects: Effect...
     ) -> SceneBuilder<Trigger, Effect> {
         when(not: trigger, send: effects)
     }

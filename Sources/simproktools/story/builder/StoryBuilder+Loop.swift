@@ -16,8 +16,8 @@ public extension StoryBuilder {
             
             @Sendable
             func provide() -> Story<Event> {
-                Story {
-                    if function($0) {
+                Story { event, logger in
+                    if function(event) {
                         return state
                     } else {
                         return provide()
