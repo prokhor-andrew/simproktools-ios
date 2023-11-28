@@ -5,16 +5,17 @@
 //  Created by Andriy Prokhorenko on 14.04.2023.
 //
 
+import simprokmachine
 import simprokstate
 
 public extension OutlineBuilder {
     
     func loop(
-        _ function: @escaping (FeatureEvent<IntTrigger, ExtTrigger>, (Message) -> Void) -> (Bool, [FeatureEvent<IntEffect, ExtEffect>])
-    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> {
+        _ function: @escaping (FeatureEvent<IntTrigger, ExtTrigger>, (Loggable) -> Void) -> (Bool, [FeatureEvent<IntEffect, ExtEffect>])
+    ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         handle { state in
             @Sendable
-            func provide() -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> {
+            func provide() -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
                 Outline { trigger, logger in
                     let (isLoop, effects) = function(trigger, logger)
                     

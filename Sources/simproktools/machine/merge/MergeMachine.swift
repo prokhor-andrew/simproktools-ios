@@ -7,7 +7,7 @@ import simprokstate
 
 public extension Machine {
 
-    static func merge(_ machines: @escaping @autoclosure () -> Set<Machine<Input, Output, Message>>) -> Machine<Input, Output, Message> {
+    static func merge(_ machines: @escaping @autoclosure () -> Set<Machine<Input, Output>>) -> Machine<Input, Output> {
         Machine {
             Feature.classic(SetOfMachines(machines())) { machines, trigger, logger in
                 switch trigger {
@@ -20,16 +20,16 @@ public extension Machine {
         }
     }
 
-    static func merge(_ machines: Machine<Input, Output, Message>...) -> Machine<Input, Output, Message> {
+    static func merge(_ machines: Machine<Input, Output>...) -> Machine<Input, Output> {
         merge(Set(machines))
     }
 
 
-    func and(_ machines: @escaping @autoclosure () -> Set<Machine<Input, Output, Message>>) -> Machine<Input, Output, Message> {
+    func and(_ machines: @escaping @autoclosure () -> Set<Machine<Input, Output>>) -> Machine<Input, Output> {
         Machine.merge(machines().union([self]))
     }
 
-    func and(_ machines: Machine<Input, Output, Message>...) -> Machine<Input, Output, Message> {
+    func and(_ machines: Machine<Input, Output>...) -> Machine<Input, Output> {
         and(Set(machines))
     }
 }

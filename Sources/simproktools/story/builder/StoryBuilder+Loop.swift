@@ -15,7 +15,7 @@ public extension StoryBuilder {
         handle { state in
             
             @Sendable
-            func provide() -> Story<Event, Message> {
+            func provide() -> Story<Event> {
                 Story { event, logger in
                     if function(event) {
                         return state

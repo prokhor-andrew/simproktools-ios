@@ -13,8 +13,8 @@ public extension Story {
     // this functions tests event on param story every time, and once the transition happens
     // it switches to that story
     func switchOnTransition(
-        to story: Story<Event, Message>
-    ) -> Story<Event, Message> {
+        to story: Story<Event>
+    ) -> Story<Event> {
         Story { trigger, logger in
             if let new = story.transit(trigger, logger) {
                 return new

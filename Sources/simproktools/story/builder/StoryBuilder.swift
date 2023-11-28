@@ -6,25 +6,25 @@ import simprokstate
 
 public struct StoryBuilder<Event, Message> {
 
-    private let _function: (Story<Event, Message>) -> Story<Event, Message>
+    private let _function: (Story<Event>) -> Story<Event>
 
     public init() {
         _function = { $0 }
     }
 
-    private init(_ function: @escaping (Story<Event, Message>) -> Story<Event, Message>) {
+    private init(_ function: @escaping (Story<Event>) -> Story<Event>) {
         self._function = function
     }
     
     public func handle(
-        function: @escaping (Story<Event, Message>) -> Story<Event, Message>
+        function: @escaping (Story<Event>) -> Story<Event>
     ) -> StoryBuilder<Event, Message> {
         StoryBuilder {
             _function(function($0))
         }
     }
     
-    public func build(_ supplier: @autoclosure () -> Story<Event, Message>) -> Story<Event, Message> {
+    public func build(_ supplier: @autoclosure () -> Story<Event>) -> Story<Event> {
         _function(supplier())
     }
 }

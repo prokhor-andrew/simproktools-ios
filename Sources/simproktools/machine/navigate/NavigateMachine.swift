@@ -11,9 +11,9 @@ import simprokstate
 public extension Machine {
 
     func navigate<RInput, ROutput>(
-        _ outline: Outline<Output, Input, RInput, ROutput, Message>
-    ) -> Machine<RInput, ROutput, Message> {
-        Machine<RInput, ROutput, Message> {
+        _ outline: Outline<Output, Input, RInput, ROutput>
+    ) -> Machine<RInput, ROutput> {
+        Machine<RInput, ROutput> {
             outline.asFeature(SetOfMachines(self))
         }
     }

@@ -2,13 +2,14 @@
 // Created by Andriy Prokhorenko on 11.02.2023.
 //
 
+import simprokmachine
 import simprokstate
 
 public extension Story {
 
     func map<REvent>(
-        _ function: @escaping (REvent, (Message) -> Void) -> Event?
-    ) -> Story<REvent, Message> {
+        _ function: @escaping (REvent, (Loggable) -> Void) -> Event?
+    ) -> Story<REvent> {
         map(with: Void()) { state, event, logger in
             if let result = function(event, logger) {
                 return (state, result)
@@ -20,9 +21,9 @@ public extension Story {
 
     func map<State, REvent>(
         with state: State,
-        function: @escaping (State, REvent, (Message) -> Void) -> (newState: State, event: Event?)?
-    ) -> Story<REvent, Message> {
-        Story<REvent, Message> {
+        function: @escaping (State, REvent, (Loggable) -> Void) -> (newState: State, event: Event?)?
+    ) -> Story<REvent> {
+        Story<REvent> {
             if let tuple = function(state, $0, $1) {
                 let newState = tuple.0
                 if let mapped = tuple.1, let new = transit(mapped, $1) {

@@ -11,7 +11,7 @@ import simprokmachine
 public extension Machine {
     
     
-    func doOnInput(function: @escaping (Input, (Message) -> Void) -> Void) -> Machine<Input, Output, Message> {
+    func doOnInput(function: @escaping (Input, (Loggable) -> Void) -> Void) -> Machine<Input, Output> {
         doOnInput(with: Void()) {
             function($1, $2)
             return $0
@@ -20,15 +20,15 @@ public extension Machine {
     
     func doOnInput<State>(
         with state: @escaping @autoclosure () -> State,
-        function: @escaping (State, Input, (Message) -> Void) -> State
-    ) -> Machine<Input, Output, Message> {
+        function: @escaping (State, Input, (Loggable) -> Void) -> State
+    ) -> Machine<Input, Output> {
         mapInput(with: state()) {
             (function($0, $1, $2), [$1])
         }
     }
     
     
-    func doOnOutput(function: @escaping (Output, (Message) -> Void) -> Void) -> Machine<Input, Output, Message> {
+    func doOnOutput(function: @escaping (Output, (Loggable) -> Void) -> Void) -> Machine<Input, Output> {
         doOnOutput(with: Void()) {
             function($1, $2)
             return $0
@@ -37,8 +37,8 @@ public extension Machine {
     
     func doOnOutput<State>(
         with state: @escaping @autoclosure () -> State,
-        function: @escaping (State, Output, (Message) -> Void) -> State
-    ) -> Machine<Input, Output, Message> {
+        function: @escaping (State, Output, (Loggable) -> Void) -> State
+    ) -> Machine<Input, Output> {
         mapOutput(with: state()) {
             (function($0, $1, $2), [$1])
         }
@@ -46,9 +46,9 @@ public extension Machine {
     
     func biDoOn<State>(
         _ state: @escaping () -> State,
-        doOnInput: @escaping (State, Input, (Message) -> Void) -> State,
-        doOnOutput: @escaping (State, Output, (Message) -> Void) -> State
-    ) -> Machine<Input, Output, Message> {
+        doOnInput: @escaping (State, Input, (Loggable) -> Void) -> State,
+        doOnOutput: @escaping (State, Output, (Loggable) -> Void) -> State
+    ) -> Machine<Input, Output> {
         biMap {
             state()
         } mapInput: {

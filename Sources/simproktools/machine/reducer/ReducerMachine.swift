@@ -9,10 +9,10 @@ public extension Machine {
 
     static func reducer(
         _ initial: @escaping @autoclosure () -> Output,
-        function: @escaping (Output, Input, (Message) -> Void) -> Output?
-    ) -> Machine<Input, Output, Message> {
-        Machine<Input, Output, Message> {
-            Feature<Void, Void, Input, Output, Message>.classic(DataMachines(initial())) { machines, event, logger in
+        function: @escaping (Output, Input, (Loggable) -> Void) -> Output?
+    ) -> Machine<Input, Output> {
+        Machine<Input, Output> {
+            Feature<Void, Void, Input, Output>.classic(DataMachines(initial())) { machines, event, logger in
                 switch event {
                 case .int:
                     return (machines, [])

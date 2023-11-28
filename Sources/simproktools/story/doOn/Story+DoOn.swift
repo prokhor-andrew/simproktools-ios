@@ -5,12 +5,13 @@
 //  Created by Andriy Prokhorenko on 15.11.2023.
 //
 
+import simprokmachine
 import simprokstate
 
 
 public extension Story {
     
-    func doOn(function: @escaping @Sendable (Event, (Message) -> Void) -> Void) -> Story<Event, Message> {
+    func doOn(function: @escaping @Sendable (Event, (Loggable) -> Void) -> Void) -> Story<Event> {
         Story { event, logger in
             function(event, logger)
             if let newStory = transit(event, logger) {
@@ -21,7 +22,7 @@ public extension Story {
         }
     }
     
-    func doOn(function: @escaping @Sendable (Event, Bool, (Message) -> Void) -> Void) -> Story<Event, Message> {
+    func doOn(function: @escaping @Sendable (Event, Bool, (Loggable) -> Void) -> Void) -> Story<Event> {
         Story { event, logger in
             if let newStory = transit(event, logger) {
                 function(event, false, logger)
@@ -33,7 +34,7 @@ public extension Story {
         }
     }
     
-    func doOnEffect(function: @escaping @Sendable (Event, (Message) -> Void) -> Void) -> Story<Event, Message> {
+    func doOnEffect(function: @escaping @Sendable (Event, (Loggable) -> Void) -> Void) -> Story<Event> {
         Story { event, logger in
             if let newStory = transit(event, logger) {
                 function(event, logger)
@@ -44,7 +45,7 @@ public extension Story {
         }
     }
     
-    func doOnGuard(function: @escaping @Sendable (Event, (Message) -> Void) -> Void) -> Story<Event, Message> {
+    func doOnGuard(function: @escaping @Sendable (Event, (Loggable) -> Void) -> Void) -> Story<Event> {
         Story { event, logger in
             if let newStory = transit(event, logger) {
                 return newStory.doOnGuard(function: function)

@@ -12,8 +12,8 @@ public extension Scene {
 
     
     static func merge(
-        _ scenes: [Scene<Trigger, Effect, Message>]
-    ) -> Scene<Trigger, Effect, Message> {
+        _ scenes: [Scene<Trigger, Effect>]
+    ) -> Scene<Trigger, Effect> {
         return Scene { trigger, logger in
             var effects: [Effect] = []
             
@@ -28,8 +28,8 @@ public extension Scene {
     }
     
     static func merge(
-        _ scenes: Scene<Trigger, Effect, Message>...
-    ) -> Scene<Trigger, Effect, Message> {
+        _ scenes: Scene<Trigger, Effect>...
+    ) -> Scene<Trigger, Effect> {
         merge(scenes)
     }
 }

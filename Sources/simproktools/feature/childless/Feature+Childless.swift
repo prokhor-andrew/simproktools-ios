@@ -2,13 +2,14 @@
 // Created by Andriy Prokhorenko on 14.02.2023.
 //
 
+import simprokmachine
 import simprokstate
 
 public extension Feature {
 
     static func childless(
-        transit: @escaping (ExtTrigger, (Message) -> Void) -> FeatureTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message>
-    ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect, Message> {
+        transit: @escaping (ExtTrigger, (Loggable) -> Void) -> FeatureTransition<IntTrigger, IntEffect, ExtTrigger, ExtEffect>
+    ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         Feature.create(SetOfMachines()) { _, trigger, logger in
             switch trigger {
             case .int:
