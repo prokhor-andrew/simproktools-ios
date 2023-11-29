@@ -11,8 +11,8 @@ public extension Outline {
         _ initial: @autoclosure @escaping () -> State,
         function: @escaping (State, FeatureEvent<IntTrigger, ExtTrigger>, (Loggable) -> Void) -> (newState: State, effects: [FeatureEvent<IntEffect, ExtEffect>])
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        Outline { trigger, logger in
-            let (newState, effects) = function(initial(), trigger, logger)
+        Outline { extras, trigger in
+            let (newState, effects) = function(initial(), trigger, extras.logger)
             return OutlineTransition(
                 classic(newState, function: function),
                 effects: effects

@@ -8,8 +8,8 @@ import simprokstate
 public extension Story {
 
     static func never(doOn: @escaping ((Loggable) -> Void) -> Void = { _ in }) -> Story<Event> {
-        Story { _, logger in
-            doOn(logger)
+        Story { extras, event in
+            doOn(extras.logger)
             return nil
         }
     }

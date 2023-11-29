@@ -17,8 +17,8 @@ public extension Scene {
         _ initial: @autoclosure @escaping () -> State,
         function: @escaping (State, Trigger, (Loggable) -> Void) -> (newState: State, effects: [Effect])
     ) -> Scene<Trigger, Effect> {
-        Scene { trigger, logger in
-            let (newState, effects) = function(initial(), trigger, logger)
+        Scene { extras, trigger in
+            let (newState, effects) = function(initial(), trigger, extras.logger)
             return SceneTransition(
                 classic(newState, function: function),
                 effects: effects

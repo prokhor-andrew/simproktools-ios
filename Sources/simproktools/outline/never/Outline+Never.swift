@@ -9,8 +9,8 @@ import simprokstate
 public extension Outline {
 
     static func never(doOn: @escaping ((Loggable) -> Void) -> Void = { _ in }) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        Outline { _, logger in
-            doOn(logger)
+        Outline { extras, trigger in
+            doOn(extras.logger)
             return OutlineTransition(never(doOn: doOn))
         }
     }

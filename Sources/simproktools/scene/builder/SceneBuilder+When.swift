@@ -17,8 +17,8 @@ public extension SceneBuilder {
             
             @Sendable
             func currentState() -> Scene<Trigger, Effect> {
-                Scene { event, logger in
-                    if let effects = function(event) {
+                Scene { extras, trigger in
+                    if let effects = function(trigger) {
                         return SceneTransition(
                             state,
                             effects: effects

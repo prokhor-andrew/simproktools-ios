@@ -17,11 +17,11 @@ public extension Scene {
         with state: @autoclosure @escaping () -> State,
         function: @escaping (State, RTrigger, (Loggable) -> Void) -> (newState: State, trigger: Trigger?)
     ) -> Scene<RTrigger, Effect> {
-        Scene<RTrigger, Effect> { trigger, logger in
-            let (newState, mapped) = function(state(), trigger, logger)
+        Scene<RTrigger, Effect> { extras, trigger in
+            let (newState, mapped) = function(state(), trigger, extras.logger)
 
             if let mapped {
-                let transition = transit(mapped, logger)
+                let transition = transit(mapped, extras.logger)
                 return SceneTransition(
                     transition.state.mapTrigger(with: newState, function: function),
                     effects: transition.effects
@@ -44,9 +44,9 @@ public extension Scene {
         with state: @autoclosure @escaping () -> State,
         function: @escaping (State, [Effect], (Loggable) -> Void) -> (newState: State, effects: [REffect])
     ) -> Scene<Trigger, REffect> {
-        Scene<Trigger, REffect> { trigger, logger in
-            let transition = transit(trigger, logger)
-            let (newState, mapped) = function(state(), transition.effects, logger)
+        Scene<Trigger, REffect> { extras, trigger in
+            let transition = transit(trigger, extras.logger)
+            let (newState, mapped) = function(state(), transition.effects, extras.logger)
             return SceneTransition(transition.state.mapEffects(with: newState, function: function), effects: mapped)
         }
     }

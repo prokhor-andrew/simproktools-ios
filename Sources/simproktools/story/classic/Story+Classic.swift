@@ -11,8 +11,8 @@ public extension Story {
         _ initial: @autoclosure @escaping () -> State,
         function: @escaping (State, Event, (Loggable) -> Void) -> State?
     ) -> Story<Event> {
-        Story { event, logger in
-            if let new = function(initial(), event, logger) {
+        Story { extras, event in
+            if let new = function(initial(), event, extras.logger) {
                 return classic(new, function: function)
             } else {
                 return nil

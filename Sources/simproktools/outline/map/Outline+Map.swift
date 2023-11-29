@@ -19,11 +19,11 @@ public extension Outline {
         with state: @autoclosure @escaping () -> State,
         function: @escaping (State, FeatureEvent<RIntTrigger, RExtTrigger>, (Loggable) -> Void) -> (newState: State, trigger: FeatureEvent<IntTrigger, ExtTrigger>?)
     ) -> Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect> {
-        Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect> { trigger, logger in
-            let (newState, mapped) = function(state(), trigger, logger)
+        Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect> { extras, trigger in
+            let (newState, mapped) = function(state(), trigger, extras.logger)
 
             if let mapped {
-                let transition = transit(mapped, logger)
+                let transition = transit(mapped, extras.logger)
                 return OutlineTransition(
                     transition.state.mapTrigger(with: newState, function: function),
                     effects: transition.effects
@@ -102,8 +102,8 @@ public extension Outline {
         with state: @autoclosure @escaping () -> State,
         function: @escaping (State, [FeatureEvent<IntEffect, ExtEffect>]) -> (newState: State, effects: [FeatureEvent<RIntEffect, RExtEffect>])
     ) -> Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> {
-        Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> { trigger, logger in
-            let transition = transit(trigger, logger)
+        Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> { extras, trigger in
+            let transition = transit(trigger, extras.logger)
             let (newState, mapped) = function(state(), transition.effects)
             return OutlineTransition(
                 transition.state.mapEffects(with: newState, function: function),

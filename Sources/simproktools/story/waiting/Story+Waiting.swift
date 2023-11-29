@@ -40,7 +40,7 @@ public func =><Event>(
     lhs: @escaping (Event) -> Bool,
     rhs: @autoclosure @escaping () -> Story<Event>
 ) -> Story<Event> {
-    Story { event, logger in lhs(event) ? rhs() : nil }
+    Story { extras, event in lhs(event) ? rhs() : nil }
 }
 
 public func =><Event>(
@@ -54,7 +54,7 @@ public func !><Event>(
     lhs: @escaping (Event) -> Bool,
     rhs: @autoclosure @escaping () -> Story<Event>
 ) -> Story<Event> {
-    Story { event, logger in !lhs(event) ? rhs() : nil }
+    Story { extras, event in !lhs(event) ? rhs() : nil }
 }
 
 public func !><Event>(

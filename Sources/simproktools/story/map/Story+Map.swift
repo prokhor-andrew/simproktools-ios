@@ -23,10 +23,10 @@ public extension Story {
         with state: State,
         function: @escaping (State, REvent, (Loggable) -> Void) -> (newState: State, event: Event?)?
     ) -> Story<REvent> {
-        Story<REvent> {
-            if let tuple = function(state, $0, $1) {
+        Story<REvent> { extras, event in
+            if let tuple = function(state, event, extras.logger) {
                 let newState = tuple.0
-                if let mapped = tuple.1, let new = transit(mapped, $1) {
+                if let mapped = tuple.1, let new = transit(mapped, extras.logger) {
                     return new.map(with: newState, function: function)
                 } else {
                     return map(with: newState, function: function)

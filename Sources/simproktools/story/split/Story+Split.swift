@@ -9,9 +9,9 @@ public extension Story {
     static func split(
         _ stories: Set<Story<Event>>
     ) -> Story<Event> {
-        Story {
+        Story { extras, event in
             for story in stories {
-                if let result = story.transit($0, $1) {
+                if let result = story.transit(event, extras.logger) {
                     return result
                 }
             }

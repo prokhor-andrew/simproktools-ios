@@ -17,8 +17,8 @@ public extension Feature {
             (Loggable) -> Void
         ) -> (newState: State, effects: [FeatureEvent<IntEffect, ExtEffect>])
     ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> where State.Trigger == IntTrigger, State.Effect == IntEffect {
-        Feature.create(initial) { machines, trigger, logger in
-            let result = function(machines, trigger, logger)
+        Feature.create(initial) { extras, trigger in
+            let result = function(extras.machines, trigger, extras.logger)
             return FeatureTransition(.classic(result.newState, function: function), effects: result.effects)
         }
     }

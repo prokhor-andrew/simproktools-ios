@@ -18,8 +18,8 @@ public extension SceneBuilder {
             
             @Sendable
             func provide() -> Scene<Trigger, Effect> {
-                Scene { event, logger in
-                    let (isLoop, effects) = function(event, logger)
+                Scene { extras, trigger in
+                    let (isLoop, effects) = function(trigger, extras.logger)
                     if isLoop {
                         return SceneTransition(
                             state,

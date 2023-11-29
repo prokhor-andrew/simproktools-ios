@@ -12,9 +12,9 @@ import simprokstate
 public extension Story {
     
     func doOn(function: @escaping @Sendable (Event, (Loggable) -> Void) -> Void) -> Story<Event> {
-        Story { event, logger in
-            function(event, logger)
-            if let newStory = transit(event, logger) {
+        Story { extras, event in
+            function(event, extras.logger)
+            if let newStory = transit(event, extras.logger) {
                 return newStory.doOn(function: function)
             } else {
                 return nil
@@ -23,21 +23,21 @@ public extension Story {
     }
     
     func doOn(function: @escaping @Sendable (Event, Bool, (Loggable) -> Void) -> Void) -> Story<Event> {
-        Story { event, logger in
-            if let newStory = transit(event, logger) {
-                function(event, false, logger)
+        Story { extras, event in
+            if let newStory = transit(event, extras.logger) {
+                function(event, false, extras.logger)
                 return newStory.doOn(function: function)
             } else {
-                function(event, true, logger)
+                function(event, true, extras.logger)
                 return nil
             }
         }
     }
     
     func doOnEffect(function: @escaping @Sendable (Event, (Loggable) -> Void) -> Void) -> Story<Event> {
-        Story { event, logger in
-            if let newStory = transit(event, logger) {
-                function(event, logger)
+        Story { extras, event in
+            if let newStory = transit(event, extras.logger) {
+                function(event, extras.logger)
                 return newStory.doOnEffect(function: function)
             } else {
                 return nil
@@ -46,11 +46,11 @@ public extension Story {
     }
     
     func doOnGuard(function: @escaping @Sendable (Event, (Loggable) -> Void) -> Void) -> Story<Event> {
-        Story { event, logger in
-            if let newStory = transit(event, logger) {
+        Story { extras, event in
+            if let newStory = transit(event, extras.logger) {
                 return newStory.doOnGuard(function: function)
             } else {
-                function(event, logger)
+                function(event, extras.logger)
                 return nil
             }
         }

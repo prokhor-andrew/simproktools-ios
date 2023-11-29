@@ -17,7 +17,7 @@ public extension OutlineBuilder {
             
             @Sendable
             func currentState() -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-                Outline { trigger, logger in
+                Outline { extras, trigger in
                     if let effects = function(trigger) {
                         return OutlineTransition(
                             state,
