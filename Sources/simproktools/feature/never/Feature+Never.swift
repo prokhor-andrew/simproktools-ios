@@ -8,10 +8,12 @@ import simprokstate
 
 public extension Feature {
 
-    static func never(doOn: @escaping ((Loggable) -> Void) -> Void = { _ in }) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        Feature.create(SetOfMachines()) { extras, _ in
-            doOn(extras.logger)
-            return FeatureTransition(never(doOn: doOn))
+    static func never(
+        doOnTrigger: @escaping (FeatureExtras<SetOfMachines<IntTrigger, IntEffect>>, FeatureEvent<IntTrigger, ExtTrigger>) -> Void = { _,_ in }
+    ) -> Feature<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
+        Feature.create(SetOfMachines()) {
+            doOnTrigger($0, $1)
+            return FeatureTransition(never(doOnTrigger: doOnTrigger))
         }
     }
 }

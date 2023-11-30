@@ -12,14 +12,14 @@ import simprokstate
 public extension SceneBuilder {
     
     func loop(
-        _ function: @escaping (Trigger, (Loggable) -> Void) -> (Bool, [Effect])
+        _ function: @escaping (SceneExtras, Trigger) -> (Bool, [Effect])
     ) -> SceneBuilder<Trigger, Effect, Message> {
         handle { state in
             
             @Sendable
             func provide() -> Scene<Trigger, Effect> {
                 Scene { extras, trigger in
-                    let (isLoop, effects) = function(trigger, extras.logger)
+                    let (isLoop, effects) = function(extras, trigger)
                     if isLoop {
                         return SceneTransition(
                             state,

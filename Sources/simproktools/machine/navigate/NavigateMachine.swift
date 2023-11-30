@@ -11,10 +11,10 @@ import simprokstate
 public extension Machine {
 
     func navigate<RInput, ROutput>(
-        _ outline: Outline<Output, Input, RInput, ROutput>
+        _ outline: @autoclosure @escaping () -> Outline<Output, Input, RInput, ROutput>
     ) -> Machine<RInput, ROutput> {
         Machine<RInput, ROutput> {
-            outline.asFeature(SetOfMachines(self))
+            outline().asFeature(SetOfMachines(self))
         }
     }
 }

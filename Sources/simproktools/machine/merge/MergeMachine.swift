@@ -9,12 +9,12 @@ public extension Machine {
 
     static func merge(_ machines: @escaping @autoclosure () -> Set<Machine<Input, Output>>) -> Machine<Input, Output> {
         Machine {
-            Feature.classic(SetOfMachines(machines())) { machines, trigger, logger in
+            Feature.classic(SetOfMachines(machines())) { extras, trigger in
                 switch trigger {
                 case .ext(let input):
-                    return (machines, effects: [.int(input)])
+                    return (extras.machines, effects: [.int(input)])
                 case .int(let output):
-                    return (machines, effects: [.ext(output)])
+                    return (extras.machines, effects: [.ext(output)])
                 }
             }
         }

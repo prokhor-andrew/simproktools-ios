@@ -8,10 +8,10 @@ import simprokstate
 public extension Story {
 
     func map<REvent>(
-        _ function: @escaping (REvent, (Loggable) -> Void) -> Event?
+        _ function: @escaping (StoryExtras, REvent) -> Event?
     ) -> Story<REvent> {
-        map(with: Void()) { state, event, logger in
-            if let result = function(event, logger) {
+        map(with: Void()) { extras, state, event in
+            if let result = function(extras, event) {
                 return (state, result)
             } else {
                 return nil
@@ -21,10 +21,10 @@ public extension Story {
 
     func map<State, REvent>(
         with state: State,
-        function: @escaping (State, REvent, (Loggable) -> Void) -> (newState: State, event: Event?)?
+        function: @escaping (StoryExtras, State, REvent) -> (newState: State, event: Event?)?
     ) -> Story<REvent> {
         Story<REvent> { extras, event in
-            if let tuple = function(state, event, extras.logger) {
+            if let tuple = function(extras, state, event) {
                 let newState = tuple.0
                 if let mapped = tuple.1, let new = transit(mapped, extras.logger) {
                     return new.map(with: newState, function: function)

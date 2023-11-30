@@ -12,16 +12,16 @@ public extension Machine {
         _ function: @escaping (Input, (Loggable) -> Void) -> Output?
     ) -> Machine<Input, Output> {
         Machine {
-            Feature.classic(SetOfMachines(self)) { machines, trigger, logger in
+            Feature.classic(SetOfMachines(self)) { extras, trigger in
                 switch trigger {
                 case .ext(let input):
-                    if let output = function(input, logger) {
-                        return (machines, [.ext(output)])
+                    if let output = function(input, extras.logger) {
+                        return (extras.machines, [.ext(output)])
                     } else {
-                        return (machines, [.int(input)])
+                        return (extras.machines, [.int(input)])
                     }
                 case .int(let output):
-                    return (machines, [.ext(output)])
+                    return (extras.machines, [.ext(output)])
                 }
             }
         }
@@ -32,17 +32,17 @@ public extension Machine {
         _ function: @escaping (State, Input, (Loggable) -> Void) -> (newState: State, output: Output?)
     ) -> Machine<Input, Output> {
         Machine { 
-            Feature.classic(DataMachines(state(), machines: self)) { machines, trigger, logger in
+            Feature.classic(DataMachines(state(), machines: self)) { extras, trigger in
                 switch trigger {
                 case .ext(let input):
-                    let (newState, redirectResult) = function(machines.data, input, logger)
+                    let (newState, redirectResult) = function(extras.machines.data, input, extras.logger)
                     if let output = redirectResult {
-                        return (DataMachines(newState, machines: machines.machines), [.ext(output)])
+                        return (DataMachines(newState, machines: extras.machines.machines), [.ext(output)])
                     } else {
-                        return (DataMachines(newState, machines: machines.machines), [.int(input)])
+                        return (DataMachines(newState, machines: extras.machines.machines), [.int(input)])
                     }
                 case .int(let output):
-                    return (machines, [.ext(output)])
+                    return (extras.machines, [.ext(output)])
                 }
             }
         }

@@ -8,19 +8,19 @@ import simprokstate
 public extension Outline {
 
     func mapTrigger<RIntTrigger, RExtTrigger>(
-        function: @escaping (FeatureEvent<RIntTrigger, RExtTrigger>, (Loggable) -> Void) -> FeatureEvent<IntTrigger, ExtTrigger>?
+        function: @escaping (OutlineExtras, FeatureEvent<RIntTrigger, RExtTrigger>) -> FeatureEvent<IntTrigger, ExtTrigger>?
     ) -> Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect> {
         mapTrigger(with: Void()) {
-            ($0, function($1, $2))
+            ($1, function($0, $2))
         }
     }
 
     func mapTrigger<State, RIntTrigger, RExtTrigger>(
         with state: @autoclosure @escaping () -> State,
-        function: @escaping (State, FeatureEvent<RIntTrigger, RExtTrigger>, (Loggable) -> Void) -> (newState: State, trigger: FeatureEvent<IntTrigger, ExtTrigger>?)
+        function: @escaping (OutlineExtras, State, FeatureEvent<RIntTrigger, RExtTrigger>) -> (newState: State, trigger: FeatureEvent<IntTrigger, ExtTrigger>?)
     ) -> Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect> {
         Outline<RIntTrigger, IntEffect, RExtTrigger, ExtEffect> { extras, trigger in
-            let (newState, mapped) = function(state(), trigger, extras.logger)
+            let (newState, mapped) = function(extras, state(), trigger)
 
             if let mapped {
                 let transition = transit(mapped, extras.logger)
@@ -37,29 +37,29 @@ public extension Outline {
     }
 
     func mapIntTrigger<RIntTrigger>(
-        function: @escaping (RIntTrigger, (Loggable) -> Void) -> IntTrigger?
+        function: @escaping (OutlineExtras, RIntTrigger) -> IntTrigger?
     ) -> Outline<RIntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        mapIntTrigger(with: Void()) { state, trigger, logger in
-            (state, function(trigger, logger))
+        mapIntTrigger(with: Void()) { extras, state, trigger in
+            (state, function(extras, trigger))
         }
     }
 
     func mapExtTrigger<RExtTrigger>(
-        function: @escaping (RExtTrigger, (Loggable) -> Void) -> ExtTrigger?
+        function: @escaping (OutlineExtras, RExtTrigger) -> ExtTrigger?
     ) -> Outline<IntTrigger, IntEffect, RExtTrigger, ExtEffect> {
-        mapExtTrigger(with: Void()) { state, trigger, logger in
-            (state, function(trigger, logger))
+        mapExtTrigger(with: Void()) { extras, state, trigger in
+            (state, function(extras, trigger))
         }
     }
 
     func mapIntTrigger<State, RIntTrigger>(
         with state: @autoclosure @escaping () -> State,
-        function: @escaping (State, RIntTrigger, (Loggable) -> Void) -> (newState: State, trigger: IntTrigger?)
+        function: @escaping (OutlineExtras, State, RIntTrigger) -> (newState: State, trigger: IntTrigger?)
     ) -> Outline<RIntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        mapTrigger(with: state()) { state, event, logger in
-            switch event {
+        mapTrigger(with: state()) { extras, state, trigger in
+            switch trigger {
             case .int(let value):
-                let (newState, mapped) = function(state, value, logger)
+                let (newState, mapped) = function(extras, state, value)
                 if let mapped {
                     return (newState, .int(mapped))
                 } else {
@@ -73,12 +73,12 @@ public extension Outline {
 
     func mapExtTrigger<State, RExtTrigger>(
         with state: @autoclosure @escaping () -> State,
-        function: @escaping (State, RExtTrigger, (Loggable) -> Void) -> (newState: State, trigger: ExtTrigger?)
+        function: @escaping (OutlineExtras, State, RExtTrigger) -> (newState: State, trigger: ExtTrigger?)
     ) -> Outline<IntTrigger, IntEffect, RExtTrigger, ExtEffect> {
-        mapTrigger(with: state()) { state, event, logger in
-            switch event {
+        mapTrigger(with: state()) { extras, state, trigger in
+            switch trigger {
             case .ext(let value):
-                let (newState, mapped) = function(state, value, logger)
+                let (newState, mapped) = function(extras, state, value)
                 if let mapped {
                     return (newState, .ext(mapped))
                 } else {

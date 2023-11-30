@@ -12,15 +12,15 @@ public extension Machine {
         function: @escaping (Output, Input, (Loggable) -> Void) -> Output?
     ) -> Machine<Input, Output> {
         Machine<Input, Output> {
-            Feature<Void, Void, Input, Output>.classic(DataMachines(initial())) { machines, event, logger in
+            Feature<Void, Void, Input, Output>.classic(DataMachines(initial())) { extras, event in
                 switch event {
                 case .int:
-                    return (machines, [])
+                    return (extras.machines, [])
                 case .ext(let trigger):
-                    if let result = function(machines.data, trigger, logger) {
-                        return (machines, [.ext(result)])
+                    if let result = function(extras.machines.data, trigger, extras.logger) {
+                        return (extras.machines, [.ext(result)])
                     } else {
-                        return (machines, [])
+                        return (extras.machines, [])
                     }
                 }
             }

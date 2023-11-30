@@ -9,10 +9,10 @@ public extension Story {
 
     static func classic<State>(
         _ initial: @autoclosure @escaping () -> State,
-        function: @escaping (State, Event, (Loggable) -> Void) -> State?
+        function: @escaping (StoryExtras, State, Event) -> State?
     ) -> Story<Event> {
         Story { extras, event in
-            if let new = function(initial(), event, extras.logger) {
+            if let new = function(extras, initial(), event) {
                 return classic(new, function: function)
             } else {
                 return nil

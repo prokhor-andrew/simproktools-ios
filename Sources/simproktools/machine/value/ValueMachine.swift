@@ -7,9 +7,9 @@ import simprokmachine
 
 public extension Machine where Input == Output {
 
-    static func value(doOn: @escaping ((Loggable) -> Void) -> Void = { _ in }) -> Machine<Input, Output> {
+    static func value(doOn: @escaping (Input, (Loggable) -> Void) -> Void = { _,_ in }) -> Machine<Input, Output> {
         .pure { input, callback, logger in
-            doOn(logger)
+            doOn(input, logger)
             await callback(input)
         }
     }

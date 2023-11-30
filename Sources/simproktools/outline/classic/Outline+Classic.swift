@@ -9,10 +9,10 @@ public extension Outline {
 
     static func classic<State>(
         _ initial: @autoclosure @escaping () -> State,
-        function: @escaping (State, FeatureEvent<IntTrigger, ExtTrigger>, (Loggable) -> Void) -> (newState: State, effects: [FeatureEvent<IntEffect, ExtEffect>])
+        function: @escaping (OutlineExtras, State, FeatureEvent<IntTrigger, ExtTrigger>) -> (newState: State, effects: [FeatureEvent<IntEffect, ExtEffect>])
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         Outline { extras, trigger in
-            let (newState, effects) = function(initial(), trigger, extras.logger)
+            let (newState, effects) = function(extras, initial(), trigger)
             return OutlineTransition(
                 classic(newState, function: function),
                 effects: effects
@@ -21,10 +21,10 @@ public extension Outline {
     }
     
     static func classic(
-        function: @escaping (FeatureEvent<IntTrigger, ExtTrigger>, (Loggable) -> Void) -> [FeatureEvent<IntEffect, ExtEffect>]
+        function: @escaping (OutlineExtras, FeatureEvent<IntTrigger, ExtTrigger>) -> [FeatureEvent<IntEffect, ExtEffect>]
     ) -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
-        classic(Void()) { state, trigger, logger in
-            (state, function(trigger, logger))
+        classic(Void()) { extras, state, trigger in
+            (state, function(extras, trigger))
         }
     }
 }

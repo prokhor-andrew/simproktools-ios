@@ -8,16 +8,16 @@ import simprokstate
 public extension Machine {
 
     static func classic<State>(
-        initial: @escaping @autoclosure () -> State,
+        _ initial: @escaping @autoclosure () -> State,
         function: @escaping (State, Input, (Loggable) -> Void) -> (newState: State, outputs: [Output])
     ) -> Machine<Input, Output> {
         Machine<Input, Output> {
-            Feature<Void, Void, Input, Output>.classic(DataMachines(initial())) { machines, event, logger in
+            Feature<Void, Void, Input, Output>.classic(DataMachines(initial())) { extras, event in
                 switch event {
                 case .int:
-                    return (machines, [])
+                    return (extras.machines, [])
                 case .ext(let trigger):
-                    let (newState, effects) = function(machines.data, trigger, logger)
+                    let (newState, effects) = function(extras.machines.data, trigger, extras.logger)
                     return (DataMachines(newState), effects.map { .ext($0) })
                 }
             }

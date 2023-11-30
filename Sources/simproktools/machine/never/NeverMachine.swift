@@ -7,9 +7,9 @@ import simprokmachine
 
 public extension Machine {
 
-    static func never(doOn: @escaping ((Loggable) -> Void) -> Void = { _ in }) -> Machine<Input, Output> {
-        .pure { _, _, logger  in
-            doOn(logger)
+    static func never(doOn: @escaping (Input, (Loggable) -> Void) -> Void = { _,_ in }) -> Machine<Input, Output> {
+        .pure { input, _, logger  in
+            doOn(input, logger)
         }
     }
 }

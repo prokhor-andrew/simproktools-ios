@@ -11,13 +11,13 @@ import simprokstate
 public extension OutlineBuilder {
     
     func loop(
-        _ function: @escaping (FeatureEvent<IntTrigger, ExtTrigger>, (Loggable) -> Void) -> (Bool, [FeatureEvent<IntEffect, ExtEffect>])
+        _ function: @escaping (OutlineExtras, FeatureEvent<IntTrigger, ExtTrigger>) -> (Bool, [FeatureEvent<IntEffect, ExtEffect>])
     ) -> OutlineBuilder<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
         handle { state in
             @Sendable
             func provide() -> Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect> {
                 Outline { extras, trigger in
-                    let (isLoop, effects) = function(trigger, extras.logger)
+                    let (isLoop, effects) = function(extras, trigger)
                     
                     if isLoop {
                         return OutlineTransition(
