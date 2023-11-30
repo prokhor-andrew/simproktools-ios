@@ -18,7 +18,7 @@ public extension Outline {
             var effects: [FeatureEvent<IntEffect, ExtEffect>] = []
             
             let mapped = outlines.map { outline in
-                let transition = outline.transit(trigger, extras.logger)
+                let transition = outline.transit(trigger, extras.machineId, extras.logger)
                 effects.append(contentsOf: transition.effects)
                 return transition.state
             }

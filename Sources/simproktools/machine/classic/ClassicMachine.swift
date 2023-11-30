@@ -11,7 +11,7 @@ public extension Machine {
         _ initial: @escaping @autoclosure () -> State,
         function: @escaping (State, Input, (Loggable) -> Void) -> (newState: State, outputs: [Output])
     ) -> Machine<Input, Output> {
-        Machine<Input, Output> {
+        Machine<Input, Output> { machineId in
             Feature<Void, Void, Input, Output>.classic(DataMachines(initial())) { extras, event in
                 switch event {
                 case .int:

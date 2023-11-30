@@ -16,10 +16,10 @@ public extension Story {
         to story: Story<Event>
     ) -> Story<Event> {
         Story { extras, event in
-            if let new = story.transit(event, extras.logger) {
+            if let new = story.transit(event, extras.machineId, extras.logger) {
                 return new
             } else {
-                if let new = transit(event, extras.logger) {
+                if let new = transit(event, extras.machineId, extras.logger) {
                     return new.switchOnTransition(to: story)
                 } else {
                     return nil

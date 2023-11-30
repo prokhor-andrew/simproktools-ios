@@ -11,7 +11,7 @@ public extension Machine {
     func redirectOutput(
         _ function: @escaping (Output, (Loggable) -> Void) -> Input?
     ) -> Machine<Input, Output> {
-        Machine {
+        Machine { machineId in
             Feature.classic(SetOfMachines(self)) { extras, trigger in
                 switch trigger {
                 case .ext(let input):
@@ -31,7 +31,7 @@ public extension Machine {
         with state: @escaping @autoclosure () -> State,
         _ function: @escaping (State, Output, (Loggable) -> Void) -> (newState: State, input: Input?)
     ) -> Machine<Input, Output> {
-        Machine { 
+        Machine { machineId in
             Feature.classic(DataMachines(state(), machines: self)) { extras, trigger in
                 switch trigger {
                 case .int(let output):

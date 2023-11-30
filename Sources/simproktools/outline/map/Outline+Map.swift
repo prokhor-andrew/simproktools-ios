@@ -23,7 +23,7 @@ public extension Outline {
             let (newState, mapped) = function(extras, state(), trigger)
 
             if let mapped {
-                let transition = transit(mapped, extras.logger)
+                let transition = transit(mapped, extras.machineId, extras.logger)
                 return OutlineTransition(
                     transition.state.mapTrigger(with: newState, function: function),
                     effects: transition.effects
@@ -103,7 +103,7 @@ public extension Outline {
         function: @escaping (State, [FeatureEvent<IntEffect, ExtEffect>]) -> (newState: State, effects: [FeatureEvent<RIntEffect, RExtEffect>])
     ) -> Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> {
         Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> { extras, trigger in
-            let transition = transit(trigger, extras.logger)
+            let transition = transit(trigger, extras.machineId, extras.logger)
             let (newState, mapped) = function(state(), transition.effects)
             return OutlineTransition(
                 transition.state.mapEffects(with: newState, function: function),

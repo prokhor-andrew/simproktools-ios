@@ -26,7 +26,7 @@ public extension Story {
         Story<REvent> { extras, event in
             if let tuple = function(extras, state, event) {
                 let newState = tuple.0
-                if let mapped = tuple.1, let new = transit(mapped, extras.logger) {
+                if let mapped = tuple.1, let new = transit(mapped, extras.machineId, extras.logger) {
                     return new.map(with: newState, function: function)
                 } else {
                     return map(with: newState, function: function)

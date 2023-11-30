@@ -16,7 +16,7 @@ public extension Story {
     ) -> Story<Event> {
         Story { extras, event in
             let mapped = stories.map { story in
-                if let newStory = story.transit(event, extras.logger) {
+                if let newStory = story.transit(event, extras.machineId, extras.logger) {
                     return newStory
                 } else {
                     return story

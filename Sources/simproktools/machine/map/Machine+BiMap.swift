@@ -24,7 +24,7 @@ public extension Machine {
         mapInput: @escaping (State, RInput, (Loggable) -> Void) -> (newState: State, inputs: [Input]),
         mapOutput: @escaping (State, Output, (Loggable) -> Void) -> (newState: State, outputs: [ROutput])
     ) -> Machine<RInput, ROutput> {
-        Machine<RInput, ROutput> { 
+        Machine<RInput, ROutput> { machineId in
             Feature.classic(DataMachines(state(), machines: self)) { extras, trigger in
                 switch trigger {
                 case .int(let output):

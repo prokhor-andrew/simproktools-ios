@@ -18,7 +18,7 @@ public extension Scene {
             var effects: [Effect] = []
             
             let mapped = scenes.map { scene in
-                let transition = scene.transit(trigger, extras.logger)
+                let transition = scene.transit(trigger, extras.machineId, extras.logger)
                 effects.append(contentsOf: transition.effects)
                 return transition.state
             }

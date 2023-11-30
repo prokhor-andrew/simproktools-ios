@@ -14,7 +14,7 @@ public extension Story {
     func doOn(function: @escaping @Sendable (StoryExtras, Event) -> Void) -> Story<Event> {
         Story { extras, event in
             function(extras, event)
-            if let newStory = transit(event, extras.logger) {
+            if let newStory = transit(event, extras.machineId, extras.logger) {
                 return newStory.doOn(function: function)
             } else {
                 return nil
@@ -24,7 +24,7 @@ public extension Story {
     
     func doOn(function: @escaping @Sendable (StoryExtras, Event, Bool) -> Void) -> Story<Event> {
         Story { extras, event in
-            if let newStory = transit(event, extras.logger) {
+            if let newStory = transit(event, extras.machineId, extras.logger) {
                 function(extras, event, false)
                 return newStory.doOn(function: function)
             } else {
@@ -36,7 +36,7 @@ public extension Story {
     
     func doOnEffect(function: @escaping @Sendable (StoryExtras, Event) -> Void) -> Story<Event> {
         Story { extras, event in
-            if let newStory = transit(event, extras.logger) {
+            if let newStory = transit(event, extras.machineId, extras.logger) {
                 function(extras, event)
                 return newStory.doOnEffect(function: function)
             } else {
@@ -47,7 +47,7 @@ public extension Story {
     
     func doOnGuard(function: @escaping @Sendable (StoryExtras, Event) -> Void) -> Story<Event> {
         Story { extras, event in
-            if let newStory = transit(event, extras.logger) {
+            if let newStory = transit(event, extras.machineId, extras.logger) {
                 return newStory.doOnGuard(function: function)
             } else {
                 function(extras, event)

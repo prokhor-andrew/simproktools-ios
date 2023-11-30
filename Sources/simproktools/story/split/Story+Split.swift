@@ -11,7 +11,7 @@ public extension Story {
     ) -> Story<Event> {
         Story { extras, event in
             for story in stories {
-                if let result = story.transit(event, extras.logger) {
+                if let result = story.transit(event, extras.machineId, extras.logger) {
                     return result
                 }
             }

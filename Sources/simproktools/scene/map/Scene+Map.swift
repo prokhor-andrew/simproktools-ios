@@ -21,7 +21,7 @@ public extension Scene {
             let (newState, mapped) = function(extras, state(), trigger)
 
             if let mapped {
-                let transition = transit(mapped, extras.logger)
+                let transition = transit(mapped, extras.machineId, extras.logger)
                 return SceneTransition(
                     transition.state.mapTrigger(with: newState, function: function),
                     effects: transition.effects
@@ -45,7 +45,7 @@ public extension Scene {
         function: @escaping (SceneExtras, State, [Effect]) -> (newState: State, effects: [REffect])
     ) -> Scene<Trigger, REffect> {
         Scene<Trigger, REffect> { extras, trigger in
-            let transition = transit(trigger, extras.logger)
+            let transition = transit(trigger, extras.machineId, extras.logger)
             let (newState, mapped) = function(extras, state(), transition.effects)
             return SceneTransition(transition.state.mapEffects(with: newState, function: function), effects: mapped)
         }
