@@ -12,12 +12,12 @@ public extension Scene {
 
     
     static func merge(
-        _ scenes: [Scene<Trigger, Effect>]
+        _ scenes: @autoclosure @escaping () -> [Scene<Trigger, Effect>]
     ) -> Scene<Trigger, Effect> {
         return Scene { extras, trigger in
             var effects: [Effect] = []
             
-            let mapped = scenes.map { scene in
+            let mapped = scenes().map { scene in
                 let transition = scene.transit(trigger, extras.machineId, extras.logger)
                 effects.append(contentsOf: transition.effects)
                 return transition.state

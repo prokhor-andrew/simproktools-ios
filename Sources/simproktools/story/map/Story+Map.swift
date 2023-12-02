@@ -20,11 +20,11 @@ public extension Story {
     }
 
     func map<State, REvent>(
-        with state: State,
+        with state: @autoclosure @escaping () -> State,
         function: @escaping (StoryExtras, State, REvent) -> (newState: State, event: Event?)?
     ) -> Story<REvent> {
         Story<REvent> { extras, event in
-            if let tuple = function(extras, state, event) {
+            if let tuple = function(extras, state(), event) {
                 let newState = tuple.0
                 if let mapped = tuple.1, let new = transit(mapped, extras.machineId, extras.logger) {
                     return new.map(with: newState, function: function)

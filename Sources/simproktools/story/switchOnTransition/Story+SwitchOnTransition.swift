@@ -13,9 +13,10 @@ public extension Story {
     // this functions tests event on param story every time, and once the transition happens
     // it switches to that story
     func switchOnTransition(
-        to story: Story<Event>
+        to story: @autoclosure @escaping () -> Story<Event>
     ) -> Story<Event> {
         Story { extras, event in
+            let story = story()
             if let new = story.transit(event, extras.machineId, extras.logger) {
                 return new
             } else {

@@ -12,10 +12,10 @@ public extension Story {
 
     
     static func merge(
-        _ stories: [Story<Event>]
+        _ stories: @autoclosure @escaping () -> [Story<Event>]
     ) -> Story<Event> {
         Story { extras, event in
-            let mapped = stories.map { story in
+            let mapped = stories().map { story in
                 if let newStory = story.transit(event, extras.machineId, extras.logger) {
                     return newStory
                 } else {
