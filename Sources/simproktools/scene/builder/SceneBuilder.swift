@@ -6,7 +6,7 @@
 import simprokstate
 
 
-public struct SceneBuilder<Trigger, Effect, Message> {
+public struct SceneBuilder<Trigger, Effect> {
 
     private let _function: (Scene<Trigger, Effect>) -> Scene<Trigger, Effect>
 
@@ -20,7 +20,7 @@ public struct SceneBuilder<Trigger, Effect, Message> {
     
     public func handle(
         function: @escaping (Scene<Trigger, Effect>) -> Scene<Trigger, Effect>
-    ) -> SceneBuilder<Trigger, Effect, Message> {
+    ) -> SceneBuilder<Trigger, Effect> {
         SceneBuilder {
             _function(function($0))
         }

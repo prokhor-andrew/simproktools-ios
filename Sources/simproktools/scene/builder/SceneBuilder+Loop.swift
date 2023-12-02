@@ -13,7 +13,7 @@ public extension SceneBuilder {
     
     func loop(
         _ function: @escaping (SceneExtras, Trigger) -> (Bool, [Effect])
-    ) -> SceneBuilder<Trigger, Effect, Message> {
+    ) -> SceneBuilder<Trigger, Effect> {
         handle { state in
             
             @Sendable

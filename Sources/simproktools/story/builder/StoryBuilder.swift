@@ -4,7 +4,7 @@
 
 import simprokstate
 
-public struct StoryBuilder<Event, Message> {
+public struct StoryBuilder<Event> {
 
     private let _function: (Story<Event>) -> Story<Event>
 
@@ -18,7 +18,7 @@ public struct StoryBuilder<Event, Message> {
     
     public func handle(
         function: @escaping (Story<Event>) -> Story<Event>
-    ) -> StoryBuilder<Event, Message> {
+    ) -> StoryBuilder<Event> {
         StoryBuilder {
             _function(function($0))
         }
