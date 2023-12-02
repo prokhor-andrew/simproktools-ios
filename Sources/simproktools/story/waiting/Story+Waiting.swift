@@ -12,7 +12,7 @@ import CasePaths
 public func waiting<Whole, Part>(
     for keyPath: KeyPath<Whole, Part>,
     to function: @escaping (Part, Part) -> Bool,
-    _ value: Part
+    value: Part
 ) -> (Whole) -> Bool {
     { function($0[keyPath: keyPath], value) }
 }
@@ -20,7 +20,7 @@ public func waiting<Whole, Part>(
 public func waiting<Whole: CasePathable, Part>(
     for casePath: CaseKeyPath<Whole, Part>,
     to function: @escaping (Part, Part) -> Bool,
-    _ value: Part
+    value: Part
 ) -> (Whole) -> Bool {
     {
         if let part = $0[case: casePath] {
