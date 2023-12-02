@@ -91,20 +91,20 @@ public extension Outline {
     }
 
     func mapEffects<RIntEffect, RExtEffect>(
-        function: @escaping ([FeatureEvent<IntEffect, ExtEffect>]) -> [FeatureEvent<RIntEffect, RExtEffect>]
+        function: @escaping (OutlineExtras, [FeatureEvent<IntEffect, ExtEffect>]) -> [FeatureEvent<RIntEffect, RExtEffect>]
     ) -> Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> {
         mapEffects(with: Void()) {
-            ($0, effects: function($1))
+            ($1, effects: function($0, $2))
         }
     }
 
     func mapEffects<State, RIntEffect, RExtEffect>(
         with state: @autoclosure @escaping () -> State,
-        function: @escaping (State, [FeatureEvent<IntEffect, ExtEffect>]) -> (newState: State, effects: [FeatureEvent<RIntEffect, RExtEffect>])
+        function: @escaping (OutlineExtras, State, [FeatureEvent<IntEffect, ExtEffect>]) -> (newState: State, effects: [FeatureEvent<RIntEffect, RExtEffect>])
     ) -> Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> {
         Outline<IntTrigger, RIntEffect, ExtTrigger, RExtEffect> { extras, trigger in
             let transition = transit(trigger, extras.machineId, extras.logger)
-            let (newState, mapped) = function(state(), transition.effects)
+            let (newState, mapped) = function(extras, state(), transition.effects)
             return OutlineTransition(
                 transition.state.mapEffects(with: newState, function: function),
                 effects: mapped
