@@ -11,51 +11,51 @@ import simprokmachine
 
 public extension Machine {
     
-    func filterInput(function: @escaping (Input, (Loggable) -> Void) -> Bool) -> Machine<Input, Output> {
+    func filterInput(function: @escaping (Input, String, (Loggable) -> Void) -> Bool) -> Machine<Input, Output> {
         filterInput(with: Void()) {
-            ($0, function($1, $2))
+            ($0, function($1, $2, $3))
         }
     }
     
     func filterInput<State>(
         with state: @autoclosure @escaping () -> State,
-        function: @escaping (State, Input, (Loggable) -> Void) -> (newState: State, shouldPass: Bool)
+        function: @escaping (State, Input, String, (Loggable) -> Void) -> (newState: State, shouldPass: Bool)
     ) -> Machine<Input, Output> {
-        mapInput(with: state()) { state, input, logger in
-            let (newState, shouldPass) = function(state, input, logger)
+        mapInput(with: state()) { state, input, id, logger in
+            let (newState, shouldPass) = function(state, input, id, logger)
             return (newState, shouldPass ? [input] : [])
         }
     }
     
-    func filterOutput(function: @escaping (Output, (Loggable) -> Void) -> Bool) -> Machine<Input, Output> {
+    func filterOutput(function: @escaping (Output, String, (Loggable) -> Void) -> Bool) -> Machine<Input, Output> {
         filterOutput(with: Void()) {
-            ($0, function($1, $2))
+            ($0, function($1, $2, $3))
         }
     }
     
     func filterOutput<State>(
         with state: @escaping @autoclosure () -> State,
-        function: @escaping (State, Output, (Loggable) -> Void) -> (newState: State, shouldPass: Bool)
+        function: @escaping (State, Output, String, (Loggable) -> Void) -> (newState: State, shouldPass: Bool)
     ) -> Machine<Input, Output> {
-        mapOutput(with: state()) { state, output, logger in
-            let (newState, shouldPass) = function(state, output, logger)
+        mapOutput(with: state()) { state, output, id, logger in
+            let (newState, shouldPass) = function(state, output, id, logger)
             return (newState, shouldPass ? [output] : [])
         }
     }
     
     func biFilter<State>(
         _ state: @escaping () -> State,
-        filterInput: @escaping (State, Input, (Loggable) -> Void) -> (State, Bool),
-        filterOutput: @escaping (State, Output, (Loggable) -> Void) -> (State, Bool)
+        filterInput: @escaping (State, Input, String, (Loggable) -> Void) -> (State, Bool),
+        filterOutput: @escaping (State, Output, String, (Loggable) -> Void) -> (State, Bool)
     ) -> Machine<Input, Output> {
         biMap {
             state()
         } mapInput: {
-            let (newState, shouldPass) = filterInput($0, $1, $2)
+            let (newState, shouldPass) = filterInput($0, $1, $2, $3)
             
             return (newState, shouldPass ? [$1] : [])
         } mapOutput: {
-            let (newState, shouldPass) = filterOutput($0, $1, $2)
+            let (newState, shouldPass) = filterOutput($0, $1, $2, $3)
                 
             return (newState, shouldPass ? [$1] : [])
         }

@@ -9,33 +9,22 @@ import simprokstate
 public extension Machine {
 
     func redirectOutput(
-        _ function: @escaping (Output, (Loggable) -> Void) -> Input?
+        _ function: @escaping (Output, String, (Loggable) -> Void) -> Input?
     ) -> Machine<Input, Output> {
-        Machine { machineId in
-            Feature.classic(SetOfMachines(self)) { extras, trigger in
-                switch trigger {
-                case .ext(let input):
-                    return (extras.machines, [.int(input)])
-                case .int(let output):
-                    if let input = function(output, extras.logger) {
-                        return (extras.machines, [.int(input)])
-                    } else {
-                        return (extras.machines, [.ext(output)])
-                    }
-                }
-            }
+        redirectOutput(with: Void()) { state, output, id, logger in
+            (state, function(output, id, logger))
         }
     }
 
-    func redirectInput<State>(
+    func redirectOutput<State>(
         with state: @escaping @autoclosure () -> State,
-        _ function: @escaping (State, Output, (Loggable) -> Void) -> (newState: State, input: Input?)
+        _ function: @escaping (State, Output, String, (Loggable) -> Void) -> (newState: State, input: Input?)
     ) -> Machine<Input, Output> {
         Machine { machineId in
             Feature.classic(DataMachines(state(), machines: self)) { extras, trigger in
                 switch trigger {
                 case .int(let output):
-                    let (newState, redirectResult) = function(extras.machines.data, output, extras.logger)
+                    let (newState, redirectResult) = function(extras.machines.data, output, machineId, extras.logger)
                     if let input = redirectResult {
                         return (DataMachines(newState, machines: extras.machines.machines), [.int(input)])
                     } else {

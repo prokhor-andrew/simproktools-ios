@@ -9,33 +9,33 @@ import simprokstate
 public extension Machine {
 
     func biMap<RInput, ROutput>(
-        mapInput: @escaping (RInput, (Loggable) -> Void) -> [Input],
-        mapOutput: @escaping (Output, (Loggable) -> Void) -> [ROutput]
+        mapInput: @escaping (RInput, String, (Loggable) -> Void) -> [Input],
+        mapOutput: @escaping (Output, String, (Loggable) -> Void) -> [ROutput]
     ) -> Machine<RInput, ROutput> {
-        biMap { Void() } mapInput: { state, input, logger in
-            (state, mapInput(input, logger))
-        } mapOutput: { state, output, logger in
-            (state, mapOutput(output, logger))
+        biMap { Void() } mapInput: { state, input, id, logger in
+            (state, mapInput(input, id, logger))
+        } mapOutput: { state, output, id, logger in
+            (state, mapOutput(output, id, logger))
         }
     }
     
     func biMap<State, RInput, ROutput>(
         with state: @escaping () -> State,
-        mapInput: @escaping (State, RInput, (Loggable) -> Void) -> (newState: State, inputs: [Input]),
-        mapOutput: @escaping (State, Output, (Loggable) -> Void) -> (newState: State, outputs: [ROutput])
+        mapInput: @escaping (State, RInput, String, (Loggable) -> Void) -> (newState: State, inputs: [Input]),
+        mapOutput: @escaping (State, Output, String, (Loggable) -> Void) -> (newState: State, outputs: [ROutput])
     ) -> Machine<RInput, ROutput> {
         Machine<RInput, ROutput> { machineId in
             Feature.classic(DataMachines(state(), machines: self)) { extras, trigger in
                 switch trigger {
                 case .int(let output):
-                    let (newState, outputs) = mapOutput(extras.machines.data, output, extras.logger)
+                    let (newState, outputs) = mapOutput(extras.machines.data, output, machineId, extras.logger)
 
                     return (
                         DataMachines(newState, machines: extras.machines.machines),
                         outputs.map { .ext($0) }
                     )
                 case .ext(let input):
-                    let (newState, inputs) = mapInput(extras.machines.data, input, extras.logger)
+                    let (newState, inputs) = mapInput(extras.machines.data, input, machineId, extras.logger)
 
                     return (
                         DataMachines(newState, machines: extras.machines.machines),

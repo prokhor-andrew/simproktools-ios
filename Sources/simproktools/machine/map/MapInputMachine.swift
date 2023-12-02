@@ -8,14 +8,16 @@ import simprokstate
 
 public extension Machine {
 
-    func mapInput<RInput>(_ function: @escaping (RInput, (Loggable) -> Void) -> [Input]) -> Machine<RInput, Output> {
-        mapInput(with: Void()) { ($0, function($1, $2)) }
+    func mapInput<RInput>(_ function: @escaping (RInput, String, (Loggable) -> Void) -> [Input]) -> Machine<RInput, Output> {
+        mapInput(with: Void()) { state, input, id, logger in
+            (state, function(input, id, logger))
+        }
     }
 
     func mapInput<State, RInput>(
         with state: @escaping @autoclosure () -> State,
-        function: @escaping (State, RInput, (Loggable) -> Void) -> (newState: State, inputs: [Input])
+        function: @escaping (State, RInput, String, (Loggable) -> Void) -> (newState: State, inputs: [Input])
     ) -> Machine<RInput, Output> {
-        biMap(with: state, mapInput: function, mapOutput: { state, output, logger in (state, [output]) })
+        biMap(with: state, mapInput: function, mapOutput: { state, output, id, logger in (state, [output]) })
     }
 }
