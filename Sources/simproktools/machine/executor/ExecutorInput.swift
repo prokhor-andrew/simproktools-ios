@@ -9,16 +9,12 @@
 public enum ExecutorInput<Id: Hashable, Payload>: Identifiable {
     case launch(id: Id, payload: Payload)
     case cancel(id: Id)
-    case update(id: Id, payload: Payload)
-    case config(id: Id, payload: Payload)
     
     
     public var id: Id {
         switch self {
         case .launch(let id, _),
-                .cancel(let id),
-                .update(let id, _),
-                .config(let id, _):
+                .cancel(let id):
             id
         }
     }

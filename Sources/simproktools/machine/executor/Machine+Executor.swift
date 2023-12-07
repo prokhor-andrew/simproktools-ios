@@ -15,10 +15,8 @@ public extension Machine {
         private let logger: (Loggable) -> Void
         
         private let object: Object
-        private let onConfig: (Id, Object, Payload) throws -> Void
         private let onCreate: (Id, Object, Payload, @escaping (Data, Bool) -> Void) throws -> Sub
         private let onDestroy: (Id, Object, Sub) -> Void
-        private let onUpdate: (Id, Object, Sub, Payload) throws -> Void
         
         private var callback: MachineCallback<Output>?
         private var subscriptions: [Id: Sub] = [:]
@@ -55,17 +53,13 @@ public extension Machine {
         
         init(
             _ object: Object,
-            onConfig: @escaping (Id, Object, Payload) throws -> Void,
             onCreate: @escaping (Id, Object, Payload, @escaping (Data, Bool) -> Void) throws -> Sub,
             onDestroy: @escaping (Id, Object, Sub) -> Void,
-            onUpdate: @escaping (Id, Object, Sub, Payload) throws -> Void,
             logger: @escaping (Loggable) -> Void
         ) {
             self.object = object
             self.onCreate = onCreate
-            self.onConfig = onConfig
             self.onDestroy = onDestroy
-            self.onUpdate = onUpdate
             self.logger = logger
         }
         
@@ -110,42 +104,20 @@ public extension Machine {
                 } else {
                     logger(ExecutorLoggable.guardedCancel(id: id))
                 }
-            case .update(let id, let payload):
-                if let subscription = subscriptions[id] {
-                    do {
-                        try onUpdate(id, object, subscription, payload)
-                        await callback?(.didUpdateSucceed(id: id))
-                    } catch let error {
-                        await callback?(.didUpdateFail(id: id, error: error))
-                    }
-                } else {
-                    logger(ExecutorLoggable.guardedUpdate(id: id))
-                }
-            case .config(let id, let payload):
-                do {
-                    try onConfig(id, object, payload)
-                    await callback?(.didConfigSuccess(id: id))
-                } catch let error {
-                    await callback?(.didConfigFail(id: id, error: error))
-                }
             }
         }
     }
     
     static func executor<Id: Hashable, Payload, Data, Object, Sub>(
         object: @escaping () -> Object,
-        onConfig: @escaping (Id, Object, Payload) throws -> Void,
         onCreate: @escaping (Id, Object, Payload, @escaping (Data, Bool) -> Void) throws -> Sub,
-        onDestroy: @escaping (Id, Object, Sub) -> Void,
-        onUpdate: @escaping (Id, Object, Sub, Payload) throws -> Void
+        onDestroy: @escaping (Id, Object, Sub) -> Void
     ) -> Machine<Input, Output> where Input == ExecutorInput<Id, Payload>, Output == ExecutorOutput<Id, Data> {
         Machine { id, logger in
             ExecutorHolder<Id, Payload, Data, Object, Sub>(
                 object(),
-                onConfig: onConfig,
                 onCreate: onCreate,
                 onDestroy: onDestroy,
-                onUpdate: onUpdate,
                 logger: logger
             )
         } onChange: { obj, callback in
