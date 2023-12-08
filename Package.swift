@@ -18,7 +18,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/simprok-dev/simprokstate-ios.git",
-            exact: .init(1, 2, 54)
+            exact: .init(1, 2, 55)
         ),
         .package(
             url: "https://github.com/pointfreeco/swift-case-paths.git",
