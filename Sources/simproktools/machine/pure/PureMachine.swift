@@ -12,17 +12,17 @@ public extension Machine {
     private actor Dummy {
         
         let id: String
-        let logger: (Loggable) -> Void
+        let logger: MachineLogger
         
         var callback: MachineCallback<Output>?
         
-        init(id: String, logger: @escaping (Loggable) -> Void) {
+        init(id: String, logger: MachineLogger) {
             self.id = id
             self.logger = logger
         }
     }
     
-    static func pure(onProcess: @escaping (Input, MachineCallback<Output>, String, (Loggable) -> Void) async -> Void) -> Machine<Input, Output> {
+    static func pure(onProcess: @escaping (Input, MachineCallback<Output>, String, MachineLogger) async -> Void) -> Machine<Input, Output> {
         Machine { id, logger in
             Dummy(id: id, logger: logger)
         } onChange: { obj, callback in

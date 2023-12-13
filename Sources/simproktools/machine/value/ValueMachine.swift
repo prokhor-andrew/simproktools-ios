@@ -7,7 +7,7 @@ import simprokmachine
 
 public extension Machine where Input == Output {
 
-    static func value(doOnTrigger: @escaping (Input, String, (Loggable) -> Void) -> Void = { _,_,_ in }) -> Machine<Input, Output> {
+    static func value(doOnTrigger: @escaping (Input, String, MachineLogger) -> Void = { _,_,_ in }) -> Machine<Input, Output> {
         .pure { input, callback, id, logger in
             doOnTrigger(input, id, logger)
             await callback(input)

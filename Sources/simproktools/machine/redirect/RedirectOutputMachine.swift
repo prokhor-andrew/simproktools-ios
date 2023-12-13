@@ -9,7 +9,7 @@ import simprokstate
 public extension Machine {
 
     func redirectOutput(
-        _ function: @escaping (Output, String, (Loggable) -> Void) -> Input?
+        _ function: @escaping (Output, String, MachineLogger) -> Input?
     ) -> Machine<Input, Output> {
         redirectOutput(with: Void()) { state, output, id, logger in
             (state, function(output, id, logger))
@@ -18,7 +18,7 @@ public extension Machine {
 
     func redirectOutput<State>(
         with state: @escaping @autoclosure () -> State,
-        _ function: @escaping (State, Output, String, (Loggable) -> Void) -> (newState: State, input: Input?)
+        _ function: @escaping (State, Output, String, MachineLogger) -> (newState: State, input: Input?)
     ) -> Machine<Input, Output> {
         Machine { machineId in
             Feature.classic(DataMachines(state(), machines: self)) { extras, trigger in

@@ -9,7 +9,7 @@ public extension Machine {
 
     static func classic<State>(
         _ initial: @escaping @autoclosure () -> State,
-        function: @escaping (State, Input, String, (Loggable) -> Void) -> (newState: State, outputs: [Output])
+        function: @escaping (State, Input, String, MachineLogger) -> (newState: State, outputs: [Output])
     ) -> Machine<Input, Output> {
         Machine<Input, Output> { machineId in
             Feature<Void, Void, Input, Output>.classic(DataMachines(initial())) { extras, event in

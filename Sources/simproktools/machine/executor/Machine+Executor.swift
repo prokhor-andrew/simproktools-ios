@@ -12,7 +12,7 @@ public extension Machine {
     
     private actor ExecutorHolder<Id: Hashable, Payload, Data, Object, Sub> where Input == ExecutorInput<Id, Payload>, Output == ExecutorOutput<Id, Data> {
         
-        private let logger: (Loggable) -> Void
+        private let logger: MachineLogger
         
         private let object: Object
         private let onCreate: (Id, Object, Payload, @escaping (Data, Bool) -> Void) throws -> Sub
@@ -55,7 +55,7 @@ public extension Machine {
             _ object: Object,
             onCreate: @escaping (Id, Object, Payload, @escaping (Data, Bool) -> Void) throws -> Sub,
             onDestroy: @escaping (Id, Object, Sub) -> Void,
-            logger: @escaping (Loggable) -> Void
+            logger: MachineLogger
         ) {
             self.object = object
             self.onCreate = onCreate

@@ -12,14 +12,14 @@ public extension Machine {
     
     func cast<RInput>(
         input: RInput.Type,
-        doOnEvent: @escaping (RInput, String, (Loggable) -> Void) -> Void = { _,_,_ in }
+        doOnEvent: @escaping (RInput, String, MachineLogger) -> Void = { _,_,_ in }
     ) -> Machine<RInput, Output> {
         cast(input: input, output: Output.self, doOnInput: doOnEvent)
     }
     
     func cast<ROutput>(
         output: ROutput.Type,
-        doOnEvent: @escaping (Output, String, (Loggable) -> Void) -> Void = { _,_,_ in }
+        doOnEvent: @escaping (Output, String, MachineLogger) -> Void = { _,_,_ in }
     ) -> Machine<Input, ROutput> {
         cast(input: Input.self, output: output, doOnOutput: doOnEvent)
     }
@@ -27,8 +27,8 @@ public extension Machine {
     func cast<RInput, ROutput>(
         input: RInput.Type,
         output: ROutput.Type,
-        doOnInput: @escaping (RInput, String, (Loggable) -> Void) -> Void = { _,_,_ in },
-        doOnOutput: @escaping (Output, String, (Loggable) -> Void) -> Void = { _,_,_ in }
+        doOnInput: @escaping (RInput, String, MachineLogger) -> Void = { _,_,_ in },
+        doOnOutput: @escaping (Output, String, MachineLogger) -> Void = { _,_,_ in }
     ) -> Machine<RInput, ROutput> {
         biMap(
             mapInput: { value, id, logger in

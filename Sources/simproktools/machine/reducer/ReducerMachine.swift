@@ -9,7 +9,7 @@ public extension Machine {
 
     static func reducer(
         _ initial: @escaping @autoclosure () -> Output,
-        function: @escaping (Output, Input, String, (Loggable) -> Void) -> Output?
+        function: @escaping (Output, Input, String, MachineLogger) -> Output?
     ) -> Machine<Input, Output> {
         Machine<Input, Output> { machineId in
             Feature<Void, Void, Input, Output>.classic(DataMachines(initial())) { extras, event in

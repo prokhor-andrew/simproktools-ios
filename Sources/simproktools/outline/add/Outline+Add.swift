@@ -20,7 +20,7 @@ public extension Outline {
             child: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>,
             parent: Outline<ExtEffect, ExtTrigger, Input, Output>,
             machineId: String,
-            logger: @escaping @Sendable (Loggable) -> Void
+            logger: MachineLogger
         ) -> (
             child: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>,
             parent: Outline<ExtEffect, ExtTrigger, Input, Output>,
@@ -56,7 +56,7 @@ public extension Outline {
             child: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>,
             parent: Outline<ExtEffect, ExtTrigger, Input, Output>,
             machineId: String,
-            logger: @escaping @Sendable (Loggable) -> Void
+            logger: MachineLogger
         ) -> (
             child: Outline<IntTrigger, IntEffect, ExtTrigger, ExtEffect>,
             parent: Outline<ExtEffect, ExtTrigger, Input, Output>,

@@ -9,8 +9,8 @@ import simprokstate
 public extension Machine {
 
     func biMap<RInput, ROutput>(
-        mapInput: @escaping (RInput, String, (Loggable) -> Void) -> [Input],
-        mapOutput: @escaping (Output, String, (Loggable) -> Void) -> [ROutput]
+        mapInput: @escaping (RInput, String, MachineLogger) -> [Input],
+        mapOutput: @escaping (Output, String, MachineLogger) -> [ROutput]
     ) -> Machine<RInput, ROutput> {
         biMap { Void() } mapInput: { state, input, id, logger in
             (state, mapInput(input, id, logger))
@@ -21,8 +21,8 @@ public extension Machine {
     
     func biMap<State, RInput, ROutput>(
         with state: @escaping () -> State,
-        mapInput: @escaping (State, RInput, String, (Loggable) -> Void) -> (newState: State, inputs: [Input]),
-        mapOutput: @escaping (State, Output, String, (Loggable) -> Void) -> (newState: State, outputs: [ROutput])
+        mapInput: @escaping (State, RInput, String, MachineLogger) -> (newState: State, inputs: [Input]),
+        mapOutput: @escaping (State, Output, String, MachineLogger) -> (newState: State, outputs: [ROutput])
     ) -> Machine<RInput, ROutput> {
         Machine<RInput, ROutput> { machineId in
             Feature.classic(DataMachines(state(), machines: self)) { extras, trigger in

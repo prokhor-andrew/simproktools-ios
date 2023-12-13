@@ -18,7 +18,7 @@ public extension Scene {
             child: Scene<Trigger, Effect>,
             parent: Scene<Effect, R>,
             machineId: String,
-            logger: @escaping @Sendable (Loggable) -> Void
+            logger: MachineLogger
         ) -> (
             child: Scene<Trigger, Effect>,
             parent: Scene<Effect, R>,
@@ -52,7 +52,7 @@ public extension Scene {
             child: Scene<Trigger, Effect>,
             parent: Scene<Effect, R>,
             machineId: String,
-            logger: @escaping @Sendable (Loggable) -> Void
+            logger: MachineLogger
         ) -> (
             child: Scene<Trigger, Effect>,
             parent: Scene<Effect, R>,
@@ -84,7 +84,7 @@ public extension Scene {
             child: Scene<Trigger, Effect>,
             parent: Scene<R, Trigger>,
             machineId: String,
-            logger: @escaping @Sendable (Loggable) -> Void
+            logger: MachineLogger
         ) -> (
             child: Scene<Trigger, Effect>,
             parent: Scene<R, Trigger>,
@@ -104,7 +104,7 @@ public extension Scene {
             child: Scene<Trigger, Effect>,
             parent: Scene<R, Trigger>,
             machineId: String,
-            logger: @escaping @Sendable (Loggable) -> Void
+            logger: MachineLogger
         ) -> (
             child: Scene<Trigger, Effect>,
             parent: Scene<R, Trigger>,

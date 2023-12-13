@@ -11,7 +11,7 @@ import simprokmachine
 
 public extension Machine {
     
-    func filterInput(function: @escaping (Input, String, (Loggable) -> Void) -> Bool) -> Machine<Input, Output> {
+    func filterInput(function: @escaping (Input, String, MachineLogger) -> Bool) -> Machine<Input, Output> {
         filterInput(with: Void()) {
             ($0, function($1, $2, $3))
         }
@@ -19,7 +19,7 @@ public extension Machine {
     
     func filterInput<State>(
         with state: @autoclosure @escaping () -> State,
-        function: @escaping (State, Input, String, (Loggable) -> Void) -> (newState: State, shouldPass: Bool)
+        function: @escaping (State, Input, String, MachineLogger) -> (newState: State, shouldPass: Bool)
     ) -> Machine<Input, Output> {
         mapInput(with: state()) { state, input, id, logger in
             let (newState, shouldPass) = function(state, input, id, logger)
@@ -27,7 +27,7 @@ public extension Machine {
         }
     }
     
-    func filterOutput(function: @escaping (Output, String, (Loggable) -> Void) -> Bool) -> Machine<Input, Output> {
+    func filterOutput(function: @escaping (Output, String, MachineLogger) -> Bool) -> Machine<Input, Output> {
         filterOutput(with: Void()) {
             ($0, function($1, $2, $3))
         }
@@ -35,7 +35,7 @@ public extension Machine {
     
     func filterOutput<State>(
         with state: @escaping @autoclosure () -> State,
-        function: @escaping (State, Output, String, (Loggable) -> Void) -> (newState: State, shouldPass: Bool)
+        function: @escaping (State, Output, String, MachineLogger) -> (newState: State, shouldPass: Bool)
     ) -> Machine<Input, Output> {
         mapOutput(with: state()) { state, output, id, logger in
             let (newState, shouldPass) = function(state, output, id, logger)
@@ -45,8 +45,8 @@ public extension Machine {
     
     func biFilter<State>(
         _ state: @escaping () -> State,
-        filterInput: @escaping (State, Input, String, (Loggable) -> Void) -> (State, Bool),
-        filterOutput: @escaping (State, Output, String, (Loggable) -> Void) -> (State, Bool)
+        filterInput: @escaping (State, Input, String, MachineLogger) -> (State, Bool),
+        filterOutput: @escaping (State, Output, String, MachineLogger) -> (State, Bool)
     ) -> Machine<Input, Output> {
         biMap {
             state()
