@@ -1,16 +1,16 @@
+////
+//// Created by Andriy Prokhorenko on 13.02.2023.
+////
 //
-// Created by Andriy Prokhorenko on 13.02.2023.
+//import simprokmachine
 //
-
-import simprokmachine
-
-
-public extension Machine where Input == Output {
-
-    static func value(doOnTrigger: @escaping (Input, String, MachineLogger) -> Void = { _,_,_ in }) -> Machine<Input, Output> {
-        .pure { input, callback, id, logger in
-            doOnTrigger(input, id, logger)
-            await callback(input)
-        }
-    }
-}
+//
+//public extension Machine where Input == Output {
+//
+//    static func value(doOnTrigger: @escaping (Input, String, MachineLogger) -> Void = { _,_,_ in }) -> Machine<Input, Output> {
+//        .pure { input, callback, id, logger in
+//            doOnTrigger(input, id, logger)
+//            await callback(input)
+//        }
+//    }
+//}

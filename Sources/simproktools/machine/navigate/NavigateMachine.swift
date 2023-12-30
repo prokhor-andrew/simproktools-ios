@@ -1,21 +1,21 @@
+////
+////  File.swift
+////  
+////
+////  Created by Andriy Prokhorenko on 27.10.2023.
+////
 //
-//  File.swift
-//  
+//import simprokmachine
+//import simprokstate
 //
-//  Created by Andriy Prokhorenko on 27.10.2023.
+//public extension Machine {
 //
-
-import simprokmachine
-import simprokstate
-
-public extension Machine {
-
-    func navigate<RInput, ROutput>(
-        outline: @escaping (String) -> Outline<Output, Input, RInput, ROutput>
-    ) -> Machine<RInput, ROutput> {
-        Machine<RInput, ROutput> { machineId in
-            outline(machineId).asFeature(SetOfMachines(self))
-        }
-    }
-}
-
+//    func navigate<RInput, ROutput>(
+//        outline: @escaping (String) -> Outline<Output, Input, RInput, ROutput>
+//    ) -> Machine<RInput, ROutput> {
+//        Machine<RInput, ROutput> { machineId in
+//            outline(machineId).asFeature(SetOfMachines(self))
+//        }
+//    }
+//}
+//
