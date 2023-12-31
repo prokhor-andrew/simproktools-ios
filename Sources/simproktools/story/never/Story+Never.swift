@@ -6,7 +6,7 @@ import simprokstate
 
 public extension Story {
 
-    static func never(_ payload: Payload) -> Story<Payload, Event> {
+    static func never(_ payload: Payload) -> Story<Payload, Event, Loggable> {
         Story(payload: payload) { _,_ in nil }
     }
 }

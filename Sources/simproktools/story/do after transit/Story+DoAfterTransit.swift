@@ -11,10 +11,10 @@ import simprokstate
 public extension Story {
     
     func doAfterTransit(function: @escaping @Sendable (
-        _ extras: StoryExtras<Payload>,
+        _ extras: StoryExtras<Payload, Loggable>,
         _ event: Event,
         _ isTransitioned: Bool
-    ) -> Void) -> Story<Payload, Event> {
+    ) -> Void) -> Story<Payload, Event, Loggable> {
         Story(payload: payload) { extras, event in
             if let newStory = transit(event, extras.machineId, extras.logger) {
                 function(newStory.extras(machineId: extras.machineId, logger: extras.logger), event, true)
